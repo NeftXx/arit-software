@@ -1,0 +1,60 @@
+.lineno {
+    -fx-background-color: #303030;
+}
+
+.styled-text-area {
+    -fx-background-color: #272822;
+}
+
+.styled-text-area .text {
+    -fx-fill: #f8f8f2;
+}
+
+.styled-text-area .text.keyword {
+    -fx-fill: #5499C7;
+    -fx-font-weight: bold;
+}
+
+.styled-text-area .text.semicolon {
+    -fx-fill: #f82671;
+    -fx-font-weight: bold;
+}
+
+.styled-text-area .text.paren {
+    -fx-fill: #F4D03F;
+    -fx-font-weight: bold;
+}
+
+.styled-text-area .text.bracket {
+    -fx-fill: #F4D03F;
+    -fx-font-weight: bold;
+}
+
+.styled-text-area .text.brace {
+    -fx-fill: #F4D03F;
+    -fx-font-weight: bold;
+}
+
+.styled-text-area .text.string {
+    -fx-fill: #E67E22;
+}
+
+.styled-text-area .text.comment {
+    -fx-fill: #75715e;
+}
+
+.styled-text-area .text.operation {
+    -fx-fill: #85C1E9;
+}
+
+.styled-text-area .text.number {
+    -fx-fill: #ae81ff;
+}
+
+.paragraph-box:has-caret {
+    -fx-background-color: #1c1c1c99;
+}
+
+.caret {
+    -fx-stroke: #f8f8f2;
+}

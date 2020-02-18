@@ -1,0 +1,184 @@
+/*****************************************************************
+ * Parser.java
+ * 
+ * Copyright ©2019 Ronald Berdúo. All Rights Reserved.
+ * This software is the proprietary information of Ronald Berdúo.
+ *
+ *****************************************************************/
+package com.neftxx.interpreter.jflex_cup;
+
+import com.neftxx.interpreter.AritLanguage;
+import com.neftxx.interpreter.ast.AstNode;
+import com.neftxx.interpreter.ast.expression.Expression;
+import com.neftxx.util.NodeInfo;
+import java_cup.runtime.ComplexSymbolFactory;
+import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Ronald Berdúo
+ */
+parser code {:
+    /**
+     * analizador
+     */
+    private AritLanguage aritLanguage;
+
+    /**
+     * Constructor del analizador sintactico
+     *
+     * @param scann  Analizador lexico
+     * @param sf     Fabrica de simbolos
+     */
+    public Parser(Lexer scann, ComplexSymbolFactory sf, AritLanguage aritLanguage) {
+        super(scann, sf);
+        this.aritLanguage = aritLanguage;
+    }
+
+    /**
+     *
+     * Método al que se llama automaticamente ante algun error sintactico.
+     *
+     * @param s simbolo que provoco el error
+     */
+    @Override
+    public void syntax_error(java_cup.runtime.Symbol s) {
+        ComplexSymbol cs = (ComplexSymbol) s;
+        error("Error: No se esperaba el siguiente simbolo `" + cs.getName() + "`.",
+            cs.getLeft().getLine(), cs.getRight().getColumn());
+    }
+
+    /**
+     *
+     * Método al que se llama en el momento en que ya no es posible una
+     * recuperacion de errores.
+
+     * @param s simbolo que provoco el error
+     * @throws Exception
+     */
+    @Override
+    public void unrecovered_syntax_error(java_cup.runtime.Symbol s) throws Exception {
+        ComplexSymbol cs = (ComplexSymbol) s;
+        error("Error irrecuperable provocado simbolo `" + cs.getName() +"`.",
+        cs.getLeft().getLine(), cs.getRight().getColumn());
+    }
+
+    /**
+     * Guarda los errores en el manejador
+     *
+     * @param message mensaje de por que se provoco el error
+     * @param line linea donde se encuentra el error
+     * @param column columna donde se encuentra el error
+     */
+    private void error(String message, int line, int column) {
+        aritLanguage.addSyntacticError(message, new NodeInfo(line, column, aritLanguage.filename));
+    }
+:};
+
+/* Terminales (tokens devueltos por el escáner). */
+
+/* Palabras claves */
+terminal CONTINUE, FUNCTION, DEFAULT, RETURN, SWITCH, BREAK, WHILE, CASE, ELSE, FOR, IN, DO, IF;
+
+/* Literales */
+terminal Integer LIT_ENTERO;
+terminal Double  LIT_DECIMAL;
+terminal Boolean LIT_BOOLEANO;
+terminal String  LIT_STRING;
+terminal String  ID;
+terminal NULL;
+
+/* Separadores */
+terminal LAMBDA, IGUAL_QUE, DIFERENTE_QUE, MAYOR_IGUAL_QUE, MENOR_IGUAL_QUE, MODULO,
+MAS, MENOS, MULT, DIV, POTENCIA, IGUAL, MAYOR_QUE, MENOR_QUE, INTERROGANTE,
+DOS_PUNTOS, OR, AND, NOT, PAR_IZQ, PAR_DER, COR_IZQ, COR_DER, PUNTO_COMA,
+COMA, LLAVE_IZQ, LLAVE_DER, UMENOS;
+
+
+/* No Terminales */
+non terminal compilation_unit;
+non terminal ArrayList<AstNode> global_statements;
+non terminal AstNode global_statement;
+non terminal AstNode statement;
+non terminal Expression expression;
+non terminal argument_list;
+
+                                /* Precedencias */
+
+/*Asociatividad */ /* Operador */                                           /* Nivel */
+precedence right    IGUAL;                                                  // 1
+precedence right    INTERROGANTE, DOS_PUNTOS;                               // 2
+precedence left     OR;                                                     // 3
+precedence left     AND;                                                    // 4
+precedence left     DIFERENTE_QUE, IGUAL_QUE;                               // 5
+precedence nonassoc MAYOR_IGUAL_QUE, MAYOR_QUE, MENOR_IGUAL_QUE, MENOR_QUE; // 6
+precedence left     MAS, MENOS;                                             // 7
+precedence left     MULT, DIV, MODULO;                                      // 8
+precedence left     POTENCIA;                                               // 9
+precedence right    UMENOS, NOT;                                            // 10;
+precedence left     COR_IZQ, COR_DER, PAR_IZQ, PAR_DER;                     // 11;
+
+
+/* Reglas gramaticales */
+start with compilation_unit;
+
+
+compilation_unit
+    ::= global_statements:astNodes {:
+        aritLanguage.setAstNodes(astNodes);
+    :}
+;
+
+global_statements
+    ::= global_statements:statements global_statement:statement {:
+            RESULT = statements;
+            RESULT.add(statement);
+        :}
+    |   global_statement:statement {:
+            RESULT = new ArrayList<>();
+            RESULT.add(statement);
+        :}
+;
+
+global_statement
+    ::= statement:statement {: RESULT = statement; :}
+;
+
+statement
+    ::= expression:expression {: RESULT = expression; :}
+    |   expression:expression PUNTO_COMA {: RESULT = expression; :}
+;   
+
+expression
+    ::= ID IGUAL expression
+    |   expression INTERROGANTE expression DOS_PUNTOS expression
+    |   expression OR expression
+    |   expression AND expression
+    |   expression DIFERENTE_QUE expression
+    |   expression IGUAL_QUE expression
+    |   expression MAYOR_IGUAL_QUE expression
+    |   expression MAYOR_QUE expression
+    |   expression MENOR_IGUAL_QUE expression
+    |   expression MENOR_QUE expression
+    |   expression MAS expression
+    |   expression MENOS expression
+    |   expression MULT expression
+    |   expression DIV expression
+    |   expression MODULO expression
+    |   expression POTENCIA expression
+    |   ID PAR_IZQ PAR_DER
+    |   ID PAR_IZQ argument_list PAR_DER
+    |   PAR_IZQ expression PAR_DER
+    |   ID
+    |   LIT_ENTERO
+    |   LIT_DECIMAL
+    |   LIT_BOOLEANO
+    |   LIT_STRING
+    |   NULL
+;
+
+argument_list
+    ::= argument_list COMA expression
+    |   expression
+;
