@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class Scope {
     public final Scope previous;
-    public HashMap<String, VarSymbol> variables;
+    protected HashMap<String, VarSymbol> variables;
 
     public Scope(Scope previous) {
         this.previous = previous;

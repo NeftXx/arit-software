@@ -15,9 +15,9 @@ import java.util.ArrayList;
 
 public class AritLanguage {
     private ArrayList<AstNode> astNodes;
-    public final ArrayList<NodeError> errors;
+    private final ArrayList<NodeError> errors;
     public final String filename;
-    public final TextArea console;
+    private final TextArea console;
     public final FileScope globalScope;
 
     public AritLanguage(String filename, TextArea console) {
@@ -58,6 +58,10 @@ public class AritLanguage {
 
     public void addSemanticError(String description, NodeInfo nodeInfo) {
         errors.add(new NodeError(TypeError.SEMANTIC, description, nodeInfo));
+    }
+
+    public void printOnConsole(String text) {
+        this.console.setText(this.console.getText() + text + "\n");
     }
 
     public void analyzeWithJflexAndCup(String text) throws Exception {

@@ -233,8 +233,8 @@ public class MainController implements Initializable {
                 } else if (javaCCMenuItem.isSelected()) {
                     aritLanguage.analyzeWithJavaCC(text);
                 }
-                aritLanguage.preInterpret();
-                aritLanguage.interpret();
+//                aritLanguage.preInterpret();
+//                aritLanguage.interpret();
                 if (!aritLanguage.errors.isEmpty()) {
                     showErrorsInTableView(aritLanguage.errors);
                 }

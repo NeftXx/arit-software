@@ -1,10 +1,9 @@
 package com.neftxx.interpreter.ast.type;
 
-public class EmptyType extends AritType {
-    public static final EmptyType NULL = new EmptyType("null", 0);
-    public static final EmptyType UNDEFINED = new EmptyType("undefined", -10);
+public class UndefinedType extends AritType {
+    public static final UndefinedType UNDEFINED = new UndefinedType("undefined", -10);
 
-    private EmptyType(String name, int priority) {
+    private UndefinedType(String name, int priority) {
         super(name, priority);
     }
 

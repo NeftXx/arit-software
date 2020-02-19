@@ -1,5 +1,8 @@
 package com.neftxx.interpreter.ast.type;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 public class TypeFacade {
     private static final TypeFacade instance = new TypeFacade();
 
@@ -21,17 +24,13 @@ public class TypeFacade {
         return BaseType.STRING;
     }
 
-    public AritType getNullType() { return EmptyType.NULL; }
-
-    public AritType getUndefinedType() { return EmptyType.UNDEFINED; }
-
-    public boolean isBaseType(AritType type) { return type instanceof BaseType; }
+    public AritType getUndefinedType() { return UndefinedType.UNDEFINED; }
 
     public boolean isIntegerType(AritType type) {
         return BaseType.INTEGER == type;
     }
 
-    public boolean isDecimalType(AritType type) {
+    public boolean isNumericType(AritType type) {
         return BaseType.NUMERIC == type;
     }
 
@@ -43,9 +42,47 @@ public class TypeFacade {
         return BaseType.STRING == type;
     }
 
-    public boolean isNullType(AritType type) { return EmptyType.NULL == type; }
+    public boolean isUndefinedType(AritType type) { return UndefinedType.UNDEFINED == type; }
 
-    public boolean isUndefinedType(AritType type) { return EmptyType.UNDEFINED == type; }
+    public Object castValue(AritType oldType, AritType newType, Object value) {
+        if (isBooleanType(oldType) && isIntegerType(newType)) return castBooleanToInteger(value);
+        if (isBooleanType(oldType) && isNumericType(newType)) return castBooleanToDecimal(value);
+        if (isBooleanType(oldType) && isStringType(newType)) return castBooleanToString(value);
+        if (isIntegerType(oldType) && isNumericType(newType)) return castIntegerToDecimal(value);
+        if (isIntegerType(oldType) && isStringType(newType)) return castIntegerToString(value);
+        if (isNumericType(oldType) && isStringType(newType)) return castDecimalToString(value);
+        return value;
+    }
+
+    private int castBooleanToInteger(Object value) {
+        return value instanceof Boolean ? ((boolean) value ? 1 : 0 ) : 0;
+    }
+
+    private double castBooleanToDecimal(Object value) {
+        return value instanceof Boolean ? ((boolean) value ? 1.0 : 0.0) : 0.0;
+    }
+
+    @NotNull
+    @Contract(pure = true)
+    private String castBooleanToString(Object value) {
+        return value instanceof Boolean ? ((boolean) value ? "True" : "False") : "True";
+    }
+
+    private double castIntegerToDecimal(Object value) {
+        return value instanceof Integer ? (double) (int) value : 0;
+    }
+
+    @NotNull
+    @Contract(pure = true)
+    private String castIntegerToString(Object value) {
+        return value instanceof Integer ? String.valueOf((int) value) : "0";
+    }
+
+    @NotNull
+    @Contract(pure = true)
+    private String castDecimalToString(Object value) {
+        return value instanceof Double ? String.valueOf((double) value) : "0.0";
+    }
 
     public static TypeFacade getInstance() {
         return instance;
