@@ -1,14 +1,15 @@
-package com.neftxx.interpreter.ast.statement.function;
+package com.neftxx.interpreter.ast.expression.function;
 
 import com.neftxx.interpreter.AritLanguage;
-import com.neftxx.interpreter.ast.AstNode;
+import com.neftxx.interpreter.ast.expression.Expression;
 import com.neftxx.interpreter.ast.scope.Scope;
 import com.neftxx.interpreter.ast.statement.Block;
 import com.neftxx.util.NodeInfo;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class Function extends AstNode {
+public class Function extends Expression {
     public final String id;
     private final ArrayList<FormalParameter> parameters;
     private final Block block;
@@ -20,13 +21,30 @@ public class Function extends AstNode {
         this.block = block;
     }
 
+    public Function (NodeInfo info, String id, Block block) {
+        this(info, id, null, block);
+    }
+
     public int numberOfParameters() {
-        return this.parameters.size();
+        return this.parameters != null ? this.parameters.size() : 0;
     }
 
     @Override
     public Object interpret(AritLanguage aritLanguage, Scope scope) {
         Object result =  block.interpret(aritLanguage, scope);
         return null;
+    }
+
+    @Override
+    public void createAstGraph(@NotNull StringBuilder astGraph) {
+    }
+
+    @Override
+    public String toString() {
+        return "Function {" +
+                "id='" + id + '\'' +
+                ", parameters=" + parameters +
+                ", block=" + block +
+                '}';
     }
 }

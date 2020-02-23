@@ -1,5 +1,7 @@
 package com.neftxx.interpreter.ast.scope;
 
+import com.neftxx.interpreter.ast.type.AritType;
+
 import java.util.HashMap;
 
 public class Scope {
@@ -11,8 +13,8 @@ public class Scope {
         this.variables = new HashMap<>();
     }
 
-    public void addVariable(String id, VarSymbol varSymbol) {
-        this.variables.put(id, varSymbol);
+    public void addVariable(String id, AritType type, Object value) {
+        this.variables.put(id, new VarSymbol(id, type, value));
     }
 
     public VarSymbol getVariable(String id) {

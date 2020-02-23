@@ -1,7 +1,7 @@
 package com.neftxx.interpreter.ast.scope;
 
-import com.neftxx.interpreter.ast.statement.function.Function;
-import com.neftxx.interpreter.ast.statement.native_function.ConcatenateFunction;
+import com.neftxx.interpreter.ast.expression.function.Function;
+import com.neftxx.interpreter.ast.statement.native_function.structure.ConcatenateFunction;
 import com.neftxx.interpreter.ast.statement.native_function.PrintFunction;
 import com.neftxx.interpreter.ast.statement.native_function.NativeFunction;
 import org.jetbrains.annotations.NotNull;

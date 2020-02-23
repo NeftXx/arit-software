@@ -816,12 +816,12 @@ public class Lexer implements java_cup.runtime.Scanner {
                             } catch (NumberFormatException ex) {
                                 error("Error: Numero "+ yytext () +" fuera del rango de un integer.");
                             }
-                            return symbol("Integer Literal", Sym.LIT_ENTERO, valor);
+                            return symbol("`Integer Literal`", Sym.LIT_ENTERO, valor);
             } 
             // fall through
           case 63: break;
           case 3: 
-            { return symbol("Identifier: '" + yytext() + "'", Sym.ID, yytext().toLowerCase());
+            { return symbol("`Identifier: '" + yytext() + "'`", Sym.ID, yytext().toLowerCase());
             } 
             // fall through
           case 64: break;
@@ -836,107 +836,107 @@ public class Lexer implements java_cup.runtime.Scanner {
             // fall through
           case 66: break;
           case 6: 
-            { return symbol("=",  Sym.IGUAL);
+            { return symbol("`=`",  Sym.IGUAL);
             } 
             // fall through
           case 67: break;
           case 7: 
-            { return symbol(">",  Sym.MAYOR_QUE);
+            { return symbol("`>`",  Sym.MAYOR_QUE);
             } 
             // fall through
           case 68: break;
           case 8: 
-            { return symbol("!",  Sym.NOT);
+            { return symbol("`!`",  Sym.NOT);
             } 
             // fall through
           case 69: break;
           case 9: 
-            { return symbol("<",  Sym.MENOR_QUE);
+            { return symbol("`<`",  Sym.MENOR_QUE);
             } 
             // fall through
           case 70: break;
           case 10: 
-            { return symbol("+",  Sym.MAS);
+            { return symbol("`+`",  Sym.MAS);
             } 
             // fall through
           case 71: break;
           case 11: 
-            { return symbol("-",  Sym.MENOS);
+            { return symbol("`-`",  Sym.MENOS);
             } 
             // fall through
           case 72: break;
           case 12: 
-            { return symbol("*",  Sym.MULT);
+            { return symbol("`*`",  Sym.MULT);
             } 
             // fall through
           case 73: break;
           case 13: 
-            { return symbol("/",  Sym.DIV);
+            { return symbol("`/`",  Sym.DIV);
             } 
             // fall through
           case 74: break;
           case 14: 
-            { return symbol("^",  Sym.POTENCIA);
+            { return symbol("`^`",  Sym.POTENCIA);
             } 
             // fall through
           case 75: break;
           case 15: 
-            { return symbol("?",  Sym.INTERROGANTE);
+            { return symbol("`?`",  Sym.INTERROGANTE);
             } 
             // fall through
           case 76: break;
           case 16: 
-            { return symbol(":",  Sym.DOS_PUNTOS);
+            { return symbol("`:`",  Sym.DOS_PUNTOS);
             } 
             // fall through
           case 77: break;
           case 17: 
-            { return symbol("|",  Sym.OR);
+            { return symbol("`|`",  Sym.OR);
             } 
             // fall through
           case 78: break;
           case 18: 
-            { return symbol("&",  Sym.AND);
+            { return symbol("`&`",  Sym.AND);
             } 
             // fall through
           case 79: break;
           case 19: 
-            { return symbol("(",  Sym.PAR_IZQ);
+            { return symbol("`(`",  Sym.PAR_IZQ);
             } 
             // fall through
           case 80: break;
           case 20: 
-            { return symbol(")",  Sym.PAR_DER);
+            { return symbol("`)`",  Sym.PAR_DER);
             } 
             // fall through
           case 81: break;
           case 21: 
-            { return symbol("[",  Sym.COR_IZQ);
+            { return symbol("`[`",  Sym.COR_IZQ);
             } 
             // fall through
           case 82: break;
           case 22: 
-            { return symbol("]",  Sym.COR_DER);
+            { return symbol("`]`",  Sym.COR_DER);
             } 
             // fall through
           case 83: break;
           case 23: 
-            { return symbol(";",  Sym.PUNTO_COMA);
+            { return symbol("`;`",  Sym.PUNTO_COMA);
             } 
             // fall through
           case 84: break;
           case 24: 
-            { return symbol(",",  Sym.COMA);
+            { return symbol("`,`",  Sym.COMA);
             } 
             // fall through
           case 85: break;
           case 25: 
-            { return symbol("{",  Sym.LLAVE_IZQ);
+            { return symbol("`{`",  Sym.LLAVE_IZQ);
             } 
             // fall through
           case 86: break;
           case 26: 
-            { return symbol("}",  Sym.LLAVE_DER);
+            { return symbol("`}`",  Sym.LLAVE_DER);
             } 
             // fall through
           case 87: break;
@@ -973,52 +973,52 @@ public class Lexer implements java_cup.runtime.Scanner {
           case 93: break;
           case 33: 
             { yybegin(YYINITIAL);
-                            return symbol("String Literal", Sym.LIT_STRING, string.toString(), string.length());
+                            return symbol("`String Literal`", Sym.LIT_STRING, string.toString(), string.length());
             } 
             // fall through
           case 94: break;
           case 34: 
-            { return symbol("if", Sym.IF);
+            { return symbol("`if`", Sym.IF);
             } 
             // fall through
           case 95: break;
           case 35: 
-            { return symbol("in", Sym.IN);
+            { return symbol("`in`", Sym.IN);
             } 
             // fall through
           case 96: break;
           case 36: 
-            { return symbol("do", Sym.DO);
+            { return symbol("`do`", Sym.DO);
             } 
             // fall through
           case 97: break;
           case 37: 
-            { return symbol("==", Sym.IGUAL_QUE);
+            { return symbol("`==`", Sym.IGUAL_QUE);
             } 
             // fall through
           case 98: break;
           case 38: 
-            { return symbol("=>", Sym.LAMBDA);
+            { return symbol("`=>`", Sym.LAMBDA);
             } 
             // fall through
           case 99: break;
           case 39: 
-            { return symbol(">=", Sym.MAYOR_IGUAL_QUE);
+            { return symbol("`>=`", Sym.MAYOR_IGUAL_QUE);
             } 
             // fall through
           case 100: break;
           case 40: 
-            { return symbol("!=", Sym.DIFERENTE_QUE);
+            { return symbol("`!=`", Sym.DIFERENTE_QUE);
             } 
             // fall through
           case 101: break;
           case 41: 
-            { return symbol("<=", Sym.MENOR_IGUAL_QUE);
+            { return symbol("`<=`", Sym.MENOR_IGUAL_QUE);
             } 
             // fall through
           case 102: break;
           case 42: 
-            { return symbol("%",  Sym.MODULO);
+            { return symbol("`%`",  Sym.MODULO);
             } 
             // fall through
           case 103: break;
@@ -1059,12 +1059,12 @@ public class Lexer implements java_cup.runtime.Scanner {
                             } catch (NumberFormatException ex) {
                                 error("Error: "+ yytext () +" fuera del rango de un decimal.");
                             }
-                            return symbol("Decimal Literal", Sym.LIT_DECIMAL, valor);
+                            return symbol("`Decimal Literal`", Sym.LIT_DECIMAL, valor);
             } 
             // fall through
           case 110: break;
           case 50: 
-            { return symbol("for", Sym.FOR);
+            { return symbol("`for`", Sym.FOR);
             } 
             // fall through
           case 111: break;
@@ -1074,7 +1074,7 @@ public class Lexer implements java_cup.runtime.Scanner {
             // fall through
           case 112: break;
           case 52: 
-            { return symbol("else", Sym.ELSE);
+            { return symbol("`else`", Sym.ELSE);
             } 
             // fall through
           case 113: break;
@@ -1084,42 +1084,42 @@ public class Lexer implements java_cup.runtime.Scanner {
             // fall through
           case 114: break;
           case 54: 
-            { return symbol("case", Sym.CASE);
+            { return symbol("`case`", Sym.CASE);
             } 
             // fall through
           case 115: break;
           case 55: 
-            { return symbol("while", Sym.WHILE);
+            { return symbol("`while`", Sym.WHILE);
             } 
             // fall through
           case 116: break;
           case 56: 
-            { return symbol("break", Sym.BREAK);
+            { return symbol("`break`", Sym.BREAK);
             } 
             // fall through
           case 117: break;
           case 57: 
-            { return symbol("return", Sym.RETURN);
+            { return symbol("`return`", Sym.RETURN);
             } 
             // fall through
           case 118: break;
           case 58: 
-            { return symbol("switch", Sym.SWITCH);
+            { return symbol("`switch`", Sym.SWITCH);
             } 
             // fall through
           case 119: break;
           case 59: 
-            { return symbol("default", Sym.DEFAULT);
+            { return symbol("`default`", Sym.DEFAULT);
             } 
             // fall through
           case 120: break;
           case 60: 
-            { return symbol("function", Sym.FUNCTION);
+            { return symbol("`function`", Sym.FUNCTION);
             } 
             // fall through
           case 121: break;
           case 61: 
-            { return symbol("continue", Sym.CONTINUE);
+            { return symbol("`continue`", Sym.CONTINUE);
             } 
             // fall through
           case 122: break;

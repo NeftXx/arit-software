@@ -1,18 +1,23 @@
 package com.neftxx.interpreter.ast.expression.structure;
 
 import com.neftxx.interpreter.ast.type.AritType;
-import com.neftxx.interpreter.ast.type.TypeFacade;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class AritVector {
+public class AritVector extends AritStructure {
     public AritType type;
     private ArrayList<DataNode> dataNodes;
 
     public AritVector(AritType type, Object value) {
+        this.type = type;
         this.dataNodes = new ArrayList<>();
-        DataNode dataNode = new DataNode(type, value);
+        this.dataNodes.add(new DataNode(type, value));
+    }
+
+    public AritVector(@NotNull DataNode dataNode) {
+        this.type = dataNode.type;
+        this.dataNodes = new ArrayList<>();
         this.dataNodes.add(dataNode);
     }
 
@@ -37,14 +42,19 @@ public class AritVector {
         this.dataNodes.get(position).changeValues(this.type, newValue);
     }
 
-    public DataNode getElement(int position) throws IndexOutOfBoundsException  {
-        return this.dataNodes.get(position);
+    public AritVector getElement(int position) throws IndexOutOfBoundsException  {
+        return new AritVector(this.dataNodes.get(position));
+    }
+
+    public ArrayList<DataNode> getDataNodes() {
+        return this.dataNodes;
     }
 
     public int size() {
         return this.dataNodes.size();
     }
 
+    @Override
     public AritVector copy() {
         ArrayList<DataNode> dataNodes = new ArrayList<>();
         for (DataNode dataNode: this.dataNodes) {
@@ -55,13 +65,6 @@ public class AritVector {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("[1] ");
-        for (DataNode dataNode : this.dataNodes) {
-            builder.append(dataNode.toString()).append(" ");
-        }
-        return builder.toString();
+        return "Vector(Tipo: "+ this.type +") -> " + this.dataNodes;
     }
-
-    private static final TypeFacade TYPE_FACADE = TypeFacade.getInstance();
 }

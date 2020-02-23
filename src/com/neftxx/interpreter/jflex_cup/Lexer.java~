@@ -41,7 +41,7 @@ public class Lexer implements java_cup.runtime.Scanner {
    *                  at the beginning of a line
    * l is of the form l = 2*k, k a non negative integer
    */
-  private static final int[] ZZ_LEXSTATE = {
+  private static final int ZZ_LEXSTATE[] = { 
      0,  0,  1,  1,  2,  2,  3, 3
   };
 
@@ -83,17 +83,17 @@ public class Lexer implements java_cup.runtime.Scanner {
   private static int [] zzUnpackAction() {
     int [] result = new int[129];
     int offset = 0;
-    offset = zzUnpackAction(offset, result);
+    offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
   }
 
-  private static int zzUnpackAction(int offset, int[] result) {
+  private static int zzUnpackAction(String packed, int offset, int [] result) {
     int i = 0;       /* index in packed string  */
     int j = offset;  /* index in unpacked array */
-    int l = Lexer.ZZ_ACTION_PACKED_0.length();
+    int l = packed.length();
     while (i < l) {
-      int count = Lexer.ZZ_ACTION_PACKED_0.charAt(i++);
-      int value = Lexer.ZZ_ACTION_PACKED_0.charAt(i++);
+      int count = packed.charAt(i++);
+      int value = packed.charAt(i++);
       do result[j++] = value; while (--count > 0);
     }
     return j;

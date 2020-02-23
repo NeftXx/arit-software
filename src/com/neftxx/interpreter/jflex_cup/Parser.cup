@@ -1,7 +1,7 @@
 /*****************************************************************
  * Parser.java
  * 
- * Copyright ©2019 Ronald Berdúo. All Rights Reserved.
+ * Copyright ©2020 Ronald Berdúo. All Rights Reserved.
  * This software is the proprietary information of Ronald Berdúo.
  *
  *****************************************************************/
@@ -9,13 +9,25 @@ package com.neftxx.interpreter.jflex_cup;
 
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.AstNode;
+import com.neftxx.interpreter.ast.expression.assignment.Assignment;
 import com.neftxx.interpreter.ast.expression.Expression;
+import com.neftxx.interpreter.ast.expression.assignment.Dimension;
+import com.neftxx.interpreter.ast.expression.assignment.PositionAssignment;
+import com.neftxx.interpreter.ast.expression.function.FunctionCall;
+import com.neftxx.interpreter.ast.expression.Identifier;
 import com.neftxx.interpreter.ast.expression.Literal;
+import com.neftxx.interpreter.ast.statement.Block;
+import com.neftxx.interpreter.ast.expression.function.FormalParameter;
+import com.neftxx.interpreter.ast.expression.function.Function;
 import com.neftxx.interpreter.ast.type.TypeFacade;
 import com.neftxx.util.NodeInfo;
+
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -58,7 +70,7 @@ parser code {:
     @Override
     public void syntax_error(java_cup.runtime.Symbol s) {
         ComplexSymbol cs = (ComplexSymbol) s;
-        error("Error: No se esperaba el siguiente simbolo `" + cs.getName() + "`.",
+        error("Error: No se esperaba el siguiente simbolo " + cs.getName() + ".",
             cs.getLeft().getLine(), cs.getRight().getColumn());
     }
 
@@ -73,7 +85,7 @@ parser code {:
     @Override
     public void unrecovered_syntax_error(java_cup.runtime.Symbol s) throws Exception {
         ComplexSymbol cs = (ComplexSymbol) s;
-        error("Error irrecuperable provocado simbolo `" + cs.getName() +"`.",
+        error("Error irrecuperable provocado simbolo " + cs.getName() + ".",
         cs.getLeft().getLine(), cs.getRight().getColumn());
     }
 
@@ -85,7 +97,17 @@ parser code {:
      * @param column columna donde se encuentra el error
      */
     private void error(String message, int line, int column) {
-        aritLanguage.addSyntacticError(message, new NodeInfo(line, column, filename));
+        List<Integer> ids = this.expected_token_ids();
+        LinkedList<String> list = new LinkedList<>();
+        for (Integer expected : ids) {
+            list.add(this.symbl_name_from_id(expected));
+        }
+        if (list.isEmpty()) {
+            aritLanguage.addSyntacticError(message, new NodeInfo(line, column, filename));
+        } else {
+            aritLanguage.addSyntacticError(message + "\nSi no que se esperaba alguno de los siguientes tokens: " + list,
+                new NodeInfo(line, column, filename));
+        }
     }
 :};
 
@@ -113,19 +135,24 @@ COMA, LLAVE_IZQ, LLAVE_DER, UMENOS;
 non terminal compilation_unit;
 non terminal ArrayList<AstNode> global_statements;
 non terminal AstNode global_statement;
-non terminal function_declaration;
-non terminal formal_parameter_list;
-non terminal formal_parameter;
-non terminal block;
-non terminal block_statements;
+non terminal Function function_declaration;
+non terminal ArrayList<FormalParameter> formal_parameter_list;
+non terminal FormalParameter formal_parameter;
+non terminal Block block;
+non terminal ArrayList<AstNode> block_statements;
 non terminal AstNode statement;
+non terminal Expression statement_expression;
 non terminal Expression expression;
-non terminal argument_list;
+non terminal Expression var_assigment;
+non terminal ArrayList<Dimension> var_dimensions;
+non terminal Expression function_call;
+non terminal ArrayList<Expression> argument_list;
+non terminal Expression argument;
 
                                 /* Precedencias */
 
 /*Asociatividad */ /* Operador */                                           /* Nivel */
-precedence right    IGUAL;                                                  // 1
+precedence right    IGUAL, LAMBDA;                                          // 1
 precedence right    INTERROGANTE, DOS_PUNTOS;                               // 2
 precedence left     OR;                                                     // 3
 precedence left     AND;                                                    // 4
@@ -144,62 +171,172 @@ start with compilation_unit;
 
 compilation_unit
     ::= global_statements:astNodes {:
-        aritLanguage.setAstNodes(astNodes);
+        if (astNodes != null) aritLanguage.setAstNodes(astNodes);
     :}
 ;
 
 global_statements
     ::= global_statements:statements global_statement:statement {:
             RESULT = statements;
-            RESULT.add(statement);
+            if (statement != null) RESULT.add(statement);
         :}
     |   global_statement:statement {:
             RESULT = new ArrayList<>();
-            RESULT.add(statement);
+            if (statement != null) RESULT.add(statement);
         :}
 ;
 
 global_statement
     ::= statement:statement {: RESULT = statement; :}
-    |   function_declaration:function {: :}
+    |   function_declaration:function {: RESULT = function; :}
+    |   error PUNTO_COMA
 ;
 
 function_declaration
-    ::= ID IGUAL FUNCTION PAR_IZQ formal_parameter_list PAR_DER block
-    |   ID IGUAL FUNCTION PAR_IZQ PAR_DER block
-    |   ID IGUAL PAR_IZQ formal_parameter_list PAR_DER LAMBDA block
-    |   ID IGUAL PAR_IZQ PAR_DER LAMBDA block
+    ::= ID:id IGUAL FUNCTION PAR_IZQ formal_parameter_list:parameters PAR_DER block:block {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            RESULT = new Function(info, id, parameters, block);
+        :}
+    |   ID:id IGUAL FUNCTION PAR_IZQ PAR_DER block:block {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            RESULT = new Function(info, id, block);
+        :}
+    |   ID:id IGUAL PAR_IZQ ID:idParameter COMA formal_parameter_list:parameters PAR_DER LAMBDA block:block {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            NodeInfo infoParameter = new NodeInfo(idParameterxleft.getLine(), idParameterxright.getColumn(), filename);
+            parameters.add(0, new FormalParameter(infoParameter, idParameter));
+            RESULT = new Function(info, id, parameters, block);
+        :}
+    |   ID:id IGUAL PAR_IZQ ID:idParameter IGUAL expression:expParameter COMA formal_parameter_list:parameters PAR_DER LAMBDA block:block {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            NodeInfo infoParameter = new NodeInfo(idParameterxleft.getLine(), idParameterxright.getColumn(), filename);
+            parameters.add(0, new FormalParameter(infoParameter, idParameter, expParameter));
+            RESULT = new Function(info, id, parameters, block);
+        :}
+    |   ID:id IGUAL PAR_IZQ ID:idParameter PAR_DER LAMBDA block:block {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            ArrayList<FormalParameter> parameters = new ArrayList<>();
+            NodeInfo infoParameter = new NodeInfo(idParameterxleft.getLine(), idParameterxright.getColumn(), filename);
+            parameters.add(new FormalParameter(infoParameter, idParameter));
+            RESULT = new Function(info, id, parameters, block);
+        :}
+    |   ID:id IGUAL PAR_IZQ ID:idParameter IGUAL expression:expParameter PAR_DER LAMBDA block:block {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            ArrayList<FormalParameter> parameters = new ArrayList<>();
+            NodeInfo infoParameter = new NodeInfo(idParameterxleft.getLine(), idParameterxright.getColumn(), filename);
+            parameters.add(new FormalParameter(infoParameter, idParameter, expParameter));
+            RESULT = new Function(info, id, parameters, block);
+        :}
+    |   ID:id IGUAL PAR_IZQ PAR_DER LAMBDA block:block {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            RESULT = new Function(info, id, block);
+        :}
 ;
 
 formal_parameter_list
-    ::= formal_parameter_list COMA formal_parameter
-    |   formal_parameter
+    ::= formal_parameter_list:parameters COMA formal_parameter:parameter {: RESULT = parameters; RESULT.add(parameter); :}
+    |   formal_parameter:parameter {: RESULT = new ArrayList<>(); RESULT.add(parameter); :}
 ;
 
 formal_parameter
-    ::= ID
-    |   ID IGUAL expression
+    ::= ID:id {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            RESULT = new FormalParameter(info, id);
+        :}
+    |   ID:id IGUAL expression:exp {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            RESULT = new FormalParameter(info, id, exp);
+        :}
 ;
 
 block
-    ::= LLAVE_IZQ LLAVE_DER
-    |   LLAVE_IZQ block_statements LLAVE_DER
+    ::= LLAVE_IZQ:llave LLAVE_DER {:
+            NodeInfo info = new NodeInfo(llavexleft.getLine(), llavexright.getColumn(), filename);
+            RESULT = new Block(info);
+        :}
+    |   LLAVE_IZQ:llave block_statements:statements LLAVE_DER {:
+            NodeInfo info = new NodeInfo(llavexleft.getLine(), llavexright.getColumn(), filename);
+            RESULT = new Block(info, statements);
+        :}
 ;
 
 block_statements
-    ::= block_statements statement
-    |   statement
+    ::= block_statements:statements statement:statement {:
+            RESULT = statements;
+            if (statement != null) RESULT.add(statement);
+        :}
+    |   statement:statement {:
+            RESULT = new ArrayList<>();
+            if (statement != null) RESULT.add(statement);
+        :}
 ;
 
 statement
-    ::= expression:expression {: RESULT = expression; :}
-    |   expression:expression PUNTO_COMA {: RESULT = expression; :}
-;   
+    ::= statement_expression:expression PUNTO_COMA {: RESULT = expression; :}
+    |   statement_expression:expression {: RESULT = expression; :}
+;
+
+statement_expression
+    ::= var_assigment:assigment {: RESULT = assigment; :}
+    |   function_call:functionCall {: RESULT = functionCall; :}
+;
+
+var_assigment
+    ::= ID:id IGUAL expression:expression {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            RESULT = new Assignment(info, id, expression);
+        :}
+    |   ID:id var_dimensions:dimensions IGUAL expression:expression {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            RESULT = new PositionAssignment(info, id, dimensions, expression);
+        :}
+;
+
+var_dimensions
+    ::= var_dimensions:dimensions COR_IZQ argument_list:access COR_DER {:
+            RESULT = dimensions;
+            if (access != null) {
+                NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
+                RESULT.add(new Dimension(info, access, false));
+            }
+        :}
+    |   var_dimensions:dimensions COR_IZQ COR_IZQ argument_list:access COR_DER COR_DER {:
+            RESULT = dimensions;
+            if (access != null) {
+                NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
+                RESULT.add(new Dimension(info, access, true));
+            }
+        :}
+    |   COR_IZQ argument_list:access COR_DER {:
+            RESULT = new ArrayList<>();
+            if (access != null) {
+                NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
+                RESULT.add(new Dimension(info, access, false));
+            }
+        :}
+    |   COR_IZQ COR_IZQ argument_list:access COR_DER COR_DER COR_DER {:
+            RESULT = new ArrayList<>();
+            if (access != null) {
+                NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
+                RESULT.add(new Dimension(info, access, true));
+            }
+        :}
+;
+
+function_call
+    ::= ID:id PAR_IZQ PAR_DER {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            RESULT = new FunctionCall(info, id);
+        :}
+    |   ID:id PAR_IZQ argument_list:arguments PAR_DER {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            RESULT = new FunctionCall(info, id, arguments);
+        :}
+;
 
 expression
-    ::= expression IGUAL expression {:
-        :}
-    |   expression INTERROGANTE expression DOS_PUNTOS expression {:
+    ::= statement_expression:expression {: RESULT = expression; :}
+    |   expression:condition INTERROGANTE expression:exp1 DOS_PUNTOS expression:exp2 {:
         :}
     |   expression OR expression {:
         :}
@@ -233,12 +370,10 @@ expression
         :}
     |   expression COR_IZQ COR_IZQ expression COR_DER COR_DER {:
         :}
-    |   ID PAR_IZQ PAR_DER {:
-        :}
-    |   ID PAR_IZQ argument_list PAR_DER {:
-        :}
     |   PAR_IZQ expression:exp PAR_DER {: RESULT = exp; :}
-    |   ID {:
+    |   ID:id {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            RESULT = new Identifier(info, id);
         :}
     |   LIT_ENTERO:lit {:
             NodeInfo info = new NodeInfo(litxleft.getLine(), litxright.getColumn(), filename);
@@ -263,6 +398,6 @@ expression
 ;
 
 argument_list
-    ::= argument_list COMA expression
-    |   expression
+    ::= argument_list:arguments COMA expression:argument {: RESULT = arguments; RESULT.add(argument); :}
+    |   expression:argument {: RESULT = new ArrayList<>(); RESULT.add(argument); :}
 ;

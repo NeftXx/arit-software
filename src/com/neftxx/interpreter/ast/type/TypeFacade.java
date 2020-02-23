@@ -26,6 +26,14 @@ public class TypeFacade {
 
     public AritType getUndefinedType() { return UndefinedType.UNDEFINED; }
 
+    public AritType getVectorType() { return StructureType.VECTOR; }
+
+    public AritType getListType() { return StructureType.LIST; }
+
+    public AritType getArrayType() { return StructureType.ARRAY; }
+
+    public AritType getMatrixType() { return StructureType.MATRIX; }
+
     public boolean isIntegerType(AritType type) {
         return BaseType.INTEGER == type;
     }
@@ -43,6 +51,16 @@ public class TypeFacade {
     }
 
     public boolean isUndefinedType(AritType type) { return UndefinedType.UNDEFINED == type; }
+
+    public boolean isVectorType(AritType type) { return StructureType.VECTOR == type; }
+
+    public boolean isListType(AritType type) { return StructureType.LIST == type; }
+
+    public boolean isArrayType(AritType type) { return StructureType.ARRAY == type; }
+
+    public boolean isMatrixType(AritType type) { return StructureType.MATRIX == type;}
+
+    public boolean isStructureType(AritType type) { return type instanceof StructureType; }
 
     public Object castValue(AritType oldType, AritType newType, Object value) {
         if (isBooleanType(oldType) && isIntegerType(newType)) return castBooleanToInteger(value);

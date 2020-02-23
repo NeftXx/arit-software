@@ -61,6 +61,9 @@ public class DataNode extends StructureNode {
 
     @Override
     public String toString() {
-        return this.value != null ? this.value.toString() : "NULL";
+        if (this.value != null) {
+            return TYPE_FACADE.isStringType(this.type) ? "\"" + this.value + "\"" : this.value.toString();
+        }
+        return "NULL";
     }
 }

@@ -3,6 +3,7 @@ package com.neftxx.interpreter;
 import com.neftxx.interpreter.ast.AstNode;
 import com.neftxx.interpreter.ast.error.*;
 import com.neftxx.interpreter.ast.scope.FileScope;
+import com.neftxx.interpreter.ast.expression.function.Function;
 import com.neftxx.interpreter.jflex_cup.Lexer;
 import com.neftxx.interpreter.jflex_cup.Parser;
 import com.neftxx.util.NodeInfo;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 
 public class AritLanguage {
     private ArrayList<AstNode> astNodes;
-    private final ArrayList<NodeError> errors;
+    public final ArrayList<NodeError> errors;
     public final String filename;
     private final TextArea console;
     public final FileScope globalScope;
@@ -37,15 +38,36 @@ public class AritLanguage {
     }
 
     public void preInterpret() {
-
+        if (this.astNodes != null) {
+            for (AstNode node : astNodes) {
+                if (node instanceof Function) {
+                    Function function = (Function) node;
+                    this.globalScope.addMethod(function.id, function);
+                }
+            }
+        }
     }
 
     public void interpret() {
         if (this.astNodes != null) {
             for (AstNode node : astNodes) {
-                node.interpret(this, globalScope);
+                if (!(node instanceof Function)) node.interpret(this, globalScope);
             }
         }
+    }
+
+    public String createAstGraph() {
+        StringBuilder astGraph = new StringBuilder();
+        astGraph.append("digraph astGraph {\n")
+                .append("rankdir=TB;\n")
+                .append("node [shape=record, style=filled, fillcolor=seashell2];\n");
+        if (this.astNodes != null) {
+            for (AstNode node: astNodes) {
+                node.createAstGraph(astGraph);
+            }
+        }
+        astGraph.append("}\n");
+        return astGraph.toString();
     }
 
     public void addLexicalError(String description, NodeInfo nodeInfo) {

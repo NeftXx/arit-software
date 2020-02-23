@@ -228,13 +228,11 @@ public class MainController implements Initializable {
             String text = codeArea.getText();
             AritLanguage aritLanguage = new AritLanguage(currentTab.getText(), consoleTextArea);
             try {
-                if (jflexCupMenuItem.isSelected()) {
-                    aritLanguage.analyzeWithJflexAndCup(text);
-                } else if (javaCCMenuItem.isSelected()) {
-                    aritLanguage.analyzeWithJavaCC(text);
-                }
-//                aritLanguage.preInterpret();
-//                aritLanguage.interpret();
+                if (jflexCupMenuItem.isSelected())aritLanguage.analyzeWithJflexAndCup(text);
+                else if (javaCCMenuItem.isSelected()) aritLanguage.analyzeWithJavaCC(text);
+                else aritLanguage.analyzeWithJflexAndCup(text);
+                aritLanguage.preInterpret();
+                aritLanguage.interpret();
                 if (!aritLanguage.errors.isEmpty()) {
                     showErrorsInTableView(aritLanguage.errors);
                 }

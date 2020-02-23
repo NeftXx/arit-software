@@ -1,7 +1,7 @@
 package com.neftxx.interpreter.ast.type;
 
 public class UndefinedType extends AritType {
-    public static final UndefinedType UNDEFINED = new UndefinedType("undefined", -10);
+    public static final UndefinedType UNDEFINED = new UndefinedType("undefined", -1);
 
     private UndefinedType(String name, int priority) {
         super(name, priority);
