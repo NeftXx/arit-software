@@ -26,6 +26,8 @@ public class TypeFacade {
 
     public AritType getUndefinedType() { return UndefinedType.UNDEFINED; }
 
+    public AritType getDefaultType() { return UndefinedType.DEFAULT; }
+
     public AritType getVectorType() { return StructureType.VECTOR; }
 
     public AritType getListType() { return StructureType.LIST; }
@@ -51,6 +53,8 @@ public class TypeFacade {
     }
 
     public boolean isUndefinedType(AritType type) { return UndefinedType.UNDEFINED == type; }
+
+    public boolean isDefaultType(AritType type) { return UndefinedType.DEFAULT == type; }
 
     public boolean isVectorType(AritType type) { return StructureType.VECTOR == type; }
 

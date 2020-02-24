@@ -58,9 +58,9 @@ public class PositionAssignment extends Expression {
                     return null;
                 }
                 AritVector vectorTemp = (AritVector) expTemp.value;
-                if (!TYPE_FACADE.isIntegerType(vectorTemp.type)) {
+                if (!TYPE_FACADE.isIntegerType(vectorTemp.baseType)) {
                     aritLanguage.addSemanticError("Error en " + this + " : tipo de subíndice no válido `" +
-                            vectorTemp.type + "`", this.info);
+                            vectorTemp.baseType + "`", this.info);
                     return null;
                 }
                 DataNode dataNode = vectorTemp.getDataNodes().get(0);

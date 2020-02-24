@@ -1,5 +1,7 @@
 package com.neftxx.interpreter.ast.type;
 
+import org.jetbrains.annotations.NotNull;
+
 public abstract class AritType {
     public final int priority;
     protected final String name;
@@ -9,11 +11,10 @@ public abstract class AritType {
         this.priority = priority;
     }
 
-    public String getName() {
-        return name;
+    public void createAstGraph(@NotNull StringBuilder astGraph) {
+        astGraph.append("node").append(this.hashCode()).append("[label = \"Tipo(")
+                .append(this.name).append(")\"];\n");
     }
-
-    public abstract boolean isSame(AritType other);
 
     @Override
     public String toString() {

@@ -30,23 +30,52 @@ public class FunctionCall extends Expression {
             this.value = nativeFunction.interpret(aritLanguage, this.arguments, scope);
             this.type = nativeFunction.type;
         } else {
-//            int numberOfArguments = this.arguments != null ? arguments.size() : 0;
-//            Function function = aritLanguage.globalScope.getMethod(this.id);
-//            if (numberOfArguments > 0) {
-//                Object[] values = new Object[numberOfArguments];
-//                int i = 0;
-//                Expression expression;
-//                for (; i < numberOfArguments; i++) {
-//                    expression = this.arguments.get(i);
-//                    values[i] = expression.interpret(aritLanguage, scope);
-//                    if (TYPE_FACADE.isUndefinedType(expression.type)) {
-//                        aritLanguage.addSemanticError("Error al evaluar el parametro " + (i + 1) +
-//                                " en la llamada a la funcion" + this.id, this.info);
-//                        this.type = TYPE_FACADE.getUndefinedType();
-//                        return null;
-//                    }
-//                }
-//            }
+            int numberOfArguments = this.arguments != null ? arguments.size() : 0;
+            Function function = aritLanguage.globalScope.getMethod(this.id, numberOfArguments);
+            if (function != null) {
+                int i = 0;
+                Expression expression;
+                Scope methodScope = new Scope(aritLanguage.globalScope);
+                ArrayList<FormalParameter> parameters = function.parameters;
+                Object valueArgument;
+                for (; i < numberOfArguments; i++) {
+                    expression = this.arguments.get(i);
+                    valueArgument = expression.interpret(aritLanguage, scope);
+                    if (TYPE_FACADE.isUndefinedType(expression.type)) {
+                        aritLanguage.addSemanticError("Error en " + this +" : al evaluar el parametro `" +
+                                (i + 1) + "`.", this.info);
+                        this.type = TYPE_FACADE.getUndefinedType();
+                        return null;
+                    } else if (TYPE_FACADE.isDefaultType(expression.type)) {
+                        expression = parameters.get(i).expDefault;
+                        if (expression != null) {
+                            valueArgument = expression.interpret(aritLanguage, methodScope);
+                            if (TYPE_FACADE.isUndefinedType(expression.type)) {
+                                aritLanguage.addSemanticError("Error en " + this +" : al evaluar el parametro `" +
+                                        (i + 1) + "` por defecto.", this.info);
+                                this.type = TYPE_FACADE.getUndefinedType();
+                                return null;
+                            }
+                        } else {
+                            aritLanguage.addSemanticError("Error en " + this + " : la función `" +
+                                            this.id + "` no tiene un valor por defecto en el parametro `" +  (i + 1) + "`.",
+                                    this.info);
+                            this.type = TYPE_FACADE.getUndefinedType();
+                            return null;
+                        }
+                    }
+                    methodScope.addVariable(parameters.get(i).id, expression.type, valueArgument);
+                }
+                this.value = function.interpret(aritLanguage, methodScope);
+                this.type = function.type;
+                return this.value;
+            } else {
+                aritLanguage.addSemanticError("Error en " + this + " : no se encuentra la función `" +
+                                this.id + "` con la cantidad de argumentos `" + numberOfArguments + "`.", this.info);
+                this.type = TYPE_FACADE.getUndefinedType();
+                this.value = null;
+                return null;
+            }
         }
         return this.value;
     }
@@ -57,10 +86,8 @@ public class FunctionCall extends Expression {
 
     @Override
     public String toString() {
-        StringBuilder cad = new StringBuilder(this.id + "(");
-        for (Expression argument: this.arguments) {
-            cad.append(argument);
-        }
+        StringBuilder cad = new StringBuilder(this.id + "( ");
+        for (Expression argument: this.arguments) cad.append(argument).append(" ");
         return cad + ")";
     }
 }

@@ -231,7 +231,7 @@ public class MainController implements Initializable {
                 if (jflexCupMenuItem.isSelected())aritLanguage.analyzeWithJflexAndCup(text);
                 else if (javaCCMenuItem.isSelected()) aritLanguage.analyzeWithJavaCC(text);
                 else aritLanguage.analyzeWithJflexAndCup(text);
-                aritLanguage.preInterpret();
+                aritLanguage.saveFunctions();
                 aritLanguage.interpret();
                 if (!aritLanguage.errors.isEmpty()) {
                     showErrorsInTableView(aritLanguage.errors);

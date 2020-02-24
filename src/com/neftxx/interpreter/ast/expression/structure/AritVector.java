@@ -6,40 +6,40 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 public class AritVector extends AritStructure {
-    public AritType type;
+    public AritType baseType;
     private ArrayList<DataNode> dataNodes;
 
-    public AritVector(AritType type, Object value) {
-        this.type = type;
+    public AritVector(AritType baseType, Object value) {
+        this.baseType = baseType;
         this.dataNodes = new ArrayList<>();
-        this.dataNodes.add(new DataNode(type, value));
+        this.dataNodes.add(new DataNode(baseType, value));
     }
 
     public AritVector(@NotNull DataNode dataNode) {
-        this.type = dataNode.type;
+        this.baseType = dataNode.baseType;
         this.dataNodes = new ArrayList<>();
         this.dataNodes.add(dataNode);
     }
 
-    public AritVector(AritType type, ArrayList<DataNode> dataNodes) {
-        this.type = type;
+    public AritVector(AritType baseType, ArrayList<DataNode> dataNodes) {
+        this.baseType = baseType;
         this.dataNodes = dataNodes;
     }
 
     public void addElement(int position, @NotNull DataNode dataNode) throws IndexOutOfBoundsException {
-        if (dataNode.type.priority > this.type.priority) {
-            AritType oldType = this.type;
-            AritType newType = dataNode.type;
+        if (dataNode.baseType.priority > this.baseType.priority) {
+            AritType oldType = this.baseType;
+            AritType newType = dataNode.baseType;
             Object newValue;
             for (DataNode node: this.dataNodes) {
                 newValue = TYPE_FACADE.castValue(oldType, newType, node.value);
                 node.changeValues(newType, newValue);
             }
-            this.type = newType;
+            this.baseType = newType;
         }
-        while (position > size()) this.dataNodes.add(DataNode.getDataNodeDefault(this.type));
-        Object newValue = TYPE_FACADE.castValue(dataNode.type, this.type, dataNode.value);
-        this.dataNodes.get(position).changeValues(this.type, newValue);
+        while (position > size()) this.dataNodes.add(DataNode.getDataNodeDefault(this.baseType));
+        Object newValue = TYPE_FACADE.castValue(dataNode.baseType, this.baseType, dataNode.value);
+        this.dataNodes.get(position).changeValues(this.baseType, newValue);
     }
 
     public AritVector getElement(int position) throws IndexOutOfBoundsException  {
@@ -60,11 +60,15 @@ public class AritVector extends AritStructure {
         for (DataNode dataNode: this.dataNodes) {
             dataNodes.add(dataNode.copy());
         }
-        return new AritVector(this.type, dataNodes);
+        return new AritVector(this.baseType, dataNodes);
     }
 
     @Override
     public String toString() {
-        return "Vector(Tipo: "+ this.type +") -> " + this.dataNodes;
+        StringBuilder cad = new StringBuilder("[ ");
+        int i = 0;
+        int size = this.size();
+        for(; i < size; i++) cad.append(this.dataNodes.get(i)).append(" ");
+        return cad.append("]").toString();
     }
 }

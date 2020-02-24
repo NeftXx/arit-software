@@ -17,11 +17,14 @@ public class PrintFunction extends NativeFunction {
             Expression expression = arguments.get(0);
             Object result = expression.interpret(aritLanguage, scope);
             if (TYPE_FACADE.isUndefinedType(expression.type)) {
-                aritLanguage.addSemanticError("Error al calcular el valor del parametro de la posición `1` de la función `print()`",
+                StringBuilder cad = new StringBuilder();
+                for (Expression argument: arguments) cad.append(argument).append(" ");
+                aritLanguage.addSemanticError("Error en print( " + cad + ") : al calcular el valor del parametro de la posición `1`.",
                         expression.info);
                 return null;
             }
-            aritLanguage.printOnConsole(result != null ? result.toString() : "NULL\n");
+            aritLanguage.printOnConsole(">");
+            aritLanguage.printOnConsole(result != null ? result.toString() : "NULL");
         } else {
             aritLanguage.printOnConsole("\n");
         }

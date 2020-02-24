@@ -11,11 +11,6 @@ public class StructureType extends AritType {
     }
 
     @Override
-    public boolean isSame(AritType other) {
-        return this == other;
-    }
-
-    @Override
     public String toString() {
         return name;
     }

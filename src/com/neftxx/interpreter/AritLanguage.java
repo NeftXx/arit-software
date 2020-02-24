@@ -33,16 +33,20 @@ public class AritLanguage {
         this.astNodes = astNodes;
     }
 
-    public ArrayList<AstNode> getAstNodes() {
-        return this.astNodes;
-    }
-
-    public void preInterpret() {
+    public void saveFunctions() {
         if (this.astNodes != null) {
             for (AstNode node : astNodes) {
                 if (node instanceof Function) {
                     Function function = (Function) node;
-                    this.globalScope.addMethod(function.id, function);
+                    if (!function.verifyNamesOfParameters()) {
+                        this.addSemanticError("Error : la función `" + function.id +
+                                        "` tiene parámetros con el mismo nombre.", function.info);
+                        continue;
+                    }
+                    if (!this.globalScope.addMethod(function.id, function)) {
+                        this.addSemanticError("Error : la función `" + function.id + "` ya existe.",
+                                function.info);
+                    }
                 }
             }
         }

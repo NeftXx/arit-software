@@ -16,7 +16,7 @@ public class Identifier extends Expression {
     }
 
     @Override
-    public Object interpret(AritLanguage aritLanguage, Scope scope) {
+    public Object interpret(AritLanguage aritLanguage, @NotNull Scope scope) {
         VarSymbol varSymbol = scope.getVariable(this.name);
         if (varSymbol != null) {
             this.type = varSymbol.type;
@@ -27,13 +27,13 @@ public class Identifier extends Expression {
             }
             return this.value;
         }
-        aritLanguage.addSemanticError("No se ha declarado la variable " + this.name + ".", this.info);
+        aritLanguage.addSemanticError("Error : objeto `" + this.name + "` no encontrado.", this.info);
         return null;
     }
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-        astGraph.append("node").append(this.hashCode()).append(" [ label = \"Identificador(")
+        astGraph.append("node").append(this.hashCode()).append("[ label = \"Identificador(")
                 .append(this.name).append(")\"];\n");
     }
 

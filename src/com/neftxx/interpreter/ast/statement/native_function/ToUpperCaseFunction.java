@@ -1,4 +1,29 @@
 package com.neftxx.interpreter.ast.statement.native_function;
 
-public class ToUpperCaseFunction {
+import com.neftxx.interpreter.AritLanguage;
+import com.neftxx.interpreter.ast.expression.Expression;
+import com.neftxx.interpreter.ast.scope.Scope;
+
+import java.util.ArrayList;
+
+public class ToUpperCaseFunction extends NativeFunction {
+    private ToUpperCaseFunction() {
+        super("toUpperCase");
+    }
+
+    @Override
+    public Object interpret(AritLanguage aritLanguage, ArrayList<Expression> arguments, Scope scope) {
+        return null;
+    }
+
+    public static ToUpperCaseFunction getInstance() {
+        return INSTANCE;
+    }
+
+    private static final ToUpperCaseFunction INSTANCE = new ToUpperCaseFunction();
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

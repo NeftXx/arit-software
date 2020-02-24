@@ -29,7 +29,7 @@ public class ConcatenateFunction extends NativeFunction {
                 return null;
             } else if (TYPE_FACADE.isVectorType(argument.type)) {
                 AritVector vector = (AritVector) value;
-                if (vector.type.priority > typeTemp.priority) typeTemp = vector.type;
+                if (vector.baseType.priority > typeTemp.priority) typeTemp = vector.baseType;
                 dataNodes.addAll(vector.getDataNodes());
             } else if (TYPE_FACADE.isListType(argument.type)) {
                 typeTemp = TYPE_FACADE.getListType();
@@ -44,8 +44,8 @@ public class ConcatenateFunction extends NativeFunction {
         }
         this.type = TYPE_FACADE.getVectorType();
         for (DataNode dataNode: dataNodes) {
-            if (typeTemp.priority > dataNode.type.priority) {
-                Object cast = TYPE_FACADE.castValue(dataNode.type, typeTemp, dataNode.value);
+            if (typeTemp.priority > dataNode.baseType.priority) {
+                Object cast = TYPE_FACADE.castValue(dataNode.baseType, typeTemp, dataNode.value);
                 dataNode.changeValues(typeTemp, cast);
             }
         }

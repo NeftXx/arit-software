@@ -13,6 +13,7 @@ import com.neftxx.interpreter.ast.expression.assignment.Assignment;
 import com.neftxx.interpreter.ast.expression.Expression;
 import com.neftxx.interpreter.ast.expression.assignment.Dimension;
 import com.neftxx.interpreter.ast.expression.assignment.PositionAssignment;
+import com.neftxx.interpreter.ast.expression.function.DefaultArgument;
 import com.neftxx.interpreter.ast.expression.function.FunctionCall;
 import com.neftxx.interpreter.ast.expression.Identifier;
 import com.neftxx.interpreter.ast.expression.Literal;
@@ -21,10 +22,8 @@ import com.neftxx.interpreter.ast.expression.function.FormalParameter;
 import com.neftxx.interpreter.ast.expression.function.Function;
 import com.neftxx.interpreter.ast.type.TypeFacade;
 import com.neftxx.util.NodeInfo;
-
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -144,10 +143,11 @@ non terminal AstNode statement;
 non terminal Expression statement_expression;
 non terminal Expression expression;
 non terminal Expression var_assigment;
+non terminal ArrayList<Expression> access_list;
 non terminal ArrayList<Dimension> var_dimensions;
 non terminal Expression function_call;
 non terminal ArrayList<Expression> argument_list;
-non terminal Expression argument;
+non terminal Expression default_exp;
 
                                 /* Precedencias */
 
@@ -293,34 +293,39 @@ var_assigment
 ;
 
 var_dimensions
-    ::= var_dimensions:dimensions COR_IZQ argument_list:access COR_DER {:
+    ::= var_dimensions:dimensions COR_IZQ access_list:access COR_DER {:
             RESULT = dimensions;
             if (access != null) {
                 NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
                 RESULT.add(new Dimension(info, access, false));
             }
         :}
-    |   var_dimensions:dimensions COR_IZQ COR_IZQ argument_list:access COR_DER COR_DER {:
+    |   var_dimensions:dimensions COR_IZQ COR_IZQ access_list:access COR_DER COR_DER {:
             RESULT = dimensions;
             if (access != null) {
                 NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
                 RESULT.add(new Dimension(info, access, true));
             }
         :}
-    |   COR_IZQ argument_list:access COR_DER {:
+    |   COR_IZQ access_list:access COR_DER {:
             RESULT = new ArrayList<>();
             if (access != null) {
                 NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
                 RESULT.add(new Dimension(info, access, false));
             }
         :}
-    |   COR_IZQ COR_IZQ argument_list:access COR_DER COR_DER COR_DER {:
+    |   COR_IZQ COR_IZQ access_list:access COR_DER COR_DER COR_DER {:
             RESULT = new ArrayList<>();
             if (access != null) {
                 NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
                 RESULT.add(new Dimension(info, access, true));
             }
         :}
+;
+
+access_list
+    ::= access_list:accessList COMA expression:access {: RESULT = accessList; RESULT.add(access); :}
+    |   expression:access {: RESULT = new ArrayList<>(); RESULT.add(access); :}
 ;
 
 function_call
@@ -399,5 +404,14 @@ expression
 
 argument_list
     ::= argument_list:arguments COMA expression:argument {: RESULT = arguments; RESULT.add(argument); :}
+    |   argument_list:arguments COMA default_exp:argument {: RESULT = arguments; RESULT.add(argument); :}
     |   expression:argument {: RESULT = new ArrayList<>(); RESULT.add(argument); :}
+    |   default_exp:argument {: RESULT = new ArrayList<>(); RESULT.add(argument);:}
+;
+
+default_exp
+    ::= DEFAULT:defaultExp {:
+            NodeInfo info = new NodeInfo(defaultExpxleft.getLine(), defaultExpxright.getColumn(), filename);
+            RESULT = new DefaultArgument(info);
+        :}
 ;

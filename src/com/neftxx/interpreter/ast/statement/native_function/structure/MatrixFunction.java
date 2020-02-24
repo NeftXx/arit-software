@@ -1,14 +1,15 @@
-package com.neftxx.interpreter.ast.statement.native_function;
+package com.neftxx.interpreter.ast.statement.native_function.structure;
 
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.expression.Expression;
 import com.neftxx.interpreter.ast.scope.Scope;
+import com.neftxx.interpreter.ast.statement.native_function.NativeFunction;
 
 import java.util.ArrayList;
 
-public class StringLengthFunction extends NativeFunction {
-    private StringLengthFunction() {
-        super("StringLength");
+public class MatrixFunction extends NativeFunction {
+    private MatrixFunction() {
+        super("matrix");
     }
 
     @Override
@@ -16,11 +17,11 @@ public class StringLengthFunction extends NativeFunction {
         return null;
     }
 
-    public static StringLengthFunction getInstance() {
+    public static MatrixFunction getInstance() {
         return INSTANCE;
     }
 
-    private static final StringLengthFunction INSTANCE = new StringLengthFunction();
+    private static final MatrixFunction INSTANCE = new MatrixFunction();
 
     @Override
     public String toString() {
