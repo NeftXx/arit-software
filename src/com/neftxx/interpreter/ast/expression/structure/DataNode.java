@@ -7,21 +7,21 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class DataNode extends StructureNode {
-    public AritType baseType;
+    public AritType type;
     public Object value;
 
-    public DataNode(AritType baseType, Object value) {
-        this.baseType = baseType;
+    public DataNode(AritType type, Object value) {
+        this.type = type;
         this.value = value;
     }
 
     public void changeValues(AritType type, Object value) {
-        this.baseType = type;
+        this.type = type;
         this.value = value;
     }
 
     public DataNode copy() {
-        return new DataNode(baseType, value);
+        return new DataNode(type, value);
     }
 
     @Nullable
@@ -62,7 +62,7 @@ public class DataNode extends StructureNode {
     @Override
     public String toString() {
         if (this.value != null) {
-            return TYPE_FACADE.isStringType(this.baseType) ? "\"" + this.value + "\"" : this.value.toString();
+            return TYPE_FACADE.isStringType(this.type) ? "\"" + this.value + "\"" : this.value.toString();
         }
         return "NULL";
     }

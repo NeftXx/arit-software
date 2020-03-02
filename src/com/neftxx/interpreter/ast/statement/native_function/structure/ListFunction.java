@@ -3,9 +3,11 @@ package com.neftxx.interpreter.ast.statement.native_function.structure;
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.expression.Expression;
 import com.neftxx.interpreter.ast.expression.structure.AritList;
+import com.neftxx.interpreter.ast.expression.structure.AritStructure;
 import com.neftxx.interpreter.ast.expression.structure.DataNode;
 import com.neftxx.interpreter.ast.scope.Scope;
 import com.neftxx.interpreter.ast.statement.native_function.NativeFunction;
+import com.neftxx.util.NodeInfo;
 
 import java.util.ArrayList;
 
@@ -15,7 +17,7 @@ public class ListFunction extends NativeFunction {
     }
 
     @Override
-    public Object interpret(AritLanguage aritLanguage, ArrayList<Expression> arguments, Scope scope) {
+    public Object interpret(NodeInfo info, AritLanguage aritLanguage, ArrayList<Expression> arguments, Scope scope) {
         this.type = TYPE_FACADE.getUndefinedType();
         ArrayList<DataNode> dataNodes = new ArrayList<>();
         Object value;
@@ -27,6 +29,7 @@ public class ListFunction extends NativeFunction {
                         arguments.indexOf(argument) + "` de la función `list()`", argument.info);
                 return null;
             }
+            if (argument.verifyCopy()) value = ((AritStructure) value).copy();
             dataNodes.add(new DataNode(argument.type, value));
         }
         this.type = TYPE_FACADE.getListType();

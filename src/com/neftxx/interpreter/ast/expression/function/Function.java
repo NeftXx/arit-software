@@ -62,6 +62,18 @@ public class Function extends Expression {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
+        astGraph.append("node").append(this.hashCode()).append("[label = \"Función[")
+                .append(this.id).append("]\"];\n");
+        for (FormalParameter parameter: this.parameters) {
+            parameter.createAstGraph(astGraph);
+            astGraph.append("node").append(this.hashCode()).append(" -> ").append("node")
+                    .append(parameter.hashCode()).append(";\n");
+        }
+        if (this.block != null) {
+            this.block.createAstGraph(astGraph);
+            astGraph.append("node").append(this.hashCode()).append(" -> ").append("node")
+                    .append(this.block.hashCode()).append(";\n");
+        }
     }
 
     @Override

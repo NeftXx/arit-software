@@ -19,12 +19,17 @@
                     <MenuItem fx:id="saveAsFileMenuItem" mnemonicParsing="false" text="Guardar como" />
                     <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" text="Salir" />
                 </Menu>
-                <Menu mnemonicParsing="false" text="Analizador">
-                    <fx:define>
-                        <ToggleGroup fx:id="group" />
-                    </fx:define>
-                    <RadioMenuItem fx:id="jflexCupMenuItem" mnemonicParsing="false" text="JFlex y Cup" toggleGroup="$group" selected="true" />
-                    <RadioMenuItem fx:id="javaCCMenuItem" mnemonicParsing="false" text="JavaCC" toggleGroup="$group" />
+                <Menu mnemonicParsing="false" text="Herramientas">
+                    <Menu mnemonicParsing="false" text="Analizador">
+                        <fx:define>
+                            <ToggleGroup fx:id="groupAnalizador" />
+                        </fx:define>
+                        <RadioMenuItem fx:id="jflexCupMenuItem" mnemonicParsing="false" text="JFlex y Cup" toggleGroup="$groupAnalizador" selected="true" />
+                        <RadioMenuItem fx:id="javaCCMenuItem" mnemonicParsing="false" text="JavaCC" toggleGroup="$groupAnalizador" />
+                    </Menu>
+                    <Menu mnemonicParsing="false" text="AST">
+                        <RadioMenuItem fx:id="graphAST" mnemonicParsing="false" text="Graficar" />
+                    </Menu>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Limpiar">
                     <MenuItem fx:id="consoleClearMenuItem" mnemonicParsing="false" text="Consola" />

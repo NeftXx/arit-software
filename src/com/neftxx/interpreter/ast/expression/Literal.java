@@ -7,6 +7,9 @@ import com.neftxx.interpreter.ast.type.AritType;
 import com.neftxx.util.NodeInfo;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author Ronald - 201504420
+ */
 public class Literal extends Expression {
     private AritType baseType;
     private Object baseValue;
@@ -26,11 +29,8 @@ public class Literal extends Expression {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-        astGraph.append("node").append(this.hashCode()).append("[label = \"Literal(")
-                .append(this.baseValue).append(")\"];\n");
-        this.baseType.createAstGraph(astGraph);
-        astGraph.append("node").append(this.hashCode()).append(" -> ").append("node")
-                .append(this.baseType.hashCode()).append(";\n");
+        astGraph.append("node").append(this.hashCode()).append("[label = \"Literal(Tipo: ")
+                .append(this.baseType).append(", Valor: ").append(this.baseValue).append(")\"];\n");
     }
 
     @Override

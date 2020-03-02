@@ -11,11 +11,6 @@ public abstract class AritType {
         this.priority = priority;
     }
 
-    public void createAstGraph(@NotNull StringBuilder astGraph) {
-        astGraph.append("node").append(this.hashCode()).append("[label = \"Tipo(")
-                .append(this.name).append(")\"];\n");
-    }
-
     @Override
     public String toString() {
         return name;

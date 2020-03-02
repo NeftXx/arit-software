@@ -1,12 +1,14 @@
 package com.neftxx.interpreter.ast.expression;
 
 import com.neftxx.interpreter.AritLanguage;
-import com.neftxx.interpreter.ast.expression.structure.AritStructure;
 import com.neftxx.interpreter.ast.scope.Scope;
 import com.neftxx.interpreter.ast.scope.VarSymbol;
 import com.neftxx.util.NodeInfo;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author Ronald - 201504420
+ */
 public class Identifier extends Expression {
     public final String name;
 
@@ -21,10 +23,6 @@ public class Identifier extends Expression {
         if (varSymbol != null) {
             this.type = varSymbol.type;
             this.value = varSymbol.value;
-            if (TYPE_FACADE.isStructureType(this.type)) {
-                AritStructure structure = (AritStructure) this.value;
-                return structure.copy();
-            }
             return this.value;
         }
         aritLanguage.addSemanticError("Error : objeto `" + this.name + "` no encontrado.", this.info);

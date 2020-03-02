@@ -2,3 +2,6 @@
 .idea/
 out/
 .java~
+src/com/neftxx/resource/graph.dot
+graph.dot
+graph.png

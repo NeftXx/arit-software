@@ -1,10 +1,12 @@
 package com.neftxx.controller;
 
+import com.neftxx.App;
 import com.neftxx.constant.Icons;
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.error.NodeError;
 import com.neftxx.util.DialogUtils;
 import com.neftxx.util.FileManager;
+import com.neftxx.util.GraphvizUtils;
 import com.neftxx.util.ImageUtils;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -12,8 +14,14 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +51,8 @@ public class MainController implements Initializable {
     private RadioMenuItem jflexCupMenuItem;
     @FXML
     private RadioMenuItem javaCCMenuItem;
+    @FXML
+    private RadioMenuItem graphAST;
     @FXML
     private MenuItem consoleClearMenuItem;
     @FXML
@@ -231,6 +241,8 @@ public class MainController implements Initializable {
                 if (jflexCupMenuItem.isSelected())aritLanguage.analyzeWithJflexAndCup(text);
                 else if (javaCCMenuItem.isSelected()) aritLanguage.analyzeWithJavaCC(text);
                 else aritLanguage.analyzeWithJflexAndCup(text);
+
+                if (graphAST.isSelected()) graphAST(aritLanguage.createAstGraph());
                 aritLanguage.saveFunctions();
                 aritLanguage.interpret();
                 if (!aritLanguage.errors.isEmpty()) {
@@ -311,6 +323,22 @@ public class MainController implements Initializable {
         tableErrors.getItems().clear();
         tableErrors.setItems(FXCollections.observableArrayList(errors));
         tabReportPane.getSelectionModel().select(TABLE_ERRORS_TAB);
+    }
+
+    private void graphAST(String code) {
+        Image image = GraphvizUtils.createGraph(code);
+        if (Objects.nonNull(image)) {
+            Stage stage = new Stage();
+            stage.initOwner(App.MAIN_STAGE);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Rmb - Frame");
+            ImageView imageView = new ImageView(image);
+            HBox hbox = new HBox(imageView);
+            Scene scene = new Scene(hbox);
+            stage.setScene(scene);
+            stage.setMaximized(true);
+            stage.show();
+        }
     }
 
     /**

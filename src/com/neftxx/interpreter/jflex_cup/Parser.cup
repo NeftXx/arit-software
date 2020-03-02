@@ -9,6 +9,7 @@ package com.neftxx.interpreter.jflex_cup;
 
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.AstNode;
+import com.neftxx.interpreter.ast.expression.assignment.AccessAssignment;
 import com.neftxx.interpreter.ast.expression.assignment.Assignment;
 import com.neftxx.interpreter.ast.expression.Expression;
 import com.neftxx.interpreter.ast.expression.assignment.Dimension;
@@ -143,8 +144,9 @@ non terminal AstNode statement;
 non terminal Expression statement_expression;
 non terminal Expression expression;
 non terminal Expression var_assigment;
+non terminal Expression var_access;
 non terminal ArrayList<Expression> access_list;
-non terminal ArrayList<Dimension> var_dimensions;
+non terminal Dimension dimension;
 non terminal Expression function_call;
 non terminal ArrayList<Expression> argument_list;
 non terminal Expression default_exp;
@@ -286,40 +288,32 @@ var_assigment
             NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
             RESULT = new Assignment(info, id, expression);
         :}
-    |   ID:id var_dimensions:dimensions IGUAL expression:expression {:
-            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
-            RESULT = new PositionAssignment(info, id, dimensions, expression);
+    |   var_access:access IGUAL expression:expression {:
+            NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
+            RESULT = new PositionAssignment(info, access, expression);
         :}
 ;
 
-var_dimensions
-    ::= var_dimensions:dimensions COR_IZQ access_list:access COR_DER {:
-            RESULT = dimensions;
-            if (access != null) {
-                NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
-                RESULT.add(new Dimension(info, access, false));
-            }
+var_access
+    ::= var_access:access dimension:dimension {:
+            NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
+            RESULT = new AccessAssignment(info, access, dimension);
         :}
-    |   var_dimensions:dimensions COR_IZQ COR_IZQ access_list:access COR_DER COR_DER {:
-            RESULT = dimensions;
-            if (access != null) {
-                NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
-                RESULT.add(new Dimension(info, access, true));
-            }
+    |   ID:access dimension:dimension {:
+            NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
+            Identifier identifier = new Identifier(info, access);
+            RESULT = new AccessAssignment(info, identifier, dimension);
         :}
-    |   COR_IZQ access_list:access COR_DER {:
-            RESULT = new ArrayList<>();
-            if (access != null) {
-                NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
-                RESULT.add(new Dimension(info, access, false));
-            }
+;
+
+dimension
+    ::= COR_IZQ access_list:access COR_DER {:
+            NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
+            RESULT = new Dimension(info, access, false);
         :}
     |   COR_IZQ COR_IZQ access_list:access COR_DER COR_DER COR_DER {:
-            RESULT = new ArrayList<>();
-            if (access != null) {
-                NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
-                RESULT.add(new Dimension(info, access, true));
-            }
+            NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
+            RESULT = new Dimension(info, access, true);
         :}
 ;
 

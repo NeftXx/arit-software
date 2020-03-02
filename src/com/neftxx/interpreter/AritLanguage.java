@@ -64,10 +64,13 @@ public class AritLanguage {
         StringBuilder astGraph = new StringBuilder();
         astGraph.append("digraph astGraph {\n")
                 .append("rankdir=TB;\n")
-                .append("node [shape=record, style=filled, fillcolor=seashell2];\n");
+                .append("node [shape=record, style=filled, fillcolor=seashell2];\n")
+                .append("node").append(this.hashCode()).append("[label = \"AST\"];\n");
         if (this.astNodes != null) {
             for (AstNode node: astNodes) {
                 node.createAstGraph(astGraph);
+                astGraph.append("node").append(this.hashCode()).append(" -> ").append("node").append(node.hashCode())
+                        .append(";\n");
             }
         }
         astGraph.append("}\n");

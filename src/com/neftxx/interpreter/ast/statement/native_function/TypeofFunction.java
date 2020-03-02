@@ -2,7 +2,10 @@ package com.neftxx.interpreter.ast.statement.native_function;
 
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.expression.Expression;
+import com.neftxx.interpreter.ast.expression.structure.AritVector;
 import com.neftxx.interpreter.ast.scope.Scope;
+import com.neftxx.util.NodeInfo;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -12,7 +15,21 @@ public class TypeofFunction extends NativeFunction {
     }
 
     @Override
-    public Object interpret(AritLanguage aritLanguage, ArrayList<Expression> arguments, Scope scope) {
+    public Object interpret(NodeInfo info, AritLanguage aritLanguage, @NotNull ArrayList<Expression> arguments, Scope scope) {
+        int size = arguments.size();
+        if (size == 1) {
+            Expression argument = arguments.get(0);
+            Object value = argument.interpret(aritLanguage, scope);
+            this.type = TYPE_FACADE.getVectorType();
+            if (TYPE_FACADE.isVectorType(argument.type)) {
+                return new AritVector(TYPE_FACADE.getStringType(), ((AritVector) value).baseType.toString());
+            }
+            return new AritVector(TYPE_FACADE.getStringType(), argument.type.toString());
+        } else {
+            aritLanguage.addSemanticError("Error : el tamaño `" + size +
+                    "` de parámetros no es válido para la función typeof().", info);
+        }
+        this.type = TYPE_FACADE.getUndefinedType();
         return null;
     }
 

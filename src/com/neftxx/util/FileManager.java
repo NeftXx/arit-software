@@ -17,6 +17,7 @@ public class FileManager {
     private static final FileChooser.ExtensionFilter ALL_FILES =
             new FileChooser.ExtensionFilter("All Files", "*.*");
 
+    @Nullable
     public static File createNewFile(String filePath) {
         try {
             File newFolder = new File(filePath);

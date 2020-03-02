@@ -66,6 +66,8 @@ public class TypeFacade {
 
     public boolean isStructureType(AritType type) { return type instanceof StructureType; }
 
+    public boolean isBaseType(AritType type) { return type instanceof BaseType; }
+
     public Object castValue(AritType oldType, AritType newType, Object value) {
         if (isBooleanType(oldType) && isIntegerType(newType)) return castBooleanToInteger(value);
         if (isBooleanType(oldType) && isNumericType(newType)) return castBooleanToDecimal(value);

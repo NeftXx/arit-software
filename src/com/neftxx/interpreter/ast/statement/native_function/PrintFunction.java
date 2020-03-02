@@ -3,6 +3,7 @@ package com.neftxx.interpreter.ast.statement.native_function;
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.expression.Expression;
 import com.neftxx.interpreter.ast.scope.Scope;
+import com.neftxx.util.NodeInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ public class PrintFunction extends NativeFunction {
     private PrintFunction() { super("print"); }
 
     @Override
-    public Object interpret(AritLanguage aritLanguage, @NotNull ArrayList<Expression> arguments, Scope scope) {
+    public Object interpret(NodeInfo info, AritLanguage aritLanguage, @NotNull ArrayList<Expression> arguments, Scope scope) {
         int numberOfArguments = arguments.size();
         if (numberOfArguments > 0) {
             Expression expression = arguments.get(0);
@@ -23,8 +24,7 @@ public class PrintFunction extends NativeFunction {
                         expression.info);
                 return null;
             }
-            aritLanguage.printOnConsole(">");
-            aritLanguage.printOnConsole(result != null ? result.toString() : "NULL");
+            aritLanguage.printOnConsole(result != null ? "> " + result.toString() : "> NULL");
         } else {
             aritLanguage.printOnConsole("\n");
         }

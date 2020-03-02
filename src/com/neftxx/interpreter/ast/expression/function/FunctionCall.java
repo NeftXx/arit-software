@@ -2,6 +2,7 @@ package com.neftxx.interpreter.ast.expression.function;
 
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.expression.Expression;
+import com.neftxx.interpreter.ast.expression.structure.AritStructure;
 import com.neftxx.interpreter.ast.scope.Scope;
 import com.neftxx.interpreter.ast.statement.native_function.NativeFunction;
 import com.neftxx.util.NodeInfo;
@@ -24,10 +25,10 @@ public class FunctionCall extends Expression {
     }
 
     @Override
-    public Object interpret(AritLanguage aritLanguage, Scope scope) {
+    public Object interpret(@NotNull AritLanguage aritLanguage, Scope scope) {
         NativeFunction nativeFunction = aritLanguage.globalScope.getNativeFunction(this.id);
         if (nativeFunction != null) {
-            this.value = nativeFunction.interpret(aritLanguage, this.arguments, scope);
+            this.value = nativeFunction.interpret(this.info, aritLanguage, this.arguments, scope);
             this.type = nativeFunction.type;
         } else {
             int numberOfArguments = this.arguments != null ? arguments.size() : 0;
@@ -44,7 +45,6 @@ public class FunctionCall extends Expression {
                     if (TYPE_FACADE.isUndefinedType(expression.type)) {
                         aritLanguage.addSemanticError("Error en " + this +" : al evaluar el parametro `" +
                                 (i + 1) + "`.", this.info);
-                        this.type = TYPE_FACADE.getUndefinedType();
                         return null;
                     } else if (TYPE_FACADE.isDefaultType(expression.type)) {
                         expression = parameters.get(i).expDefault;
@@ -53,17 +53,16 @@ public class FunctionCall extends Expression {
                             if (TYPE_FACADE.isUndefinedType(expression.type)) {
                                 aritLanguage.addSemanticError("Error en " + this +" : al evaluar el parametro `" +
                                         (i + 1) + "` por defecto.", this.info);
-                                this.type = TYPE_FACADE.getUndefinedType();
                                 return null;
                             }
                         } else {
                             aritLanguage.addSemanticError("Error en " + this + " : la función `" +
                                             this.id + "` no tiene un valor por defecto en el parametro `" +  (i + 1) + "`.",
                                     this.info);
-                            this.type = TYPE_FACADE.getUndefinedType();
                             return null;
                         }
                     }
+                    if (expression.verifyCopy()) valueArgument = ((AritStructure) valueArgument).copy();
                     methodScope.addVariable(parameters.get(i).id, expression.type, valueArgument);
                 }
                 this.value = function.interpret(aritLanguage, methodScope);
@@ -72,16 +71,21 @@ public class FunctionCall extends Expression {
             } else {
                 aritLanguage.addSemanticError("Error en " + this + " : no se encuentra la función `" +
                                 this.id + "` con la cantidad de argumentos `" + numberOfArguments + "`.", this.info);
-                this.type = TYPE_FACADE.getUndefinedType();
-                this.value = null;
                 return null;
             }
         }
-        return this.value;
+        return null;
     }
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
+        astGraph.append("node").append(this.hashCode()).append("[label = \"LlamadaFunción(")
+                .append(this.id).append(")\"];\n");
+        for (Expression argument: this.arguments) {
+            argument.createAstGraph(astGraph);
+            astGraph.append("node").append(this.hashCode()).append(" -> ").append("node")
+                    .append(argument.hashCode()).append(";\n");
+        }
     }
 
     @Override

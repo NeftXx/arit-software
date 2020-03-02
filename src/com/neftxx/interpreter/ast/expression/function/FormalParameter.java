@@ -28,6 +28,13 @@ public class FormalParameter extends AstNode {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
+        astGraph.append("node").append(this.hashCode()).append("[label = \"Parametro(")
+                .append(this.id).append(")\"];\n");
+        if (this.expDefault != null) {
+            this.expDefault.createAstGraph(astGraph);
+            astGraph.append("node").append(this.hashCode()).append(" -> ").append("node")
+                    .append(this.expDefault.hashCode()).append(";\n");
+        }
     }
 
     @Override
