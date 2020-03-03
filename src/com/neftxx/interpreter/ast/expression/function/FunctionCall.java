@@ -30,6 +30,7 @@ public class FunctionCall extends Expression {
         if (nativeFunction != null) {
             this.value = nativeFunction.interpret(this.info, aritLanguage, this.arguments, scope);
             this.type = nativeFunction.type;
+            return this.value;
         } else {
             int numberOfArguments = this.arguments != null ? arguments.size() : 0;
             Function function = aritLanguage.globalScope.getMethod(this.id, numberOfArguments);
@@ -74,7 +75,6 @@ public class FunctionCall extends Expression {
                 return null;
             }
         }
-        return null;
     }
 
     @Override

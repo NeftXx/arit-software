@@ -24,13 +24,11 @@ public class DataNode extends StructureNode {
         return new DataNode(type, value);
     }
 
-    @Nullable
     public static DataNode getDataNodeDefault(AritType type) {
         if (TYPE_FACADE.isIntegerType(type)) return getDataNodeInteger();
         if (TYPE_FACADE.isNumericType(type)) return getDataNodeNumeric();
         if (TYPE_FACADE.isBooleanType(type)) return getDataNodeBoolean();
-        if (TYPE_FACADE.isStringType(type)) return getDataNodeString();
-        return null;
+        return getDataNodeString();
     }
 
     @NotNull

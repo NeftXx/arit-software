@@ -14,6 +14,9 @@ public class Scope {
     }
 
     public void addVariable(String id, AritType type, Object value) {
+        if (this.variables.containsKey(id)) {
+            this.variables.get(id).changeValues(type, value);
+        }
         this.variables.put(id, new VarSymbol(id, type, value));
     }
 

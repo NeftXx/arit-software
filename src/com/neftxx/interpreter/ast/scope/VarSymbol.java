@@ -12,4 +12,9 @@ public class VarSymbol {
         this.type = type;
         this.value = value;
     }
+
+    public void changeValues(AritType type, Object value) {
+        this.type = type;
+        this.value = value;
+    }
 }

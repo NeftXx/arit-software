@@ -39,7 +39,7 @@ public class AritVector extends AritStructure {
         }
         while (position > size()) this.dataNodes.add(DataNode.getDataNodeDefault(this.baseType));
         Object newValue = TYPE_FACADE.castValue(dataNode.type, this.baseType, dataNode.value);
-        this.dataNodes.get(position).changeValues(this.baseType, newValue);
+        this.dataNodes.get(position - 1).changeValues(this.baseType, newValue);
     }
 
     public AritVector getItemAssignment(int position) throws IndexOutOfBoundsException  {

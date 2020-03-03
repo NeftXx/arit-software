@@ -9,11 +9,10 @@ package com.neftxx.interpreter.jflex_cup;
 
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.AstNode;
-import com.neftxx.interpreter.ast.expression.assignment.AccessAssignment;
+import com.neftxx.interpreter.ast.expression.assignment.Access;
 import com.neftxx.interpreter.ast.expression.assignment.Assignment;
 import com.neftxx.interpreter.ast.expression.Expression;
-import com.neftxx.interpreter.ast.expression.assignment.Dimension;
-import com.neftxx.interpreter.ast.expression.assignment.PositionAssignment;
+import com.neftxx.interpreter.ast.expression.assignment.StructureAssignment;
 import com.neftxx.interpreter.ast.expression.function.DefaultArgument;
 import com.neftxx.interpreter.ast.expression.function.FunctionCall;
 import com.neftxx.interpreter.ast.expression.Identifier;
@@ -144,9 +143,7 @@ non terminal AstNode statement;
 non terminal Expression statement_expression;
 non terminal Expression expression;
 non terminal Expression var_assigment;
-non terminal Expression var_access;
-non terminal ArrayList<Expression> access_list;
-non terminal Dimension dimension;
+non terminal ArrayList access_list;
 non terminal Expression function_call;
 non terminal ArrayList<Expression> argument_list;
 non terminal Expression default_exp;
@@ -288,38 +285,53 @@ var_assigment
             NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
             RESULT = new Assignment(info, id, expression);
         :}
-    |   var_access:access IGUAL expression:expression {:
-            NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
-            RESULT = new PositionAssignment(info, access, expression);
-        :}
-;
-
-var_access
-    ::= var_access:access dimension:dimension {:
-            NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
-            RESULT = new AccessAssignment(info, access, dimension);
-        :}
-    |   ID:access dimension:dimension {:
-            NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
-            Identifier identifier = new Identifier(info, access);
-            RESULT = new AccessAssignment(info, identifier, dimension);
-        :}
-;
-
-dimension
-    ::= COR_IZQ access_list:access COR_DER {:
-            NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
-            RESULT = new Dimension(info, access, false);
-        :}
-    |   COR_IZQ COR_IZQ access_list:access COR_DER COR_DER COR_DER {:
-            NodeInfo info = new NodeInfo(accessxleft.getLine(), accessxright.getColumn(), filename);
-            RESULT = new Dimension(info, access, true);
+    |   ID:id access_list:list IGUAL expression:expression {:
+            NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);
+            RESULT = new StructureAssignment(info, id, list, expression);
         :}
 ;
 
 access_list
-    ::= access_list:accessList COMA expression:access {: RESULT = accessList; RESULT.add(access); :}
-    |   expression:access {: RESULT = new ArrayList<>(); RESULT.add(access); :}
+    ::= access_list:list COR_IZQ expression:exp1 COMA expression:exp2 COR_DER {:
+            NodeInfo info = new NodeInfo(exp1xleft.getLine(), exp1xright.getColumn(), filename);
+            RESULT = list; RESULT.add(new Access(info, exp1, exp2));
+        :}
+    |   access_list:list COR_IZQ expression:exp COMA COR_DER {:
+            NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
+            RESULT = list; RESULT.add(new Access(info, exp, Access.Type.TWO_MATRIX));
+        :}
+    |   access_list:list COR_IZQ COMA expression:exp COR_DER {:
+            NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
+            RESULT = list; RESULT.add(new Access(info, exp, Access.Type.THREE_MATRIX));
+        :}
+    |   access_list:list COR_IZQ expression:exp COR_DER {:
+            NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
+            RESULT = list; RESULT.add(new Access(info, exp, Access.Type.NORMAL));
+        :}
+    |   access_list:list COR_IZQ COR_IZQ expression:exp COR_DER COR_DER {:
+            NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
+            RESULT = list; RESULT.add(new Access(info, exp, Access.Type.TWO_LIST));
+        :}
+    |   COR_IZQ expression:exp1 COMA expression:exp2 COR_DER {:
+            NodeInfo info = new NodeInfo(exp1xleft.getLine(), exp1xright.getColumn(), filename);
+            RESULT = new ArrayList<>(); RESULT.add(new Access(info, exp1, exp2));
+        :}
+    |   COR_IZQ expression:exp COMA COR_DER {:
+            NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
+            RESULT = new ArrayList<>(); RESULT.add(new Access(info, exp, Access.Type.TWO_MATRIX));
+        :}
+    |   COR_IZQ COMA expression:exp COR_DER {:
+            NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
+            RESULT = new ArrayList<>(); RESULT.add(new Access(info, exp, Access.Type.THREE_MATRIX));
+        :}
+    |   COR_IZQ expression:exp COR_DER {:
+            NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
+            RESULT = new ArrayList<>(); RESULT.add(new Access(info, exp, Access.Type.NORMAL));
+        :}
+    |   COR_IZQ COR_IZQ expression:exp COR_DER COR_DER {:
+            NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
+            RESULT = new ArrayList<>(); RESULT.add(new Access(info, exp, Access.Type.TWO_LIST));
+        :}
 ;
 
 function_call

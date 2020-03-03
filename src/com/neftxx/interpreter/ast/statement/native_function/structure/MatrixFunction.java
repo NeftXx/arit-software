@@ -13,8 +13,20 @@ public class MatrixFunction extends NativeFunction {
         super("matrix");
     }
 
+    // TODO: terminar las matrices, estaba calculando las expresiones
     @Override
     public Object interpret(NodeInfo info, AritLanguage aritLanguage, ArrayList<Expression> arguments, Scope scope) {
+        this.type = TYPE_FACADE.getUndefinedType();
+        int argumentsSize = arguments.size();
+        if (argumentsSize > 2) {
+            Expression vectorExp = arguments.get(0);
+            Expression rowsExp = arguments.get(1);
+            Expression colExp = arguments.get(2);
+
+        } else {
+            aritLanguage.addSemanticError("Error : no se encontró la funcion matrix con la cantidad de parametros `" +
+                    argumentsSize + "`.", info);
+        }
         return null;
     }
 
