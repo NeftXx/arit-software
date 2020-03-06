@@ -17,6 +17,8 @@ import com.neftxx.interpreter.ast.expression.function.DefaultArgument;
 import com.neftxx.interpreter.ast.expression.function.FunctionCall;
 import com.neftxx.interpreter.ast.expression.Identifier;
 import com.neftxx.interpreter.ast.expression.Literal;
+import com.neftxx.interpreter.ast.expression.operation.Arithmetic;
+import com.neftxx.interpreter.ast.expression.operation.UnarySubtraction;
 import com.neftxx.interpreter.ast.statement.Block;
 import com.neftxx.interpreter.ast.expression.function.FormalParameter;
 import com.neftxx.interpreter.ast.expression.function.Function;
@@ -151,7 +153,7 @@ non terminal Expression default_exp;
                                 /* Precedencias */
 
 /*Asociatividad */ /* Operador */                                           /* Nivel */
-precedence right    IGUAL, LAMBDA;                                          // 1
+precedence right    IGUAL;                                                  // 1
 precedence right    INTERROGANTE, DOS_PUNTOS;                               // 2
 precedence left     OR;                                                     // 3
 precedence left     AND;                                                    // 4
@@ -349,38 +351,54 @@ expression
     ::= statement_expression:expression {: RESULT = expression; :}
     |   expression:condition INTERROGANTE expression:exp1 DOS_PUNTOS expression:exp2 {:
         :}
-    |   expression OR expression {:
+    |   expression:exp1 OR:op expression:exp2 {:
         :}
-    |   expression AND expression {:
+    |   expression:exp1 AND:op expression:exp2 {:
         :}
-    |   expression DIFERENTE_QUE expression {:
+    |   expression:exp1 DIFERENTE_QUE:op expression:exp2 {:
         :}
-    |   expression IGUAL_QUE expression {:
+    |   expression:exp1 IGUAL_QUE:op expression:exp2 {:
         :}
-    |   expression MAYOR_IGUAL_QUE expression {:
+    |   expression:exp1 MAYOR_IGUAL_QUE:op expression:exp2 {:
         :}
-    |   expression MAYOR_QUE expression {:
+    |   expression:exp1 MAYOR_QUE:op expression:exp2 {:
         :}
-    |   expression MENOR_IGUAL_QUE expression {:
+    |   expression:exp1 MENOR_IGUAL_QUE:op expression:exp2 {:
         :}
-    |   expression MENOR_QUE expression {:
+    |   expression:exp1 MENOR_QUE:op expression:exp2 {:
         :}
-    |   expression MAS expression {:
+    |   expression:exp1 MAS:op expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Arithmetic(info, exp1, exp2, Arithmetic.Operator.SUM);
         :}
-    |   expression MENOS expression {:
+    |   expression:exp1 MENOS:op expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Arithmetic(info, exp1, exp2, Arithmetic.Operator.SUBTRACTION);
         :}
-    |   expression MULT expression {:
+    |   expression:exp1 MULT:op expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Arithmetic(info, exp1, exp2, Arithmetic.Operator.MULTIPLICATION);
         :}
-    |   expression DIV expression {:
+    |   expression:exp1 DIV:op expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Arithmetic(info, exp1, exp2, Arithmetic.Operator.DIVISION);
         :}
-    |   expression MODULO expression {:
+    |   expression:exp1 MODULO:op expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Arithmetic(info, exp1, exp2, Arithmetic.Operator.MODULE);
         :}
-    |   expression POTENCIA expression {:
+    |   expression:exp1 POTENCIA:op expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Arithmetic(info, exp1, exp2, Arithmetic.Operator.POWER);
         :}
     |   expression COR_IZQ expression COR_DER {:
         :}
     |   expression COR_IZQ COR_IZQ expression COR_DER COR_DER {:
         :}
+    |   MENOS:op expression:exp {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new UnarySubtraction(info, exp);
+        :} %prec UMENOS
     |   PAR_IZQ expression:exp PAR_DER {: RESULT = exp; :}
     |   ID:id {:
             NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);

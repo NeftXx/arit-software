@@ -38,7 +38,8 @@ public class AritVector extends AritStructure {
             this.baseType = newType;
         }
         while (position > size()) this.dataNodes.add(DataNode.getDataNodeDefault(this.baseType));
-        Object newValue = TYPE_FACADE.castValue(dataNode.type, this.baseType, dataNode.value);
+        Object newValue = dataNode.value;
+        if (dataNode.type != this.baseType) newValue = TYPE_FACADE.castValue(dataNode.type, this.baseType, dataNode.value);
         this.dataNodes.get(position - 1).changeValues(this.baseType, newValue);
     }
 

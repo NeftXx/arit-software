@@ -25,7 +25,7 @@ public class Identifier extends Expression {
             this.value = varSymbol.value;
             return this.value;
         }
-        aritLanguage.addSemanticError("Error : objeto `" + this.name + "` no encontrado.", this.info);
+        aritLanguage.addSemanticError("Error : objeto " + this.name + " no encontrado.", this.info);
         return null;
     }
 
