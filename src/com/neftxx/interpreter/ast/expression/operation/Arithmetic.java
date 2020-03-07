@@ -219,7 +219,9 @@ public class Arithmetic extends Operation {
     private DataNode getDataNode(AritLanguage aritLanguage, AritType type, Object value1, Object value2) {
         if (TYPE_FACADE.isIntegerType(type)) return new DataNode(type, getValue(aritLanguage, value1, value2).intValue());
         else if (TYPE_FACADE.isNumericType(type)) return new DataNode(type, getValue(aritLanguage, value1, value2));
-        return new DataNode(type, value1.toString() + value2.toString());
+        String val1 = value1 != null ? value1.toString() : "NULL",
+                val2 = value2 != null ? value2.toString() : "NULL";
+        return new DataNode(type, val1 + val2);
     }
 
     private Double getValue(AritLanguage aritLanguage, Object value1, Object value2) {

@@ -17,8 +17,7 @@ import com.neftxx.interpreter.ast.expression.function.DefaultArgument;
 import com.neftxx.interpreter.ast.expression.function.FunctionCall;
 import com.neftxx.interpreter.ast.expression.Identifier;
 import com.neftxx.interpreter.ast.expression.Literal;
-import com.neftxx.interpreter.ast.expression.operation.Arithmetic;
-import com.neftxx.interpreter.ast.expression.operation.UnarySubtraction;
+import com.neftxx.interpreter.ast.expression.operation.*;
 import com.neftxx.interpreter.ast.statement.Block;
 import com.neftxx.interpreter.ast.expression.function.FormalParameter;
 import com.neftxx.interpreter.ast.expression.function.Function;
@@ -349,23 +348,41 @@ function_call
 
 expression
     ::= statement_expression:expression {: RESULT = expression; :}
-    |   expression:condition INTERROGANTE expression:exp1 DOS_PUNTOS expression:exp2 {:
+    |   expression:condition INTERROGANTE:op expression:exp1 DOS_PUNTOS expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Ternary(info, condition, exp1, exp2);
         :}
     |   expression:exp1 OR:op expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Logical(info, exp1, exp2, Logical.Operator.OR);
         :}
     |   expression:exp1 AND:op expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Logical(info, exp1, exp2, Logical.Operator.AND);
         :}
     |   expression:exp1 DIFERENTE_QUE:op expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Comparator(info, exp1, exp2, Comparator.Operator.UNEQUAL);
         :}
     |   expression:exp1 IGUAL_QUE:op expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Comparator(info, exp1, exp2, Comparator.Operator.EQUAL);
         :}
     |   expression:exp1 MAYOR_IGUAL_QUE:op expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Comparator(info, exp1, exp2, Comparator.Operator.GREATER_THAN_OR_EQUAL_TO);
         :}
     |   expression:exp1 MAYOR_QUE:op expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Comparator(info, exp1, exp2, Comparator.Operator.GREATER_THAN);
         :}
     |   expression:exp1 MENOR_IGUAL_QUE:op expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Comparator(info, exp1, exp2, Comparator.Operator.LESS_THAN_OR_EQUAL_TO);
         :}
     |   expression:exp1 MENOR_QUE:op expression:exp2 {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Comparator(info, exp1, exp2, Comparator.Operator.LESS_THAN);
         :}
     |   expression:exp1 MAS:op expression:exp2 {:
             NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
@@ -399,6 +416,10 @@ expression
             NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
             RESULT = new UnarySubtraction(info, exp);
         :} %prec UMENOS
+    |   NOT:op expression:exp {:
+            NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
+            RESULT = new Not(info, exp);
+        :} %prec NOT
     |   PAR_IZQ expression:exp PAR_DER {: RESULT = exp; :}
     |   ID:id {:
             NodeInfo info = new NodeInfo(idxleft.getLine(), idxright.getColumn(), filename);

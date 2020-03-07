@@ -12,74 +12,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class UnarySubtraction extends Operation {
-
-    public UnarySubtraction(NodeInfo info, Expression expression) {
+public class Not extends Operation {
+    public Not(NodeInfo info, Expression expression) {
         super(info, expression, null);
-    }
-
-    @Override
-    public Object interpret(AritLanguage aritLanguage, Scope scope) {
-        Object result = this.expLeft.interpret(aritLanguage, scope);
-        if (TYPE_FACADE.isVectorType(this.expLeft.type)) {
-            AritVector aritVector = (AritVector) result;
-            if (TYPE_FACADE.isIntegerType(aritVector.baseType)) {
-                int i, size = aritVector.size();
-                ArrayList<DataNode> dataNodeArrayList = new ArrayList<>();
-                for (i = 0; i < size; i++) {
-                    dataNodeArrayList.add(new DataNode(aritVector.baseType, -toInt(aritVector.getDataNodes().get(i).value)));
-                }
-                this.type = TYPE_FACADE.getVectorType();
-                this.value = new AritVector(aritVector.baseType, dataNodeArrayList);
-                return this.value;
-            } else if (TYPE_FACADE.isNumericType(aritVector.baseType)) {
-                int i, size = aritVector.size();
-                ArrayList<DataNode> dataNodeArrayList = new ArrayList<>();
-                for (i = 0; i < size; i++) {
-                    dataNodeArrayList.add(new DataNode(aritVector.baseType, -toDouble(aritVector.getDataNodes().get(i).value)));
-                }
-                this.type = TYPE_FACADE.getVectorType();
-                this.value = new AritVector(aritVector.baseType, dataNodeArrayList);
-                return this.value;
-            } else {
-                aritLanguage.addSemanticError("Error en " + this + " : no se puede operar con el signo '-' a " +
-                        " un vector de tipo " + aritVector.baseType + ".", this.info);
-            }
-        } else if (TYPE_FACADE.isMatrixType(this.expLeft.type)) {
-            AritMatrix aritMatrix = (AritMatrix) result;
-            if (TYPE_FACADE.isIntegerType(aritMatrix.baseType)) {
-                int i, size = aritMatrix.size();
-                DataNode[] dataNodes = new DataNode[size];
-                for (i = 0; i < size; i++) {
-                    dataNodes[i] = new DataNode(aritMatrix.baseType, -toInt(aritMatrix.getDataNodes()[i].value));
-                }
-                this.type = TYPE_FACADE.getMatrixType();
-                this.value = new AritMatrix(aritMatrix.baseType, dataNodes, aritMatrix.rows, aritMatrix.columns);
-                return this.value;
-            } else if (TYPE_FACADE.isNumericType(aritMatrix.baseType)) {
-                int i, size = aritMatrix.size();
-                DataNode[] dataNodes = new DataNode[size];
-                for (i = 0; i < size; i++) {
-                    dataNodes[i] = new DataNode(aritMatrix.baseType, -toDouble(aritMatrix.getDataNodes()[i].value));
-                }
-                this.type = TYPE_FACADE.getMatrixType();
-                this.value = new AritMatrix(aritMatrix.baseType, dataNodes, aritMatrix.rows, aritMatrix.columns);
-                return this.value;
-            } else {
-                aritLanguage.addSemanticError("Error en " + this + " : no se puede operar con el signo '-' a " +
-                        " una matriz de tipo " + aritMatrix.baseType + ".", this.info);
-            }
-        } else {
-            aritLanguage.addSemanticError("Error en " + this + " : no se puede operar con el signo '-' a " +
-                    " una estructura de tipo " + this.expLeft.type + ".", this.info);
-        }
-        this.type = TYPE_FACADE.getUndefinedType();
-        return null;
-    }
-
-    @Override
-    public void createAstGraph(@NotNull StringBuilder astGraph) {
-
     }
 
     @Override
@@ -88,7 +23,52 @@ public class UnarySubtraction extends Operation {
     }
 
     @Override
+    public Object interpret(AritLanguage aritLanguage, Scope scope) {
+        Object result = this.expLeft.interpret(aritLanguage, scope);
+        if (TYPE_FACADE.isVectorType(this.expLeft.type)) {
+            AritVector aritVector = (AritVector) result;
+            if (TYPE_FACADE.isBooleanType(aritVector.baseType)) {
+                int i, size = aritVector.size();
+                ArrayList<DataNode> dataNodeArrayList = new ArrayList<>();
+                for (i = 0; i < size; i++) {
+                    dataNodeArrayList.add(new DataNode(aritVector.baseType, !toBoolean(aritVector.getDataNodes().get(i).value)));
+                }
+                this.type = TYPE_FACADE.getVectorType();
+                this.value = new AritVector(aritVector.baseType, dataNodeArrayList);
+                return this.value;
+            } else {
+                aritLanguage.addSemanticError("Error en " + this + " : no se puede operar con el signo ! a " +
+                        " un vector de tipo " + aritVector.baseType + ".", this.info);
+            }
+        } else if (TYPE_FACADE.isMatrixType(this.expLeft.type)) {
+            AritMatrix aritMatrix = (AritMatrix) result;
+            if (TYPE_FACADE.isBooleanType(aritMatrix.baseType)) {
+                int i, size = aritMatrix.size();
+                DataNode[] dataNodes = new DataNode[size];
+                for (i = 0; i < size; i++) {
+                    dataNodes[i] = new DataNode(aritMatrix.baseType, !toBoolean(aritMatrix.getDataNodes()[i].value));
+                }
+                this.type = TYPE_FACADE.getMatrixType();
+                this.value = new AritMatrix(aritMatrix.baseType, dataNodes, aritMatrix.rows, aritMatrix.columns);
+                return this.value;
+            } else {
+                aritLanguage.addSemanticError("Error en " + this + " : no se puede operar con el signo ! a " +
+                        " una matriz de tipo " + aritMatrix.baseType + ".", this.info);
+            }
+        } else {
+            aritLanguage.addSemanticError("Error en " + this + " : no se puede operar con el signo ! a " +
+                    " una estructura de tipo " + this.expLeft.type + ".", this.info);
+        }
+        this.type = TYPE_FACADE.getUndefinedType();
+        return null;
+    }
+
+    @Override
+    public void createAstGraph(@NotNull StringBuilder astGraph) {
+    }
+
+    @Override
     public String toString() {
-        return "-" + this.expLeft;
+        return "!" + this.expLeft;
     }
 }

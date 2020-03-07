@@ -25,6 +25,14 @@ public abstract class Operation extends Expression {
     protected double toDouble(Object value) {
         if (value instanceof Integer) return ((Integer) value).doubleValue();
         if (value instanceof Double) return (Double) value;
-        return 0;
+        return 0.0;
+    }
+
+    protected String toString(Object value) {
+        return value != null ? value.toString() : null;
+    }
+
+    protected boolean toBoolean(Object value) {
+        return value instanceof Boolean && (boolean) value;
     }
 }

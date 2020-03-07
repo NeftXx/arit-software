@@ -14,7 +14,9 @@ import java.util.ArrayList;
 
 public class Comparator extends Operation {
     public enum Operator {
-        EQUAL("=="), UNEQUAL("!=");
+        EQUAL("=="), UNEQUAL("!="),
+        GREATER_THAN(">"), LESS_THAN("<"), GREATER_THAN_OR_EQUAL_TO(">="),
+        LESS_THAN_OR_EQUAL_TO("<=");
         String op;
 
         Operator(String op) {
@@ -62,9 +64,9 @@ public class Comparator extends Operation {
         } else if (TYPE_FACADE.isMatrixType(expLeft.type) && TYPE_FACADE.isMatrixType(expRight.type)) {
             if (operateMatrix(aritLanguage, (AritMatrix) resultLeft, (AritMatrix) resultRight)) return this.value;
         } else if (TYPE_FACADE.isMatrixType(expLeft.type) && TYPE_FACADE.isVectorType(expRight.type)) {
-            if (operateMatrixVector(aritLanguage, (AritMatrix) resultLeft, (AritVector) resultRight)) return this.value;
+            if (operateMatrixVector(aritLanguage, (AritMatrix) resultLeft, (AritVector) resultRight, true)) return this.value;
         } else if (TYPE_FACADE.isVectorType(expLeft.type) && TYPE_FACADE.isMatrixType(expRight.type)) {
-            if (operateMatrixVector(aritLanguage, (AritMatrix) resultRight, (AritVector) resultLeft)) return this.value;
+            if (operateMatrixVector(aritLanguage, (AritMatrix) resultRight, (AritVector) resultLeft, false)) return this.value;
         }
         else {
             aritLanguage.addSemanticError("Error en " + this + " : no se puede operar las estructuras " +
@@ -75,34 +77,64 @@ public class Comparator extends Operation {
     }
 
     private boolean operateMatrixVector(
-            AritLanguage aritLanguage, AritMatrix aritMatrix, @NotNull AritVector aritVector
+            AritLanguage aritLanguage, AritMatrix aritMatrix, @NotNull AritVector aritVector, boolean isMatrixVector
     ) {
         if (aritVector.size() == 1) {
             AritType typeTemp = getMaxType(aritMatrix.baseType, aritVector.baseType);
-            if (TYPE_FACADE.isBooleanType(typeTemp) || TYPE_FACADE.isStringType(typeTemp) ||
-                    TYPE_FACADE.isIntegerType(typeTemp) || TYPE_FACADE.isNumericType(typeTemp)) {
-                int i, sizeMatriz = aritMatrix.size();
-                DataNode[] dataNodeArrayList = new DataNode[sizeMatriz];
-                AritType boolType = TYPE_FACADE.getBooleanType();
-                boolean res, isNumber = TYPE_FACADE.isIntegerType(typeTemp) || TYPE_FACADE.isNumericType(typeTemp);
-                Object currentVal, scalar = aritVector.getDataNodes().get(0).value;
-                if (isNumber) scalar = toDouble(scalar);
+            boolean isNumber = TYPE_FACADE.isIntegerType(typeTemp) || TYPE_FACADE.isNumericType(typeTemp),
+                    isBoolean = TYPE_FACADE.isBooleanType(typeTemp),
+                    isString = TYPE_FACADE.isStringType(typeTemp);
+            int i, sizeMatriz = aritMatrix.size();
+            DataNode[] dataNodeArrayList = new DataNode[sizeMatriz];
+            AritType boolType = TYPE_FACADE.getBooleanType();
+            if (isNumber) {
+                double currentValue, scalar = toDouble(aritVector.getDataNodes().get(0).value);
                 for (i = 0; i < sizeMatriz; i++) {
-                    if (isNumber) currentVal = toDouble(aritMatrix.getDataNodes()[i].value);
-                    else currentVal = aritMatrix.getDataNodes()[i].value;
-                    res = (this.operator == Operator.EQUAL) == (currentVal == scalar);
-                    dataNodeArrayList[i] = new DataNode(boolType, res);
+                    currentValue = toDouble(aritMatrix.getDataNodes()[i].value);
+                    if (isMatrixVector) dataNodeArrayList[i] = new DataNode(boolType, compareNumbers(currentValue, scalar));
+                    else dataNodeArrayList[i] = new DataNode(boolType, compareNumbers(scalar, currentValue));
                 }
-                this.type = TYPE_FACADE.getMatrixType();
-                this.value = new AritMatrix(boolType, dataNodeArrayList, aritMatrix.rows, aritMatrix.columns);
-                return true;
+            } else if (isBoolean) {
+                if (isValid()) {
+                    boolean currentValue, scalar = toBoolean(aritVector.getDataNodes().get(0).value);
+                    for (i = 0; i < sizeMatriz; i++) {
+                        currentValue = toBoolean(aritMatrix.getDataNodes()[i].value);
+                        dataNodeArrayList[i] = new DataNode(boolType, compareBooleans(currentValue, scalar));
+                    }
+                } else {
+                    return getMessageError(aritLanguage, aritMatrix, aritVector, isMatrixVector);
+                }
+            } else if (isString) {
+                String currentValue, scalar = aritVector.getDataNodes().get(0).value.toString();
+                for (i = 0; i < sizeMatriz; i++) {
+                    currentValue = aritMatrix.getDataNodes()[i].value.toString();
+                    if (isMatrixVector) dataNodeArrayList[i] = new DataNode(boolType, compareStrings(currentValue, scalar));
+                    else dataNodeArrayList[i] = new DataNode(boolType, compareStrings(scalar, currentValue));
+                }
             } else {
-                aritLanguage.addSemanticError("Error en " + this + " : No se puede comparar una matriz de " +
-                        "tipo " + aritMatrix.baseType + " con un vector de tipo " + aritVector.baseType + ".", this.info);
+                return getMessageError(aritLanguage, aritMatrix, aritVector, isMatrixVector);
             }
+            this.type = TYPE_FACADE.getMatrixType();
+            this.value = new AritMatrix(boolType, dataNodeArrayList, aritMatrix.rows, aritMatrix.columns);
+            return true;
         } else {
             aritLanguage.addSemanticError("Error en " + this + " : No se puede operar una matriz con" +
                     " un vector de un tamaño mayor a uno.", this.info);
+        }
+        return false;
+    }
+
+    private boolean getMessageError(
+            AritLanguage aritLanguage, AritMatrix aritMatrix, @NotNull AritVector aritVector, boolean isMatrixVector
+    ) {
+        if (isMatrixVector) {
+            aritLanguage.addSemanticError("Error en " + this + " : No se puede usar el operador " +
+                    this.operator + " con una matriz de tipo " + aritMatrix.baseType +
+                    " con un vector de tipo " + aritVector.baseType + ".", this.info);
+        } else {
+            aritLanguage.addSemanticError("Error en " + this + " : No se puede usar el operador " +
+                    this.operator + " con el vector de tipo " + aritVector.baseType +
+                    " con un la matriz de tipo " + aritMatrix.baseType + ".", this.info);
         }
         return false;
     }
@@ -112,31 +144,49 @@ public class Comparator extends Operation {
     ) {
         if (aritMatrixLeft.rows == aritMatrixRight.rows && aritMatrixLeft.columns == aritMatrixRight.columns) {
             AritType typeTemp = getMaxType(aritMatrixLeft.baseType, aritMatrixRight.baseType);
-            if (TYPE_FACADE.isBooleanType(typeTemp) || TYPE_FACADE.isStringType(typeTemp) ||
-                    TYPE_FACADE.isIntegerType(typeTemp) || TYPE_FACADE.isNumericType(typeTemp)) {
-                int i, sizeMatrix = aritMatrixLeft.size();
-                DataNode[] dataNodeArrayList = new DataNode[sizeMatrix];
-                AritType boolType = TYPE_FACADE.getBooleanType();
-                boolean res, isNumber = TYPE_FACADE.isIntegerType(typeTemp) || TYPE_FACADE.isNumericType(typeTemp);
-                Object val1, val2;
+            boolean isNumber = TYPE_FACADE.isIntegerType(typeTemp) || TYPE_FACADE.isNumericType(typeTemp),
+                    isBoolean = TYPE_FACADE.isBooleanType(typeTemp),
+                    isString = TYPE_FACADE.isStringType(typeTemp);
+            int i, sizeMatrix = aritMatrixLeft.size();
+            DataNode[] dataNodeArrayList = new DataNode[sizeMatrix];
+            AritType boolType = TYPE_FACADE.getBooleanType();
+            if (isNumber) {
+                double val1, val2;
                 for (i = 0; i < sizeMatrix; i++) {
-                    if (isNumber) {
-                        val1 = toDouble(aritMatrixLeft.getDataNodes()[i].value);
-                        val2 = toDouble(aritMatrixRight.getDataNodes()[i].value);
-                    } else {
-                        val1 = aritMatrixLeft.getDataNodes()[i].value;
-                        val2 = aritMatrixRight.getDataNodes()[i].value;
-                    }
-                    res = (this.operator == Operator.EQUAL) == (val1 == val2);
-                    dataNodeArrayList[i] = new DataNode(boolType, res);
+                    val1 = toDouble(aritMatrixLeft.getDataNodes()[i].value);
+                    val2 = toDouble(aritMatrixRight.getDataNodes()[i].value);
+                    dataNodeArrayList[i] = new DataNode(boolType, compareNumbers(val1, val2));
                 }
-                this.type = TYPE_FACADE.getMatrixType();
-                this.value = new AritMatrix(boolType, dataNodeArrayList, aritMatrixLeft.rows, aritMatrixLeft.columns);
-                return true;
+            } else if (isBoolean) {
+                if (isValid()) {
+                    boolean val1, val2;
+                    for (i = 0; i < sizeMatrix; i++) {
+                        val1 = toBoolean(aritMatrixLeft.getDataNodes()[i].value);
+                        val2 = toBoolean(aritMatrixRight.getDataNodes()[i].value);
+                        dataNodeArrayList[i] = new DataNode(boolType, compareBooleans(val1, val2));
+                    }
+                } else {
+                    aritLanguage.addSemanticError("Error en " + this + " : No se puede usar el operador " +
+                            this.operator + " con una matriz de tipo " + aritMatrixLeft.baseType +
+                            " con una matriz de tipo " + aritMatrixRight.baseType + ".", this.info);
+                    return false;
+                }
+            } else if (isString) {
+                String val1, val2;
+                for (i = 0; i < sizeMatrix; i++) {
+                    val1 = aritMatrixLeft.getDataNodes()[i].value.toString();
+                    val2 = aritMatrixRight.getDataNodes()[i].value.toString();
+                    dataNodeArrayList[i] = new DataNode(boolType, compareStrings(val1, val2));
+                }
             } else {
-                aritLanguage.addSemanticError("Error en " + this + " : No se puede comparar una matriz de " +
-                        "tipo " + aritMatrixLeft.baseType + " con una matriz de tipo " + aritMatrixRight.baseType + ".", this.info);
+                aritLanguage.addSemanticError("Error en " + this + " : No se puede usar el operador " +
+                        this.operator + " con una matriz de tipo " + aritMatrixLeft.baseType +
+                        " con una matriz de tipo " + aritMatrixRight.baseType + ".", this.info);
+                return false;
             }
+            this.type = TYPE_FACADE.getMatrixType();
+            this.value = new AritMatrix(boolType, dataNodeArrayList, aritMatrixLeft.rows, aritMatrixLeft.columns);
+            return true;
         } else {
             aritLanguage.addSemanticError("Error en `" + this +
                     "` : No se puede comparar dos matrices con diferentes dimensiones.", this.info);
@@ -151,39 +201,128 @@ public class Comparator extends Operation {
         int sizeVectorRight = aritVectorRight.size();
         if (sizeVectorLeft == 1 || sizeVectorRight == 1 || sizeVectorLeft == sizeVectorRight) {
             AritType typeTemp = getMaxType(aritVectorLeft.baseType, aritVectorRight.baseType);
-            if (TYPE_FACADE.isBooleanType(typeTemp) || TYPE_FACADE.isStringType(typeTemp) ||
-                    TYPE_FACADE.isIntegerType(typeTemp) || TYPE_FACADE.isNumericType(typeTemp)) {
-                int maxSize = Math.max(sizeVectorLeft, sizeVectorRight);
-                int countLeft, countRight, i;
-                ArrayList<DataNode> dataNodeArrayList = new ArrayList<>();
-                AritType boolType = TYPE_FACADE.getBooleanType();
-                boolean res, isNumber = TYPE_FACADE.isIntegerType(typeTemp) || TYPE_FACADE.isNumericType(typeTemp);
-                Object val1, val2;
+            boolean isNumber = TYPE_FACADE.isIntegerType(typeTemp) || TYPE_FACADE.isNumericType(typeTemp),
+                    isBoolean = TYPE_FACADE.isBooleanType(typeTemp),
+                    isString = TYPE_FACADE.isStringType(typeTemp);
+            int maxSize = Math.max(sizeVectorLeft, sizeVectorRight);
+            int countLeft, countRight, i;
+            ArrayList<DataNode> dataNodeArrayList = new ArrayList<>();
+            AritType boolType = TYPE_FACADE.getBooleanType();
+            if (isNumber) {
+                double val1, val2;
                 for (i = 0, countLeft = 0, countRight = 0; i < maxSize; i++, countLeft++, countRight++) {
                     if (countLeft == sizeVectorLeft) countLeft = 0;
                     if (countRight == sizeVectorRight) countRight = 0;
-                    if (isNumber) {
-                        val1 = toDouble(aritVectorLeft.getDataNodes().get(countLeft).value);
-                        val2 = toDouble(aritVectorRight.getDataNodes().get(countRight).value);
-                    } else {
-                        val1 = aritVectorLeft.getDataNodes().get(countLeft).value;
-                        val2 = aritVectorRight.getDataNodes().get(countRight).value;
-                    }
-                    res = (this.operator == Operator.EQUAL) == (val1 == val2);
-                    dataNodeArrayList.add(new DataNode(boolType, res));
+                    val1 = toDouble(aritVectorLeft.getDataNodes().get(countLeft).value);
+                    val2 = toDouble(aritVectorRight.getDataNodes().get(countRight).value);
+                    dataNodeArrayList.add(new DataNode(boolType, compareNumbers(val1, val2)));
                 }
-                this.type = TYPE_FACADE.getVectorType();
-                this.value = new AritVector(boolType, dataNodeArrayList);
-                return true;
+            } else if (isBoolean) {
+                if (isValid()) {
+                    boolean val1, val2;
+                    for (i = 0, countLeft = 0, countRight = 0; i < maxSize; i++, countLeft++, countRight++) {
+                        if (countLeft == sizeVectorLeft) countLeft = 0;
+                        if (countRight == sizeVectorRight) countRight = 0;
+                        val1 = toBoolean(aritVectorLeft.getDataNodes().get(countLeft).value);
+                        val2 = toBoolean(aritVectorRight.getDataNodes().get(countRight).value);
+                        dataNodeArrayList.add(new DataNode(boolType, compareBooleans(val1, val2)));
+                    }
+                } else {
+                    aritLanguage.addSemanticError("Error en " + this + " : No se puede usar el operador " +
+                            this.operator + " con un vector de tipo " + aritVectorLeft.baseType +
+                            " con un vector de tipo " + aritVectorRight.baseType + ".", this.info);
+                    return false;
+                }
+            } else if (isString) {
+                String str1, str2;
+                for (i = 0, countLeft = 0, countRight = 0; i < maxSize; i++, countLeft++, countRight++) {
+                    if (countLeft == sizeVectorLeft) countLeft = 0;
+                    if (countRight == sizeVectorRight) countRight = 0;
+                    str1 = toString(aritVectorLeft.getDataNodes().get(countLeft).value);
+                    str2 = toString(aritVectorRight.getDataNodes().get(countRight).value);
+                    dataNodeArrayList.add(new DataNode(boolType, compareStrings(str1, str2)));
+                }
             } else {
-                aritLanguage.addSemanticError("Error en " + this + " : No se puede comparar un vector de " +
-                        "tipo " + aritVectorLeft.baseType + " con un vector de tipo " + aritVectorRight.baseType + ".", this.info);
+                aritLanguage.addSemanticError("Error en " + this + " : No se puede usar el operador " +
+                        this.operator + " con un vector de tipo " + aritVectorLeft.baseType +
+                        " con un vector de tipo " + aritVectorRight.baseType + ".", this.info);
+                return false;
             }
+            this.type = TYPE_FACADE.getVectorType();
+            this.value = new AritVector(boolType, dataNodeArrayList);
+            return true;
         } else {
             aritLanguage.addSemanticError("Error en " + this +
                     " : No se puede comparar vectores con tamaños diferentes.", this.info);
         }
         return false;
+    }
+
+    private boolean isValid() {
+        switch (this.operator) {
+            case LESS_THAN:
+            case LESS_THAN_OR_EQUAL_TO:
+            case GREATER_THAN:
+            case GREATER_THAN_OR_EQUAL_TO:
+                return false;
+        }
+        return true;
+    }
+
+    private Boolean compareStrings(String val1, String val2) {
+        int i = val1 != null ? val1.compareTo(val2) : 0;
+        switch (this.operator) {
+            case EQUAL:
+                if (val1 == null && val2 == null) return true;
+                return val1 != null && val1.equals(val2);
+            case UNEQUAL:
+                if (val1 == null && val2 == null) return false;
+                return !(val1 != null && val1.equals(val2));
+            case LESS_THAN:
+                if (val1 == null && val2 == null) return false;
+                return i < 0;
+            case GREATER_THAN:
+                if (val1 == null && val2 == null) return false;
+                return i > 0;
+            case LESS_THAN_OR_EQUAL_TO:
+                if (val1 == null && val2 == null) return true;
+                return i <= 0;
+            case GREATER_THAN_OR_EQUAL_TO:
+                if (val1 == null && val2 == null) return true;
+                return i >= 0;
+            default:
+                return false;
+        }
+    }
+
+    private Boolean compareBooleans(Boolean val1, Boolean val2) {
+        switch (this.operator) {
+            case EQUAL:
+                return val1.equals(val2);
+            case UNEQUAL:
+                return !val1.equals(val2);
+            default:
+                return false;
+        }
+    }
+
+    private Boolean compareNumbers(Double val1, Double val2) {
+        switch (this.operator) {
+            case EQUAL:
+                return val1.equals(val2);
+            case UNEQUAL:
+                return !val1.equals(val2);
+            case LESS_THAN:
+                return val1 < val2;
+            case GREATER_THAN:
+                return val1 > val2;
+            case LESS_THAN_OR_EQUAL_TO:
+                return val1 <= val2;
+            case GREATER_THAN_OR_EQUAL_TO:
+                return val1 >= val2;
+            default:
+                return false;
+        }
     }
 
     @Override
