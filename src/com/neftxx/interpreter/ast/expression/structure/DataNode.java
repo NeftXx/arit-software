@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class DataNode extends StructureNode {
-    public AritType type;
     public Object value;
 
     public DataNode(AritType type, Object value) {
@@ -20,6 +19,7 @@ public class DataNode extends StructureNode {
         this.value = value;
     }
 
+    @Override
     public DataNode copy() {
         return new DataNode(type, value);
     }
@@ -63,5 +63,10 @@ public class DataNode extends StructureNode {
             return TYPE_FACADE.isStringType(this.type) ? "\"" + this.value + "\"" : this.value.toString();
         }
         return "NULL";
+    }
+
+    @Override
+    public int size() {
+        return 1;
     }
 }

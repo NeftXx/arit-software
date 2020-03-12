@@ -8,7 +8,9 @@ import com.neftxx.interpreter.jflex_cup.Lexer;
 import com.neftxx.interpreter.jflex_cup.Parser;
 import com.neftxx.util.NodeInfo;
 import java_cup.runtime.ComplexSymbolFactory;
+import javafx.scene.Node;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.VBox;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -19,13 +21,15 @@ public class AritLanguage {
     public final ArrayList<NodeError> errors;
     public final String filename;
     private final TextArea console;
+    private final VBox paneCharts;
     public final FileScope globalScope;
 
-    public AritLanguage(String filename, TextArea console) {
+    public AritLanguage(String filename, TextArea console, VBox paneCharts) {
         this.errors = new ArrayList<>();
         this.astNodes = null;
         this.filename = filename;
         this.console = console;
+        this.paneCharts = paneCharts;
         this.globalScope = new FileScope();
     }
 
@@ -91,6 +95,10 @@ public class AritLanguage {
 
     public void printOnConsole(String text) {
         this.console.setText(this.console.getText() + text + "\n");
+    }
+
+    public void addChart(Node node) {
+        this.paneCharts.getChildren().add(node);
     }
 
     public void analyzeWithJflexAndCup(String text) throws Exception {

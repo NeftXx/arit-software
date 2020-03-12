@@ -32,8 +32,10 @@ public class Function extends Expression {
 
     public boolean verifyNamesOfParameters() {
         HashSet<String> ids = new HashSet<>();
-        for (FormalParameter parameter : this.parameters)
-            if (ids.add(parameter.id)) return false;
+        if (this.parameters != null) {
+            for (FormalParameter parameter : this.parameters)
+                if (ids.add(parameter.id)) return false;
+        }
         return true;
     }
 

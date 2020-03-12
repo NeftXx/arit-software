@@ -13,7 +13,7 @@ public class SyntaxUtils {
     private static final String BRACKET_PATTERN = "[\\[\\]]";
     private static final String SEMICOLON_PATTERN = ";";
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-    private static final String COMMENT_PATTERN = "#[^\n]*" + "|" + "#\\*(.|\\R)*?\\*#";
+    private static final String COMMENT_PATTERN = "#\\*(.|\\R)*?\\*#"+ "|" + "#[^\n]*";
     private static final String OPERATION_PATTERN = "=>|==|!=|>=|<=|%%|\\+|-|\\*|/|\\^|=|>|<|\\?|:|[|]|&|!|,";
     private static final String NUMBERS_PATTERN = "[0-9]+(\".\"[0-9]+)?";
 
@@ -24,8 +24,8 @@ public class SyntaxUtils {
                     + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
                     + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
                     + "|(?<STRING>" + STRING_PATTERN + ")"
-                    + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
                     + "|(?<OPERATION>" + OPERATION_PATTERN + ")"
                     + "|(?<NUMBER>" + NUMBERS_PATTERN + ")"
+                    + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
     );
 }

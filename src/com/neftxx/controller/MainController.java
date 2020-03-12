@@ -20,6 +20,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -37,6 +38,8 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 public class MainController implements Initializable {
+    @FXML
+    private VBox paneCharts;
     @FXML
     private MenuItem newFileMenuItem;
     @FXML
@@ -236,9 +239,9 @@ public class MainController implements Initializable {
             VirtualizedScrollPane<?> pane = (VirtualizedScrollPane<?>) currentTab.getContent();
             CodeArea codeArea = (CodeArea) pane.getContent();
             String text = codeArea.getText();
-            AritLanguage aritLanguage = new AritLanguage(currentTab.getText(), consoleTextArea);
+            AritLanguage aritLanguage = new AritLanguage(currentTab.getText(), this.consoleTextArea, this.paneCharts);
             try {
-                if (jflexCupMenuItem.isSelected())aritLanguage.analyzeWithJflexAndCup(text);
+                if (jflexCupMenuItem.isSelected()) aritLanguage.analyzeWithJflexAndCup(text);
                 else if (javaCCMenuItem.isSelected()) aritLanguage.analyzeWithJavaCC(text);
                 else aritLanguage.analyzeWithJflexAndCup(text);
 
@@ -249,6 +252,7 @@ public class MainController implements Initializable {
                     showErrorsInTableView(aritLanguage.errors);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 String warnMessage = "Error al analizar el archivo " + currentTab.getText();
                 debugger.warning(warnMessage);
                 DialogUtils.createErrorDialog(DialogUtils.ERROR_DIALOG, warnMessage, "");
@@ -294,7 +298,7 @@ public class MainController implements Initializable {
      */
     private boolean selectTabIfItExists(String absolutePath) {
         ObservableList<Tab> tabs = codeAreaLayout.getTabs();
-        for (Tab tab: tabs) {
+        for (Tab tab : tabs) {
             if (tab.getId().equals(absolutePath)) {
                 SingleSelectionModel<Tab> selectionModel = codeAreaLayout.getSelectionModel();
                 selectionModel.select(tab);
@@ -350,6 +354,7 @@ public class MainController implements Initializable {
     }
 
     private void clearElements() {
+        this.paneCharts.getChildren().clear();
         this.consoleTextArea.clear();
         this.tableErrors.getItems().clear();
         this.tableSymbols.getItems().clear();

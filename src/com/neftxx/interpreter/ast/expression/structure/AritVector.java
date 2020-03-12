@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 public class AritVector extends AritStructure {
-    public AritType baseType;
     private ArrayList<DataNode> dataNodes;
 
     public AritVector(AritType baseType, Object value) {

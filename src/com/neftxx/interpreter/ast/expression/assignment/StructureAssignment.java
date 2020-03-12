@@ -27,8 +27,8 @@ public class StructureAssignment extends Expression {
 
     private void vectorAssignment(AritLanguage aritLanguage, Scope scope, AritVector vector) {
         boolean ok = true;
-        for (Access access: this.accessList) {
-            if (!access.isToVector()) {
+        for (Access access : this.accessList) {
+            if (access.notAccessVector()) {
                 ok = false;
                 aritLanguage.addSemanticError("Error en `" + this +
                         "` : No se permite este tipo de acceso en un vector `" + access + "`.", this.info);
@@ -57,10 +57,10 @@ public class StructureAssignment extends Expression {
                         }
                     } else {
                         aritLanguage.addSemanticError("Error en `" + this +
-                                "` : no se puede asignar a una posición de un vector una estructura con tamaño mayor a uno.",
+                                        "` : no se puede asignar a una posición de un vector una estructura con tamaño mayor a uno.",
                                 this.info);
                     }
-                } else if(TYPE_FACADE.isListType(typeTemp)) {
+                } else if (TYPE_FACADE.isListType(typeTemp)) {
                     AritList aritListTemp = (AritList) value;
                     if (aritListTemp.size() == 1) {
                         if (this.expression.verifyCopy()) aritListTemp = aritListTemp.copy();
@@ -233,7 +233,7 @@ public class StructureAssignment extends Expression {
                     }
                 } else {
                     aritLanguage.addSemanticError("Error en `" + this + "` : se debe asignar un vector de " +
-                                    "tamaño 1 en este tipo de acceso", access.info);
+                            "tamaño 1 en este tipo de acceso", access.info);
                 }
             } else {
                 aritLanguage.addSemanticError("Error en `" + this +
@@ -251,6 +251,9 @@ public class StructureAssignment extends Expression {
         if (varSymbol != null) {
             if (TYPE_FACADE.isVectorType(varSymbol.type)) {
                 vectorAssignment(aritLanguage, scope, (AritVector) varSymbol.value);
+                if (!TYPE_FACADE.isUndefinedType(this.type)) {
+                    varSymbol.changeValues(this.type, this.value);
+                }
             } else if (TYPE_FACADE.isMatrixType(varSymbol.type)) {
                 matrixAssignment(aritLanguage, scope, (AritMatrix) varSymbol.value);
             }
@@ -264,5 +267,17 @@ public class StructureAssignment extends Expression {
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
 
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder cad = new StringBuilder(this.id);
+        int i, size = this.accessList.size();
+        for (i = 0; i < size; i++) {
+            cad.append(this.accessList.get(i));
+        }
+        cad.append(" = ");
+        cad.append(this.expression);
+        return cad.toString();
     }
 }

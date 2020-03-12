@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 
 public class FileManager {
     private static final FileChooser.ExtensionFilter R_FILES =
-            new FileChooser.ExtensionFilter("R Files", "*.r");
+            new FileChooser.ExtensionFilter("R Files", "*.r", "*.arit", "*.R", "*.ARIT");
     private static final FileChooser.ExtensionFilter ALL_FILES =
             new FileChooser.ExtensionFilter("All Files", "*.*");
 

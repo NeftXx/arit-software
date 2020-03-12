@@ -67,8 +67,8 @@ public class Access extends AstNode {
         }
     }
 
-    public boolean isToVector() {
-        return this.accessType == Type.NORMAL;
+    public boolean notAccessVector() {
+        return this.accessType != Type.NORMAL;
     }
 
     public boolean isTypeOneToList() {

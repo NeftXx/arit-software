@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 public class AritMatrix extends AritStructure {
-    public AritType baseType;
     private DataNode[] dataNodes;
     public final int rows;
     public final int columns;
@@ -27,7 +26,7 @@ public class AritMatrix extends AritStructure {
         for (i = 0; i < columns; i++) {
             for (j = 0; j < rows; j++) {
                 if (currentPosition > size) currentPosition = 0;
-                newDataNodes[j * columns + i]  = dataNodes.get(currentPosition).copy();
+                newDataNodes[j * columns + i] = dataNodes.get(currentPosition).copy();
                 currentPosition++;
             }
         }
@@ -41,8 +40,9 @@ public class AritMatrix extends AritStructure {
     public AritVector modifyItemWithAccessOne(int posX, int posY, @NotNull DataNode dataNode) throws IndexOutOfBoundsException {
         verifyNodeTypeChange(dataNode.type);
         Object newValue = dataNode.value;
-        if (dataNode.type != this.baseType) newValue = TYPE_FACADE.castValue(dataNode.type, this.baseType, dataNode.value);
-        this.dataNodes[((posX - 1) * this.rows) + posY - 1].changeValues(this.baseType, newValue);
+        if (dataNode.type != this.baseType)
+            newValue = TYPE_FACADE.castValue(dataNode.type, this.baseType, dataNode.value);
+        this.dataNodes[(posY - 1) * this.columns + posX - 1].changeValues(this.baseType, newValue);
         return new AritVector(dataNode.copy());
     }
 
@@ -75,7 +75,8 @@ public class AritMatrix extends AritStructure {
         Object newValue;
         if (currentPosition > size) currentPosition = 0;
         dataNode = currentDataNodes.get(currentPosition);
-        if (dataNode.type != this.baseType) newValue = TYPE_FACADE.castValue(dataNode.type, this.baseType, dataNode.value);
+        if (dataNode.type != this.baseType)
+            newValue = TYPE_FACADE.castValue(dataNode.type, this.baseType, dataNode.value);
         else newValue = dataNode.value;
         this.dataNodes[i * this.columns + column].changeValues(this.baseType, newValue);
         newDataNodes.add(currentDataNodes.get(currentPosition).copy());
@@ -86,7 +87,7 @@ public class AritMatrix extends AritStructure {
     public AritVector modifyItemWithAccessFour(int position, @NotNull DataNode dataNode) throws IndexOutOfBoundsException {
         verifyNodeTypeChange(dataNode.type);
         int column, row, count = 0;
-        for(column = 0; column < this.columns; column++) {
+        for (column = 0; column < this.columns; column++) {
             for (row = 0; row < this.rows; row++) {
                 if (count == position) {
                     this.dataNodes[row * this.columns + column] = dataNode;
@@ -120,7 +121,7 @@ public class AritMatrix extends AritStructure {
 
     public AritVector getItemWithAccessFour(int position) throws IndexOutOfBoundsException {
         int i = 0, j = 0, count = 0;
-        for(; i < this.columns; i++) {
+        for (; i < this.columns; i++) {
             for (; j < this.rows; j++) {
                 if (count == position) {
                     return new AritVector(this.dataNodes[j * this.columns + i].copy());
@@ -135,7 +136,7 @@ public class AritMatrix extends AritStructure {
         if (newType.priority > this.baseType.priority) {
             AritType oldType = this.baseType;
             Object newValue;
-            for (DataNode node: this.dataNodes) {
+            for (DataNode node : this.dataNodes) {
                 newValue = TYPE_FACADE.castValue(oldType, newType, node.value);
                 node.changeValues(newType, newValue);
             }
@@ -162,12 +163,12 @@ public class AritMatrix extends AritStructure {
     @Override
     public String toString() {
         int i, j;
-        StringBuilder cad = new StringBuilder("| ");
+        StringBuilder cad = new StringBuilder("\n  | ");
         for (i = 0; i < this.rows; i++) {
             for (j = 0; j < this.columns; j++) {
                 cad.append(this.dataNodes[i * this.columns + j]).append(" | ");
             }
-            if (i != this.rows - 1) cad.append('\n').append("   | ");
+            if (i != this.rows - 1) cad.append('\n').append("  | ");
         }
         return cad.toString();
     }

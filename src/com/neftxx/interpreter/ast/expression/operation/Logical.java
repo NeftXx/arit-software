@@ -49,9 +49,9 @@ public class Logical extends Operation {
         } else if (TYPE_FACADE.isMatrixType(expLeft.type) && TYPE_FACADE.isMatrixType(expRight.type)) {
             if (operateMatrix(aritLanguage, (AritMatrix) resultLeft, (AritMatrix) resultRight)) return this.value;
         } else if (TYPE_FACADE.isMatrixType(expLeft.type) && TYPE_FACADE.isVectorType(expRight.type)) {
-            if (operateMatrixVector(aritLanguage, (AritMatrix) resultLeft, (AritVector) resultRight, true)) return true;
+            if (operateMatrixVector(aritLanguage, (AritMatrix) resultLeft, (AritVector) resultRight, true)) return this.value;
         } else if (TYPE_FACADE.isVectorType(expLeft.type) && TYPE_FACADE.isMatrixType(expRight.type)) {
-            if (operateMatrixVector(aritLanguage, (AritMatrix) resultRight, (AritVector) resultLeft, false)) return true;
+            if (operateMatrixVector(aritLanguage, (AritMatrix) resultRight, (AritVector) resultLeft, false)) return this.value;
         }
         else {
             aritLanguage.addSemanticError("Error en " + this + " : no se puede operar las estructuras " +

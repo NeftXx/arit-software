@@ -26,6 +26,9 @@ public class Block extends AstNode {
             Object value;
             for (AstNode astNode : astNodes) {
                 value = astNode.interpret(aritLanguage, scope);
+                if (value instanceof Break || value instanceof Continue || value instanceof Return) {
+                    return value;
+                }
             }
         }
         return null;

@@ -18,9 +18,11 @@ import com.neftxx.interpreter.ast.expression.function.FunctionCall;
 import com.neftxx.interpreter.ast.expression.Identifier;
 import com.neftxx.interpreter.ast.expression.Literal;
 import com.neftxx.interpreter.ast.expression.operation.*;
+import com.neftxx.interpreter.ast.expression.structure.StructureAccess;
 import com.neftxx.interpreter.ast.statement.Block;
 import com.neftxx.interpreter.ast.expression.function.FormalParameter;
 import com.neftxx.interpreter.ast.expression.function.Function;
+import com.neftxx.interpreter.ast.statement.Return;
 import com.neftxx.interpreter.ast.type.TypeFacade;
 import com.neftxx.util.NodeInfo;
 import java_cup.runtime.ComplexSymbolFactory;
@@ -141,10 +143,13 @@ non terminal FormalParameter formal_parameter;
 non terminal Block block;
 non terminal ArrayList<AstNode> block_statements;
 non terminal AstNode statement;
+non terminal Return return_statement;
 non terminal Expression statement_expression;
 non terminal Expression expression;
 non terminal Expression var_assigment;
-non terminal ArrayList access_list;
+non terminal ArrayList<Access> access_list;
+non terminal Access access;
+non terminal StructureAccess structure_access;
 non terminal Expression function_call;
 non terminal ArrayList<Expression> argument_list;
 non terminal Expression default_exp;
@@ -271,9 +276,25 @@ block_statements
         :}
 ;
 
+return_statement
+    ::= RETURN:r PUNTO_COMA {:
+            NodeInfo info = new NodeInfo(rxleft.getLine(), rxleft.getColumn(), filename);
+            RESULT = new Return(info);
+        :}
+    |   RETURN:r expression:exp {:
+            NodeInfo info = new NodeInfo(rxleft.getLine(), rxleft.getColumn(), filename);
+            RESULT = new Return(info, exp);
+        :}
+    |   RETURN:r expression:exp PUNTO_COMA {:
+            NodeInfo info = new NodeInfo(rxleft.getLine(), rxleft.getColumn(), filename);
+            RESULT = new Return(info, exp);
+        :}
+;
+
 statement
     ::= statement_expression:expression PUNTO_COMA {: RESULT = expression; :}
     |   statement_expression:expression {: RESULT = expression; :}
+    |   return_statement:statement {: RESULT = statement; :}
 ;
 
 statement_expression
@@ -293,45 +314,30 @@ var_assigment
 ;
 
 access_list
-    ::= access_list:list COR_IZQ expression:exp1 COMA expression:exp2 COR_DER {:
+    ::= access_list:list access:access {: RESULT = list; if (access != null) RESULT.add(access); :}
+    |   access:access {: RESULT = new ArrayList<>(); if (access != null) RESULT.add(access); :}
+;
+
+access
+    ::= COR_IZQ expression:exp1 COMA expression:exp2 COR_DER {:
             NodeInfo info = new NodeInfo(exp1xleft.getLine(), exp1xright.getColumn(), filename);
-            RESULT = list; RESULT.add(new Access(info, exp1, exp2));
-        :}
-    |   access_list:list COR_IZQ expression:exp COMA COR_DER {:
-            NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
-            RESULT = list; RESULT.add(new Access(info, exp, Access.Type.TWO_MATRIX));
-        :}
-    |   access_list:list COR_IZQ COMA expression:exp COR_DER {:
-            NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
-            RESULT = list; RESULT.add(new Access(info, exp, Access.Type.THREE_MATRIX));
-        :}
-    |   access_list:list COR_IZQ expression:exp COR_DER {:
-            NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
-            RESULT = list; RESULT.add(new Access(info, exp, Access.Type.NORMAL));
-        :}
-    |   access_list:list COR_IZQ COR_IZQ expression:exp COR_DER COR_DER {:
-            NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
-            RESULT = list; RESULT.add(new Access(info, exp, Access.Type.TWO_LIST));
-        :}
-    |   COR_IZQ expression:exp1 COMA expression:exp2 COR_DER {:
-            NodeInfo info = new NodeInfo(exp1xleft.getLine(), exp1xright.getColumn(), filename);
-            RESULT = new ArrayList<>(); RESULT.add(new Access(info, exp1, exp2));
+            RESULT = new Access(info, exp1, exp2);
         :}
     |   COR_IZQ expression:exp COMA COR_DER {:
             NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
-            RESULT = new ArrayList<>(); RESULT.add(new Access(info, exp, Access.Type.TWO_MATRIX));
+            RESULT = new Access(info, exp, Access.Type.TWO_MATRIX);
         :}
     |   COR_IZQ COMA expression:exp COR_DER {:
             NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
-            RESULT = new ArrayList<>(); RESULT.add(new Access(info, exp, Access.Type.THREE_MATRIX));
+            RESULT = new Access(info, exp, Access.Type.THREE_MATRIX);
         :}
     |   COR_IZQ expression:exp COR_DER {:
             NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
-            RESULT = new ArrayList<>(); RESULT.add(new Access(info, exp, Access.Type.NORMAL));
+            RESULT = new Access(info, exp, Access.Type.NORMAL);
         :}
     |   COR_IZQ COR_IZQ expression:exp COR_DER COR_DER {:
             NodeInfo info = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
-            RESULT = new ArrayList<>(); RESULT.add(new Access(info, exp, Access.Type.TWO_LIST));
+            RESULT = new Access(info, exp, Access.Type.TWO_LIST);
         :}
 ;
 
@@ -347,7 +353,7 @@ function_call
 ;
 
 expression
-    ::= statement_expression:expression {: RESULT = expression; :}
+    ::= function_call:expression {: RESULT = expression; :}
     |   expression:condition INTERROGANTE:op expression:exp1 DOS_PUNTOS expression:exp2 {:
             NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
             RESULT = new Ternary(info, condition, exp1, exp2);
@@ -408,9 +414,9 @@ expression
             NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
             RESULT = new Arithmetic(info, exp1, exp2, Arithmetic.Operator.POWER);
         :}
-    |   expression COR_IZQ expression COR_DER {:
-        :}
-    |   expression COR_IZQ COR_IZQ expression COR_DER COR_DER {:
+    |   expression:exp access:access {:
+            NodeInfo infoExp = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
+            RESULT = new StructureAccess(infoExp, exp, access);
         :}
     |   MENOS:op expression:exp {:
             NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);

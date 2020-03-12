@@ -8,6 +8,11 @@ import java.util.ArrayList;
 public class AritList extends AritStructure  {
     private ArrayList<DataNode> dataNodes;
 
+    public AritList(DataNode dataNode) {
+        this.dataNodes = new ArrayList<>();
+        this.dataNodes.add(dataNode);
+    }
+
     public AritList(ArrayList<DataNode> dataNodes) {
         this.dataNodes = dataNodes;
     }
@@ -42,6 +47,10 @@ public class AritList extends AritStructure  {
             );
         }
         this.dataNodes.get(position - 1).changeValues(type, value);
+    }
+
+    public DataNode getItemValue(int position) throws IndexOutOfBoundsException  {
+        return this.dataNodes.get(position - 1);
     }
 
     public ArrayList<DataNode> getDataNodes() {

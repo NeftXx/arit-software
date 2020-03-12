@@ -90,8 +90,14 @@ public class FunctionCall extends Expression {
 
     @Override
     public String toString() {
-        StringBuilder cad = new StringBuilder(this.id + "( ");
-        for (Expression argument: this.arguments) cad.append(argument).append(" ");
+        StringBuilder cad = new StringBuilder(this.id + "(");
+        if (this.arguments != null) {
+            int i, size = this.arguments.size();
+            for (i = 0; i < size; i ++) {
+                cad.append(this.arguments.get(i));
+                if (i != size - 1) cad.append(", ");
+            }
+        }
         return cad + ")";
     }
 }
