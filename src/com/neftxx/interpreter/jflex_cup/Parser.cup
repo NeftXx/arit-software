@@ -22,7 +22,16 @@ import com.neftxx.interpreter.ast.expression.structure.StructureAccess;
 import com.neftxx.interpreter.ast.statement.Block;
 import com.neftxx.interpreter.ast.expression.function.FormalParameter;
 import com.neftxx.interpreter.ast.expression.function.Function;
+import com.neftxx.interpreter.ast.statement.Break;
+import com.neftxx.interpreter.ast.statement.Continue;
 import com.neftxx.interpreter.ast.statement.Return;
+import com.neftxx.interpreter.ast.statement.ifStm.IfStatement;
+import com.neftxx.interpreter.ast.statement.ifStm.SubIf;
+import com.neftxx.interpreter.ast.statement.loop.DoWhileStm;
+import com.neftxx.interpreter.ast.statement.loop.ForStm;
+import com.neftxx.interpreter.ast.statement.loop.WhileStm;
+import com.neftxx.interpreter.ast.statement.switchStm.CaseStm;
+import com.neftxx.interpreter.ast.statement.switchStm.SwitchStm;
 import com.neftxx.interpreter.ast.type.TypeFacade;
 import com.neftxx.util.NodeInfo;
 import java_cup.runtime.ComplexSymbolFactory;
@@ -143,13 +152,22 @@ non terminal FormalParameter formal_parameter;
 non terminal Block block;
 non terminal ArrayList<AstNode> block_statements;
 non terminal AstNode statement;
+non terminal Break break_statement;
+non terminal Continue continue_statement;
 non terminal Return return_statement;
+non terminal IfStatement if_statement;
+non terminal ArrayList<SubIf> if_list;
+non terminal SwitchStm switch_statement;
+non terminal ArrayList<CaseStm> switch_labels;
+non terminal CaseStm switch_label;
+non terminal WhileStm while_statement;
+non terminal DoWhileStm do_while_statement;
+non terminal ForStm for_statement;
 non terminal Expression statement_expression;
 non terminal Expression expression;
 non terminal Expression var_assigment;
 non terminal ArrayList<Access> access_list;
 non terminal Access access;
-non terminal StructureAccess structure_access;
 non terminal Expression function_call;
 non terminal ArrayList<Expression> argument_list;
 non terminal Expression default_exp;
@@ -276,6 +294,16 @@ block_statements
         :}
 ;
 
+break_statement
+    ::= BREAK:stm {: RESULT = new Break(new NodeInfo(stmxleft.getLine(), stmxright.getColumn(), filename)); :}
+    |   BREAK:stm PUNTO_COMA {: RESULT = new Break(new NodeInfo(stmxleft.getLine(), stmxright.getColumn(), filename)); :}
+;
+
+continue_statement
+    ::= CONTINUE:stm {: RESULT = new Continue(new NodeInfo(stmxleft.getLine(), stmxright.getColumn(), filename)); :}
+    |   CONTINUE:stm PUNTO_COMA {: RESULT = new Continue(new NodeInfo(stmxleft.getLine(), stmxright.getColumn(), filename)); :}
+;
+
 return_statement
     ::= RETURN:r PUNTO_COMA {:
             NodeInfo info = new NodeInfo(rxleft.getLine(), rxleft.getColumn(), filename);
@@ -291,10 +319,109 @@ return_statement
         :}
 ;
 
+if_statement
+    ::= if_list:list ELSE:else_ block:block {:
+            NodeInfo info = new NodeInfo(else_xleft.getLine(), else_xleft.getColumn(), filename);
+            list.add(new SubIf(info, block));
+            info = new NodeInfo(listxleft.getLine(), listxleft.getColumn(), filename);
+            RESULT = new IfStatement(info, list);
+        :}
+    |   if_list:list {:
+            NodeInfo info = new NodeInfo(listxleft.getLine(), listxleft.getColumn(), filename);
+            RESULT = new IfStatement(info, list);
+        :}
+;
+
+if_list
+    ::= if_list:list ELSE IF:if_ PAR_IZQ expression:exp PAR_DER block:block {:
+            RESULT = list;
+            NodeInfo info = new NodeInfo(if_xleft.getLine(), if_xleft.getColumn(), filename);
+            RESULT.add(new SubIf(info, exp, block));
+        :}
+    |   IF:if_ PAR_IZQ expression:exp PAR_DER block:block {:
+            NodeInfo info = new NodeInfo(if_xleft.getLine(), if_xleft.getColumn(), filename);
+            RESULT = new ArrayList<>();
+            RESULT.add(new SubIf(info, exp, block));
+        :}
+;
+
+switch_statement
+    ::= SWITCH:stm PAR_IZQ expression:exp PAR_DER LLAVE_IZQ switch_labels:labels LLAVE_DER {:
+            NodeInfo info = new NodeInfo(stmxleft.getLine(), stmxright.getColumn(), filename);
+            RESULT = new SwitchStm(info, exp, labels);
+        :}
+    |   SWITCH:stm PAR_IZQ expression:exp PAR_DER LLAVE_IZQ LLAVE_DER {:
+            NodeInfo info = new NodeInfo(stmxleft.getLine(), stmxright.getColumn(), filename);
+            RESULT = new SwitchStm(info, exp, null);
+        :}
+;
+
+switch_labels
+    ::= switch_labels:labels switch_label:label {:
+            RESULT = labels;
+            if (label != null) RESULT.add(label);
+        :}
+    |   switch_label:label {:
+            RESULT = new ArrayList<>();
+            if (label != null) RESULT.add(label);
+        :}
+;
+
+switch_label
+    ::= CASE:label expression:exp DOS_PUNTOS block_statements:block {:
+            NodeInfo info = new NodeInfo(labelxleft.getLine(), labelxright.getColumn(), filename);
+            RESULT = new CaseStm(info, exp, block);
+        :}
+    |   CASE:label expression:exp DOS_PUNTOS {:
+            NodeInfo info = new NodeInfo(labelxleft.getLine(), labelxright.getColumn(), filename);
+            RESULT = new CaseStm(info, exp, null);
+        :}
+    |   DEFAULT:label DOS_PUNTOS block_statements:block {:
+            NodeInfo info = new NodeInfo(labelxleft.getLine(), labelxright.getColumn(), filename);
+            RESULT = new CaseStm(info, null, block);
+        :}
+    |   DEFAULT:label DOS_PUNTOS {:
+            NodeInfo info = new NodeInfo(labelxleft.getLine(), labelxright.getColumn(), filename);
+            RESULT = new CaseStm(info, null, null);
+        :}
+;
+
+while_statement
+    ::= WHILE:stm PAR_IZQ expression:exp PAR_DER block:block  {:
+            NodeInfo info = new NodeInfo(stmxleft.getLine(), stmxright.getColumn(), filename);
+            RESULT = new WhileStm(info, exp, block);
+        :}
+;
+
+do_while_statement
+    ::= DO:stm block:block WHILE PAR_IZQ expression:exp PAR_DER {:
+            NodeInfo info = new NodeInfo(stmxleft.getLine(), stmxright.getColumn(), filename);
+            RESULT = new DoWhileStm(info, exp, block);
+        :}
+    |   DO:stm block:block WHILE PAR_IZQ expression:exp PAR_DER PUNTO_COMA {:
+            NodeInfo info = new NodeInfo(stmxleft.getLine(), stmxright.getColumn(), filename);
+            RESULT = new DoWhileStm(info, exp, block);
+        :}
+;
+
+for_statement
+    ::= FOR:stm PAR_IZQ ID:id IN expression:exp PAR_DER block:block {:
+            NodeInfo info = new NodeInfo(stmxleft.getLine(), stmxright.getColumn(), filename);
+            RESULT = new ForStm(info, id, exp, block);
+        :}
+;
+
 statement
     ::= statement_expression:expression PUNTO_COMA {: RESULT = expression; :}
     |   statement_expression:expression {: RESULT = expression; :}
+    |   break_statement:statement {: RESULT = statement; :}
+    |   continue_statement:statement {: RESULT = statement; :}
     |   return_statement:statement {: RESULT = statement; :}
+    |   if_statement:statement {: RESULT = statement; :}
+    |   switch_statement:statement {: RESULT = statement; :}
+    |   while_statement:statement {: RESULT = statement; :}
+    |   do_while_statement:statement {: RESULT = statement; :}
+    |   for_statement:statement {: RESULT = statement; :}
 ;
 
 statement_expression

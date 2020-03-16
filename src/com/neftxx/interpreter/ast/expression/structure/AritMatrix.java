@@ -107,7 +107,7 @@ public class AritMatrix extends AritStructure {
         row = row - 1;
         int j = 0;
         ArrayList<DataNode> newDataNodes = new ArrayList<>();
-        for (; j < this.columns; j++) newDataNodes.add(this.dataNodes[j * this.columns + row].copy());
+        for (; j < this.columns; j++) newDataNodes.add(this.dataNodes[row * this.columns + j].copy());
         return new AritVector(this.baseType, newDataNodes);
     }
 
@@ -115,14 +115,15 @@ public class AritMatrix extends AritStructure {
         column = column - 1;
         int i = 0;
         ArrayList<DataNode> newDataNodes = new ArrayList<>();
-        for (; i < this.rows; i++) newDataNodes.add(this.dataNodes[column * this.columns + i].copy());
+        for (; i < this.rows; i++) newDataNodes.add(this.dataNodes[i * this.columns + column].copy());
         return new AritVector(this.baseType, newDataNodes);
     }
 
     public AritVector getItemWithAccessFour(int position) throws IndexOutOfBoundsException {
-        int i = 0, j = 0, count = 0;
-        for (; i < this.columns; i++) {
-            for (; j < this.rows; j++) {
+        int i , j;
+        int count = 0;
+        for (i = 0; i < this.columns; i++) {
+            for (j = 0; j < this.rows; j++) {
                 if (count == position) {
                     return new AritVector(this.dataNodes[j * this.columns + i].copy());
                 }

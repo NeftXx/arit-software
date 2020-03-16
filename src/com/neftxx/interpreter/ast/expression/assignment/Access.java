@@ -57,12 +57,10 @@ public class Access extends AstNode {
                     DataNode dataNode = vector.getDataNodes().get(0);
                     this.values[position] = (int) dataNode.value;
                 } else {
-                    aritLanguage.addSemanticError("Error en " + this +
-                            ": la posición no es de un tipo entero.", this.info);
+                    aritLanguage.addSemanticError("Error : la posición no es de un tipo entero.", this.info);
                 }
             } else {
-                aritLanguage.addSemanticError("Error en " + this +
-                        ": la posición no es de un tipo entero.", this.info);
+                aritLanguage.addSemanticError("Error : la posición no es de un tipo entero.", this.info);
             }
         }
     }

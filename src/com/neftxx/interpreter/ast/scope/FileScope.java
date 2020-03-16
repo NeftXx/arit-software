@@ -18,7 +18,6 @@ public class FileScope extends Scope {
     private HashMap<String, Function> methods;
 
     public FileScope() {
-        super(null);
         this.methods = new HashMap<>();
     }
 

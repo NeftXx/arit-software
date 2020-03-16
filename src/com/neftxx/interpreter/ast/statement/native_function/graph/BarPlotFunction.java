@@ -72,10 +72,13 @@ public class BarPlotFunction extends NativeFunction {
     private BarChart<String, Number> getChart(double[] values, String xLab, String yLab, String title, String[] names) {
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel(xLab);
+        xAxis.setStyle("-fx-font-size: 16px;");
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel(yLab);
+        yAxis.setStyle("-fx-font-size: 16px;");
         BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
         barChart.setTitle(title);
+        barChart.setStyle("-fx-background-color: white; -fx-font-weight: bold");
         barChart.getData().add(getSeries(values, names));
         return barChart;
     }

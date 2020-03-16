@@ -37,14 +37,15 @@ public class FunctionCall extends Expression {
             if (function != null) {
                 int i = 0;
                 Expression expression;
-                Scope methodScope = new Scope(aritLanguage.globalScope);
+                Scope methodScope = new Scope();
+                methodScope.setPrevious(aritLanguage.globalScope);
                 ArrayList<FormalParameter> parameters = function.parameters;
                 Object valueArgument;
                 for (; i < numberOfArguments; i++) {
                     expression = this.arguments.get(i);
                     valueArgument = expression.interpret(aritLanguage, scope);
                     if (TYPE_FACADE.isUndefinedType(expression.type)) {
-                        aritLanguage.addSemanticError("Error en " + this +" : al evaluar el parametro `" +
+                        aritLanguage.addSemanticError("Error : al evaluar el parametro `" +
                                 (i + 1) + "`.", this.info);
                         return null;
                     } else if (TYPE_FACADE.isDefaultType(expression.type)) {
@@ -52,12 +53,12 @@ public class FunctionCall extends Expression {
                         if (expression != null) {
                             valueArgument = expression.interpret(aritLanguage, methodScope);
                             if (TYPE_FACADE.isUndefinedType(expression.type)) {
-                                aritLanguage.addSemanticError("Error en " + this +" : al evaluar el parametro `" +
+                                aritLanguage.addSemanticError("Error : al evaluar el parametro `" +
                                         (i + 1) + "` por defecto.", this.info);
                                 return null;
                             }
                         } else {
-                            aritLanguage.addSemanticError("Error en " + this + " : la función `" +
+                            aritLanguage.addSemanticError("Error : la función `" +
                                             this.id + "` no tiene un valor por defecto en el parametro `" +  (i + 1) + "`.",
                                     this.info);
                             return null;
@@ -70,7 +71,7 @@ public class FunctionCall extends Expression {
                 this.type = function.type;
                 return this.value;
             } else {
-                aritLanguage.addSemanticError("Error en " + this + " : no se encuentra la función `" +
+                aritLanguage.addSemanticError("Error : no se encuentra la función `" +
                                 this.id + "` con la cantidad de argumentos `" + numberOfArguments + "`.", this.info);
                 return null;
             }

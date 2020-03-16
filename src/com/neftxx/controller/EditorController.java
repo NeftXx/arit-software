@@ -47,7 +47,7 @@ public class EditorController {
 
     private void codeAreaHighlighter() {
         codeArea.multiPlainChanges()
-                .successionEnds(Duration.ofMillis(400))
+                .successionEnds(Duration.ofMillis(1000))
                 .supplyTask(this::computeHighlightingAsync)
                 .awaitLatest(codeArea.multiPlainChanges())
                 .filterMap(tryTask -> {

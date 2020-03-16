@@ -79,6 +79,7 @@ public class PieFunction extends NativeFunction {
         pieChart.setClockwise(true);
         pieChart.setLabelsVisible(true);
         pieChart.setStartAngle(180);
+        pieChart.setStyle("-fx-background-color: white; -fx-font-weight: bold");
         return pieChart;
     }
 

@@ -13,7 +13,7 @@ public class SyntaxUtils {
     private static final String BRACKET_PATTERN = "[\\[\\]]";
     private static final String SEMICOLON_PATTERN = ";";
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-    private static final String COMMENT_PATTERN = "#\\*(.|\\R)*?\\*#"+ "|" + "#[^\n]*";
+    private static final String COMMENT_PATTERN = "#[^\n]*";
     private static final String OPERATION_PATTERN = "=>|==|!=|>=|<=|%%|\\+|-|\\*|/|\\^|=|>|<|\\?|:|[|]|&|!|,";
     private static final String NUMBERS_PATTERN = "[0-9]+(\".\"[0-9]+)?";
 

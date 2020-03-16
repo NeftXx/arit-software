@@ -5,12 +5,23 @@ import com.neftxx.interpreter.ast.type.AritType;
 import java.util.HashMap;
 
 public class Scope {
-    public final Scope previous;
+    protected Scope previous;
     protected HashMap<String, VarSymbol> variables;
 
-    public Scope(Scope previous) {
-        this.previous = previous;
+    public Scope() {
         this.variables = new HashMap<>();
+    }
+
+    public HashMap<String, VarSymbol> getVariables() {
+        return variables;
+    }
+
+    public void setPrevious(Scope previous) {
+        this.previous = previous;
+    }
+
+    public void setVariables(HashMap<String, VarSymbol> variables) {
+        this.variables.putAll(variables);
     }
 
     public void addVariable(String id, AritType type, Object value) {

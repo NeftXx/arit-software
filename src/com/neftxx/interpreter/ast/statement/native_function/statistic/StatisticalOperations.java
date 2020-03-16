@@ -46,7 +46,7 @@ public class StatisticalOperations {
         return mode;
     }
 
-    private static void quickSort(@NotNull double[] values, int left, int right){
+    public static void quickSort(@NotNull double[] values, int left, int right){
         double pivot = values[left];
         int i = left;
         int j = right;

@@ -266,27 +266,32 @@ public class MainController implements Initializable {
      * @param sourceFile archivo
      */
     private void openSourceInTab(File sourceFile) {
-        if (Objects.nonNull(sourceFile)) {
-            boolean exists = selectTabIfItExists(sourceFile.getAbsolutePath());
-            if (!exists) {
-                Tab rmbTab = new Tab(sourceFile.getName());
-                rmbTab.setId(sourceFile.getAbsolutePath());
-                rmbTab.setUserData(sourceFile.getPath());
-                rmbTab.setOnClosed(event -> onTabCloseAction(rmbTab));
-                rmbTab.setGraphic(ImageUtils.buildImageView(Icons.codeIconImage));
-                String code = FileManager.readFile(sourceFile);
-                if (code != null) {
-                    CodeArea codeTextArea = new CodeArea();
-                    EditorController editorController = new EditorController(codeTextArea);
-                    editorController.editorSettings();
-                    codeTextArea.replaceText(0, 0, code);
-                    rmbTab.setContent(new VirtualizedScrollPane<>(codeTextArea));
-                    Platform.runLater(() -> {
-                        codeAreaLayout.getTabs().add(rmbTab);
-                        codeAreaLayout.getSelectionModel().select(rmbTab);
-                    });
+        try {
+            if (Objects.nonNull(sourceFile)) {
+                boolean exists = selectTabIfItExists(sourceFile.getAbsolutePath());
+                if (!exists) {
+                    Tab rmbTab = new Tab(sourceFile.getName());
+                    rmbTab.setId(sourceFile.getAbsolutePath());
+                    rmbTab.setUserData(sourceFile.getPath());
+                    rmbTab.setOnClosed(event -> onTabCloseAction(rmbTab));
+                    rmbTab.setGraphic(ImageUtils.buildImageView(Icons.codeIconImage));
+                    String code = FileManager.readFile(sourceFile);
+                    if (code != null) {
+                        CodeArea codeTextArea = new CodeArea();
+                        EditorController editorController = new EditorController(codeTextArea);
+                        editorController.editorSettings();
+                        codeTextArea.replaceText(0, 0, code);
+                        rmbTab.setContent(new VirtualizedScrollPane<>(codeTextArea));
+                        Platform.runLater(() -> {
+                            codeAreaLayout.getTabs().add(rmbTab);
+                            codeAreaLayout.getSelectionModel().select(rmbTab);
+                        });
+                    }
                 }
             }
+        } catch (Exception e){
+            debugger.warning(e.getMessage());
+            DialogUtils.createErrorDialog(DialogUtils.ERROR_DIALOG, e.getMessage(), "");
         }
     }
 

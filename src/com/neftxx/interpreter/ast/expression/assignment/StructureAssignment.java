@@ -30,8 +30,8 @@ public class StructureAssignment extends Expression {
         for (Access access : this.accessList) {
             if (access.notAccessVector()) {
                 ok = false;
-                aritLanguage.addSemanticError("Error en `" + this +
-                        "` : No se permite este tipo de acceso en un vector `" + access + "`.", this.info);
+                aritLanguage.addSemanticError("Error : No se permite este tipo de acceso en un vector `" +
+                        access + "`.", this.info);
             }
         }
         if (ok) {
@@ -42,8 +42,7 @@ public class StructureAssignment extends Expression {
                 Object value = this.expression.interpret(aritLanguage, scope);
                 AritType typeTemp = this.expression.type;
                 if (TYPE_FACADE.isUndefinedType(typeTemp)) {
-                    aritLanguage.addSemanticError("Error en `" + this +
-                            "` : al calcular el valor de la expresión.", this.info);
+                    aritLanguage.addSemanticError("Error : al calcular el valor de la expresión.", this.info);
                 } else if (TYPE_FACADE.isVectorType(typeTemp)) {
                     AritVector aritVectorTemp = (AritVector) value;
                     if (aritVectorTemp.size() == 1) {
@@ -53,12 +52,11 @@ public class StructureAssignment extends Expression {
                             this.value = vector;
                             this.type = TYPE_FACADE.getVectorType();
                         } catch (Exception ex) {
-                            aritLanguage.addSemanticError("Error en `" + this + "` : al asignar en este vector.", this.info);
+                            aritLanguage.addSemanticError("Error : al asignar en este vector.", this.info);
                         }
                     } else {
-                        aritLanguage.addSemanticError("Error en `" + this +
-                                        "` : no se puede asignar a una posición de un vector una estructura con tamaño mayor a uno.",
-                                this.info);
+                        aritLanguage.addSemanticError("Error : no se puede asignar a una posición de un " +
+                                        "vector una estructura con tamaño mayor a uno.", this.info);
                     }
                 } else if (TYPE_FACADE.isListType(typeTemp)) {
                     AritList aritListTemp = (AritList) value;
@@ -69,18 +67,16 @@ public class StructureAssignment extends Expression {
                         this.value = newList;
                         this.type = TYPE_FACADE.getListType();
                     } else {
-                        aritLanguage.addSemanticError("Error en `" + this +
-                                        "` : no se puede asignar a una posición de un vector una estructura con tamaño mayor a uno.",
-                                this.info);
+                        aritLanguage.addSemanticError("Error : no se puede asignar a una posición de un " +
+                                        "vector una estructura con tamaño mayor a uno.", this.info);
                     }
                 } else {
-                    aritLanguage.addSemanticError("Error en `" + this +
-                                    "` : no se puede asignar a una posición de un vector un arreglo o matriz",
-                            this.info);
+                    aritLanguage.addSemanticError("Error : no se puede asignar a una posición de un " +
+                                    "vector un arreglo o matriz", this.info);
                 }
             } else {
-                aritLanguage.addSemanticError("Error en `" + this +
-                        "` : el valor de la posición de acceso debe ser igual o mayor a uno.", this.info);
+                aritLanguage.addSemanticError("Error : el valor de la posición de acceso debe " +
+                        "ser igual o mayor a uno.", this.info);
             }
         }
     }
@@ -97,8 +93,8 @@ public class StructureAssignment extends Expression {
             } else if (access.isTypeFourToMatrix()) {
                 matrixAssignmentTypeFour(aritLanguage, scope, matrix, access);
             } else {
-                aritLanguage.addSemanticError("Error en `" + this +
-                        "` : No se permite este tipo de acceso en una matriz `" + access + "`.", this.info);
+                aritLanguage.addSemanticError("Error : No se permite este tipo de acceso en una matriz `" +
+                        access + "`.", this.info);
             }
         }
     }
@@ -110,8 +106,7 @@ public class StructureAssignment extends Expression {
             Object value = this.expression.interpret(aritLanguage, scope);
             AritType typeTemp = this.expression.type;
             if (TYPE_FACADE.isUndefinedType(typeTemp)) {
-                aritLanguage.addSemanticError("Error en `" + this +
-                        "` : al calcular el valor de la expresión.", access.info);
+                aritLanguage.addSemanticError("Error : al calcular el valor de la expresión.", access.info);
             } else if (TYPE_FACADE.isVectorType(typeTemp)) {
                 AritVector aritVector = (AritVector) value;
                 if (aritVector.size() == 1) {
@@ -119,22 +114,20 @@ public class StructureAssignment extends Expression {
                         this.type = TYPE_FACADE.getVectorType();
                         this.value = matrix.modifyItemWithAccessOne(posX, posY, aritVector.getDataNodes().get(0));
                     } catch (Exception ex) {
-                        aritLanguage.addSemanticError("Error en `" + this + ": se excedió el índice de la matriz.", access.info);
+                        aritLanguage.addSemanticError("Error : se excedió el índice de la matriz.", access.info);
                         this.type = TYPE_FACADE.getUndefinedType();
                         this.value = null;
                     }
                 } else {
-                    aritLanguage.addSemanticError("Error en `" + this +
-                                    "` : no se le puede asignar un vector de tamaño mayor a uno a una matriz con este tipo de acceso",
-                            access.info);
+                    aritLanguage.addSemanticError("Error : no se le puede asignar un vector de tamaño mayor " +
+                                    "a uno a una matriz con este tipo de acceso", access.info);
                 }
             } else {
-                aritLanguage.addSemanticError("Error en `" + this +
-                        "` : no se le puede asignar un valor de tipo `" + typeTemp + "` a una matriz.", access.info);
+                aritLanguage.addSemanticError("Error : no se le puede asignar un valor de tipo `" +
+                        typeTemp + "` a una matriz.", access.info);
             }
         } else {
-            aritLanguage.addSemanticError("Error en `" + this +
-                    "` : las posiciones de acceso deben ser positivos.", access.info);
+            aritLanguage.addSemanticError("Error : las posiciones de acceso deben ser positivos.", access.info);
         }
     }
 
@@ -145,8 +138,7 @@ public class StructureAssignment extends Expression {
             Object value = this.expression.interpret(aritLanguage, scope);
             AritType typeTemp = this.expression.type;
             if (TYPE_FACADE.isUndefinedType(typeTemp)) {
-                aritLanguage.addSemanticError("Error en `" + this +
-                        "` : al calcular el valor de la expresión.", this.info);
+                aritLanguage.addSemanticError("Error : al calcular el valor de la expresión.", this.info);
             } else if (TYPE_FACADE.isVectorType(typeTemp)) {
                 AritVector aritVector = (AritVector) value;
                 int size = aritVector.size();
@@ -155,22 +147,20 @@ public class StructureAssignment extends Expression {
                         this.type = TYPE_FACADE.getVectorType();
                         this.value = matrix.modifyItemWithAccessTwo(aritVector.baseType, row, aritVector.getDataNodes());
                     } catch (Exception ex) {
-                        aritLanguage.addSemanticError("Error en `" + this + ": se excedió el índice de la matriz.", access.info);
+                        aritLanguage.addSemanticError("Error : se excedió el índice de la matriz.", access.info);
                         this.type = TYPE_FACADE.getUndefinedType();
                         this.value = null;
                     }
                 } else {
-                    aritLanguage.addSemanticError("Error en `" + this +
-                                    "` : se debe asignar un vector de tamaño 1 o del mismo tamaño de las columnas de la matriz",
-                            access.info);
+                    aritLanguage.addSemanticError("Error : se debe asignar un vector de tamaño 1 o del mismo " +
+                                    "tamaño de las columnas de la matriz", access.info);
                 }
             } else {
-                aritLanguage.addSemanticError("Error en `" + this +
-                        "` : no se le puede asignar un valor de tipo `" + typeTemp + "` a una matriz.", access.info);
+                aritLanguage.addSemanticError("Error : no se le puede asignar un valor de tipo `" +
+                        typeTemp + "` a una matriz.", access.info);
             }
         } else {
-            aritLanguage.addSemanticError("Error en `" + this +
-                    "` : las posición de acceso a filas deben ser positivo.", access.info);
+            aritLanguage.addSemanticError("Error : las posición de acceso a filas deben ser positivo.", access.info);
         }
     }
 
@@ -181,8 +171,7 @@ public class StructureAssignment extends Expression {
             Object value = this.expression.interpret(aritLanguage, scope);
             AritType typeTemp = this.expression.type;
             if (TYPE_FACADE.isUndefinedType(typeTemp)) {
-                aritLanguage.addSemanticError("Error en `" + this +
-                        "` : al calcular el valor de la expresión.", this.info);
+                aritLanguage.addSemanticError("Error : al calcular el valor de la expresión.", this.info);
             } else if (TYPE_FACADE.isVectorType(typeTemp)) {
                 AritVector aritVector = (AritVector) value;
                 int size = aritVector.size();
@@ -191,22 +180,20 @@ public class StructureAssignment extends Expression {
                         this.type = TYPE_FACADE.getVectorType();
                         this.value = matrix.modifyItemWithAccessThree(aritVector.baseType, column, aritVector.getDataNodes());
                     } catch (Exception ex) {
-                        aritLanguage.addSemanticError("Error en `" + this + ": se excedió el índice de la matriz.", access.info);
+                        aritLanguage.addSemanticError("Error : se excedió el índice de la matriz.", access.info);
                         this.type = TYPE_FACADE.getUndefinedType();
                         this.value = null;
                     }
                 } else {
-                    aritLanguage.addSemanticError("Error en `" + this +
-                                    "` : se debe asignar un vector de tamaño 1 o del mismo tamaño de las filas de la matriz",
-                            access.info);
+                    aritLanguage.addSemanticError("Error : se debe asignar un vector de tamaño 1 o del mismo " +
+                                    "tamaño de las filas de la matriz", access.info);
                 }
             } else {
-                aritLanguage.addSemanticError("Error en `" + this +
-                        "` : no se le puede asignar un valor de tipo `" + typeTemp + "` a una matriz.", access.info);
+                aritLanguage.addSemanticError("Error : no se le puede asignar un valor de tipo `"
+                        + typeTemp + "` a una matriz.", access.info);
             }
         } else {
-            aritLanguage.addSemanticError("Error en `" + this +
-                    "` : las posición de acceso a columnas deben ser positivo.", access.info);
+            aritLanguage.addSemanticError("Error : las posición de acceso a columnas deben ser positivo.", access.info);
         }
     }
 
@@ -217,8 +204,7 @@ public class StructureAssignment extends Expression {
             Object value = this.expression.interpret(aritLanguage, scope);
             AritType typeTemp = this.expression.type;
             if (TYPE_FACADE.isUndefinedType(typeTemp)) {
-                aritLanguage.addSemanticError("Error en `" + this +
-                        "` : al calcular el valor de la expresión.", this.info);
+                aritLanguage.addSemanticError("Error : al calcular el valor de la expresión.", this.info);
             } else if (TYPE_FACADE.isVectorType(typeTemp)) {
                 AritVector aritVector = (AritVector) value;
                 if (aritVector.size() == 1) {
@@ -227,21 +213,21 @@ public class StructureAssignment extends Expression {
                         this.type = TYPE_FACADE.getVectorType();
                         this.value = matrix.modifyItemWithAccessFour(position, aritVector.getDataNodes().get(0));
                     } catch (Exception ex) {
-                        aritLanguage.addSemanticError("Error en `" + this + ": se excedió el índice de la matriz.", access.info);
+                        aritLanguage.addSemanticError("Error : se excedió el índice de la matriz.", access.info);
                         this.type = TYPE_FACADE.getUndefinedType();
                         this.value = null;
                     }
                 } else {
-                    aritLanguage.addSemanticError("Error en `" + this + "` : se debe asignar un vector de " +
+                    aritLanguage.addSemanticError("Error : se debe asignar un vector de " +
                             "tamaño 1 en este tipo de acceso", access.info);
                 }
             } else {
-                aritLanguage.addSemanticError("Error en `" + this +
-                        "` : no se le puede asignar un valor de tipo `" + typeTemp + "` a una matriz.", access.info);
+                aritLanguage.addSemanticError("Error : no se le puede asignar un valor de tipo `" +
+                        typeTemp + "` a una matriz.", access.info);
             }
         } else {
-            aritLanguage.addSemanticError("Error en `" + this +
-                    "` : las posición de en este tipo de acceso deben ser positivo.", access.info);
+            aritLanguage.addSemanticError("Error : las posición de en este tipo de acceso deben ser " +
+                    "positivo.", access.info);
         }
     }
 
@@ -259,8 +245,7 @@ public class StructureAssignment extends Expression {
             }
             return this.value;
         }
-        aritLanguage.addSemanticError("Error en `" + this +
-                "` : No se encontró el objeto `" + this.id + "`.", this.info);
+        aritLanguage.addSemanticError("Error : No se encontró el objeto `" + this.id + "`.", this.info);
         return null;
     }
 
