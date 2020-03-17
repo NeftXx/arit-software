@@ -46,7 +46,7 @@ public class HistFunction extends NativeFunction {
                     String title = toString(vectorArg3.getDataNodes().get(0).value);
                     aritLanguage.addChart(getChartViewer(values, xLab, title));
                 } else {
-                    // error
+                    // TODO: AGREGAR ERROR
                 }
             } else if (isMatrix(expArgument1) && isVector(expArgument2) && isVector(expArgument3)) {
                 AritMatrix matrixArg1 = (AritMatrix) resArgument1;
@@ -62,13 +62,13 @@ public class HistFunction extends NativeFunction {
                     String title = toString(vectorArg3.getDataNodes().get(0).value);
                     aritLanguage.addChart(getChartViewer(values, xLab, title));
                 } else {
-                    // error
+                    // TODO: AGREGAR ERROR
                 }
             } else {
-                // error
+                // TODO: AGREGAR ERROR
             }
         } else {
-            // error
+            // TODO: AGREGAR ERROR
         }
         return null;
     }

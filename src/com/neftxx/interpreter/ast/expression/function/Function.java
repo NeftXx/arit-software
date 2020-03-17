@@ -47,12 +47,12 @@ public class Function extends Expression {
 
     @Override
     public Object interpret(AritLanguage aritLanguage, Scope scope) {
-        Object result =  block.interpret(aritLanguage, scope);
         this.type = TYPE_FACADE.getUndefinedType();
         this.value = null;
+        Object result =  this.block.interpret(aritLanguage, scope);
         if (result instanceof Break || result instanceof Continue) {
-            aritLanguage.addSemanticError("Error en la función `" + this.id +
-                    "` : No se encontró un bucle con cierre para la sentencia break o continue.", ((AstNode) result).info);
+            aritLanguage.addSemanticError("Error en la función " + this.id +
+                    " : No se encontró un bucle con cierre para la sentencia break o continue.", ((AstNode) result).info);
             return null;
         }
         if (result instanceof Return) {

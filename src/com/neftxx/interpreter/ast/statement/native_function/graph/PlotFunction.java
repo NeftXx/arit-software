@@ -48,7 +48,7 @@ public class PlotFunction extends NativeFunction {
                         if (!(type.equalsIgnoreCase("P") ||
                                 type.equalsIgnoreCase("I") ||
                                 type.equalsIgnoreCase("O"))) {
-                            // error
+                            // TODO: AGREGAR ERROR
                             type = "O";
                         }
                         String labelX = toString(vectorArgument3.getDataNodes().get(0).value);
@@ -73,9 +73,11 @@ public class PlotFunction extends NativeFunction {
                         }
                         aritLanguage.addChart(getScatterChart(values, labelX, labelY, title, min, max));
                     } else {
-                        // error
+                        // TODO: AGREGAR ERROR
                     }
-                } else {}
+                } else {
+                    // TODO: AGREGAR ERROR
+                }
             } else if (isMatrix(expArgument1)) {
                 if (isVector(expArgument2) && isVector(expArgument3) && isVector(expArgument4) && isVector(expArgument5)) {
                     AritMatrix matrixArgument1 = (AritMatrix) resultArgument1;
@@ -94,7 +96,7 @@ public class PlotFunction extends NativeFunction {
                         if (!(type.equalsIgnoreCase("P") ||
                                 type.equalsIgnoreCase("I") ||
                                 type.equalsIgnoreCase("O"))) {
-                            // error
+                            // TODO: AGREGAR ERROR
                             type = "O";
                         }
                         String labelX = toString(vectorArgument3.getDataNodes().get(0).value);
@@ -119,14 +121,16 @@ public class PlotFunction extends NativeFunction {
                         }
                         aritLanguage.addChart(getScatterChart(values, labelX, labelY, title, min, max));
                     } else {
-                        // error
+                        // TODO: AGREGAR ERROR
                     }
-                } else {}
+                } else {
+                    // TODO: AGREGAR ERROR
+                }
             } else {
-                // error
+                // TODO: AGREGAR ERROR
             }
         } else {
-            // error
+            // TODO: AGREGAR ERROR
         }
         return null;
     }

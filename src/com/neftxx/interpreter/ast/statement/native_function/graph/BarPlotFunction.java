@@ -39,7 +39,7 @@ public class BarPlotFunction extends NativeFunction {
                         && isString(vectorNamesArg)) {
                     int i, sizeH = vectorH.size(), sizeNames = vectorNamesArg.size();
                     if (sizeH != sizeNames) {
-                        // error
+                        // TODO: AGREGAR ERROR
                     }
                     double[] values = new double[sizeH];
                     String[] names = new String[sizeH];
@@ -58,12 +58,13 @@ public class BarPlotFunction extends NativeFunction {
                     String title = toString(vectorMain.getDataNodes().get(0).value);
                     aritLanguage.addChart(getChart(values, xLab, yLab, title, names));
                 } else {
-
+                    // TODO: AGREGAR ERROR
                 }
             } else {
+                // TODO: AGREGAR ERROR
             }
         } else {
-
+            // TODO: AGREGAR ERROR
         }
         return null;
     }

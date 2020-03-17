@@ -46,16 +46,20 @@ public class SubIf extends AstNode {
                 if (TYPE_FACADE.isBooleanType(aritVector.baseType)) {
                     value = toBoolean(aritVector.getDataNodes().get(0).value);
                 } else {
+                    // TODO: Agregar error
+                    return null;
                 }
             } else if (TYPE_FACADE.isMatrixType(this.expression.type)) {
                 AritMatrix aritMatrix = (AritMatrix) result;
                 if (TYPE_FACADE.isBooleanType(aritMatrix.baseType)) {
                     value = toBoolean(aritMatrix.getDataNodes()[0].value);
                 } else {
-
+                    // TODO: Agregar error
+                    return null;
                 }
             } else {
-
+                // TODO: Agregar error
+                return null;
             }
         }
         this.condValue = value;

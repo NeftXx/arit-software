@@ -25,10 +25,12 @@ public class Scope {
     }
 
     public void addVariable(String id, AritType type, Object value) {
-        if (this.variables.containsKey(id)) {
-            this.variables.get(id).changeValues(type, value);
+        VarSymbol found = getVariable(id);
+        if (found != null) {
+            found.changeValues(type, value);
+        } else {
+            this.variables.put(id, new VarSymbol(id, type, value));
         }
-        this.variables.put(id, new VarSymbol(id, type, value));
     }
 
     public VarSymbol getVariable(String id) {

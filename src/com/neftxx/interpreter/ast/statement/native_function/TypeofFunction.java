@@ -2,6 +2,7 @@ package com.neftxx.interpreter.ast.statement.native_function;
 
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.expression.Expression;
+import com.neftxx.interpreter.ast.expression.structure.AritMatrix;
 import com.neftxx.interpreter.ast.expression.structure.AritVector;
 import com.neftxx.interpreter.ast.scope.Scope;
 import com.neftxx.util.NodeInfo;
@@ -24,6 +25,11 @@ public class TypeofFunction extends NativeFunction {
             if (TYPE_FACADE.isVectorType(argument.type)) {
                 return new AritVector(TYPE_FACADE.getStringType(), ((AritVector) value).baseType.toString());
             }
+
+            if (TYPE_FACADE.isMatrixType(argument.type)) {
+                return new AritVector(TYPE_FACADE.getStringType(), ((AritMatrix) value).baseType.toString());
+            }
+            // TODO: AGREGAR TYPEOF PARA ARREGLOS
             return new AritVector(TYPE_FACADE.getStringType(), argument.type.toString());
         } else {
             aritLanguage.addSemanticError("Error : el tamaño `" + size +

@@ -53,6 +53,18 @@ public class AritList extends AritStructure  {
         return this.dataNodes.get(position - 1);
     }
 
+    public DataNode getItemAssignment(int position) throws IndexOutOfBoundsException  {
+        while (position > size()) {
+            this.dataNodes.add(
+                    new DataNode(
+                            TYPE_FACADE.getVectorType(),
+                            new AritVector(DataNode.getDataNodeDefault(TYPE_FACADE.getStringType()))
+                    )
+            );
+        }
+        return getItemValue(position);
+    }
+
     public ArrayList<DataNode> getDataNodes() {
         return this.dataNodes;
     }

@@ -30,8 +30,8 @@ public class StructureAssignment extends Expression {
         for (Access access : this.accessList) {
             if (access.notAccessVector()) {
                 ok = false;
-                aritLanguage.addSemanticError("Error : No se permite este tipo de acceso en un vector `" +
-                        access + "`.", this.info);
+                aritLanguage.addSemanticError("Error : No se permite este tipo de acceso en un vector " +
+                        access + ".", this.info);
             }
         }
         if (ok) {
@@ -77,6 +77,103 @@ public class StructureAssignment extends Expression {
             } else {
                 aritLanguage.addSemanticError("Error : el valor de la posición de acceso debe " +
                         "ser igual o mayor a uno.", this.info);
+            }
+        }
+    }
+
+    private void listAssignment(AritLanguage aritLanguage, Scope scope, AritList aritList) {
+        int size = this.accessList.size();
+        if (size > 0) {
+            int position, i;
+            Access access;
+            Object structure = aritList;
+            for (i = 0; i < size - 1; i++) {
+                access = this.accessList.get(i);
+                if (structure instanceof AritList) {
+                    if (access.isTypeOneToList()) {
+                        access.interpret(aritLanguage, scope);
+                        position = access.values[0];
+                        AritList list = (AritList) structure;
+                        structure = new AritList(list.getItemAssignment(position));
+                    } else if (access.isTypeTwoToList()) {
+                        access.interpret(aritLanguage, scope);
+                        position = access.values[0];
+                        AritList list = (AritList) structure;
+                        structure = list.getItemAssignment(position).value;
+                    } else {
+                        // error
+                        return;
+                    }
+                } else if (structure instanceof AritVector) {
+                    if (access.notAccessVector()) {
+                        // error
+                        return;
+                    } else {
+                        access.interpret(aritLanguage, scope);
+                        position = access.values[0];
+                        AritVector vector = (AritVector) structure;
+                        structure = vector.getItemAssignment(position);
+                    }
+                } else {
+                    // error
+                    return;
+                }
+            }
+
+            if (structure instanceof AritList) {
+                AritList list = (AritList) structure;
+                i = size - 1;
+                access = this.accessList.get(i);
+                if (access.isTypeOneToList() || access.isTypeTwoToList()) {
+                    access.interpret(aritLanguage, scope);
+                    position = access.values[0];
+                    Object value = this.expression.interpret(aritLanguage, scope);
+                    if (value instanceof AritVector) {
+                        AritVector aritVectorTemp = (AritVector) value;
+                        if (aritVectorTemp.size() == 1) {
+                            try {
+                                if (this.expression.verifyCopy()) aritVectorTemp = aritVectorTemp.copy();
+                                list.addElement(position, aritVectorTemp.getDataNodes().get(0));
+                                this.value = list;
+                                this.type = TYPE_FACADE.getVectorType();
+                            } catch (Exception ex) {
+                                // TODO: ARREGLAR ERROR
+                                aritLanguage.addSemanticError("Error : al asignar en este vector.", this.info);
+                            }
+                        } else {
+                            // TODO: ARREGLAR ERROR
+                            aritLanguage.addSemanticError("Error : no se puede asignar a una posición de un " +
+                                    "vector una estructura con tamaño mayor a uno.", this.info);
+                        }
+                    } else if (value instanceof AritList) {
+                        AritList aritListTemp = (AritList) value;
+                        if (aritListTemp.size() == 1) {
+                            try {
+                                if (this.expression.verifyCopy()) aritListTemp = aritListTemp.copy();
+                                list.addElement(position, aritListTemp.getDataNodes().get(0));
+                                this.value = list;
+                                this.type = TYPE_FACADE.getVectorType();
+                            } catch (Exception ex) {
+                                // TODO: agregar error
+                            }
+                        } else {
+                            // TODO: ARREGLAR ERROR
+                            aritLanguage.addSemanticError("Error : no se puede asignar a una posición de un " +
+                                    "vector una estructura con tamaño mayor a uno.", this.info);
+                        }
+                    } else {
+                        // error
+                    }
+                } else {
+                    // error
+                }
+            } else if (structure instanceof AritVector) {
+                i = size - 1;
+                access = this.accessList.get(i);
+                access.interpret(aritLanguage, scope);
+                position = access.values[0];
+            } else {
+                // error
             }
         }
     }
@@ -240,6 +337,8 @@ public class StructureAssignment extends Expression {
                 if (!TYPE_FACADE.isUndefinedType(this.type)) {
                     varSymbol.changeValues(this.type, this.value);
                 }
+            } else if (TYPE_FACADE.isListType(varSymbol.type)) {
+
             } else if (TYPE_FACADE.isMatrixType(varSymbol.type)) {
                 matrixAssignment(aritLanguage, scope, (AritMatrix) varSymbol.value);
             }

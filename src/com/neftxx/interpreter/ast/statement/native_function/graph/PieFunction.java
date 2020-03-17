@@ -40,7 +40,7 @@ public class PieFunction extends NativeFunction {
                         && TYPE_FACADE.isStringType(mainAritVector.baseType)) {
                     int i, sizeX = xAritVector.size(), sizeLabels = labelsAritVector.size();
                     if (sizeX != sizeLabels) {
-
+                        // TODO: AGREGAR ERROR
                     }
                     double[] values = new double[sizeX];
                     String[] labels = new String[sizeX];
@@ -57,12 +57,13 @@ public class PieFunction extends NativeFunction {
                     String title = toString(mainAritVector.getDataNodes().get(0).value);
                     aritLanguage.addChart(getChart(values, labels, title));
                 } else {
-
+                    // TODO: AGREGAR ERROR
                 }
             } else {
-
+                // TODO: AGREGAR ERROR
             }
         } else {
+            // TODO: AGREGAR ERROR
         }
         return null;
     }
