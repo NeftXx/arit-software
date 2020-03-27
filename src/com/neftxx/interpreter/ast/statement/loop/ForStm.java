@@ -3,10 +3,7 @@ package com.neftxx.interpreter.ast.statement.loop;
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.AstNode;
 import com.neftxx.interpreter.ast.expression.Expression;
-import com.neftxx.interpreter.ast.expression.structure.AritList;
-import com.neftxx.interpreter.ast.expression.structure.AritMatrix;
-import com.neftxx.interpreter.ast.expression.structure.AritVector;
-import com.neftxx.interpreter.ast.expression.structure.DataNode;
+import com.neftxx.interpreter.ast.expression.structure.*;
 import com.neftxx.interpreter.ast.scope.Scope;
 import com.neftxx.interpreter.ast.statement.Block;
 import com.neftxx.interpreter.ast.statement.Break;
@@ -15,6 +12,8 @@ import com.neftxx.interpreter.ast.type.AritType;
 import com.neftxx.util.NodeInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
 
 public class ForStm extends AstNode {
     public String id;
@@ -31,14 +30,16 @@ public class ForStm extends AstNode {
     @Override
     public Object interpret(AritLanguage aritLanguage, Scope scope) {
         Object result = this.expression.interpret(aritLanguage, scope);
-        if (TYPE_FACADE.isVectorType(this.expression.type)) {
+        if (result instanceof AritVector) {
             return iterateVector(aritLanguage, scope, (AritVector) result);
-        } if (TYPE_FACADE.isListType(this.expression.type)) {
+        } if (result instanceof AritList) {
             return iterateList(aritLanguage, scope, (AritList) result);
-        } if (TYPE_FACADE.isMatrixType(this.expression.type)) {
+        } if (result instanceof AritMatrix) {
             return iterateMatrix(aritLanguage, scope, (AritMatrix) result);
+        } if (result instanceof AritArray) {
+            return iterateArray(aritLanguage, scope, (AritArray) result);
         } else {
-            // error
+            aritLanguage.addSemanticError("Error : no se puede iterar este tipo de objeto.", this.info);
         }
         return null;
     }
@@ -65,7 +66,7 @@ public class ForStm extends AstNode {
         Scope localScope;
         for (i = 1; i <= size; i++) {
             dataNode = list.getItemValue(i);
-            localScope = newScope(scope, dataNode.type, dataNode.value);
+            localScope = newScope(scope, dataNode.baseType, dataNode.value);
             valueBlock = this.block.interpret(aritLanguage, localScope);
             if (valueBlock instanceof Break) return null;
             if (valueBlock instanceof Return) return valueBlock;
@@ -78,8 +79,26 @@ public class ForStm extends AstNode {
         int i, size = matrix.size();
         Object valueBlock;
         Scope localScope;
+        AritType typeVector = TYPE_FACADE.getVectorType();
         for (i = 0; i < size; i++) {
-            localScope = newScope(scope, TYPE_FACADE.getVectorType(), matrix.getItemWithAccessFour(i));
+            localScope = newScope(scope, typeVector, matrix.getItem(i));
+            valueBlock = this.block.interpret(aritLanguage, localScope);
+            if (valueBlock instanceof Break) return null;
+            if (valueBlock instanceof Return) return valueBlock;
+        }
+        return null;
+    }
+
+    @Nullable
+    private Object iterateArray(AritLanguage aritLanguage, Scope scope, @NotNull AritArray array) {
+        ArrayList<DataNode> dataNodes = array.getDataNodes();
+        int i, size = dataNodes.size();
+        Object valueBlock;
+        Scope localScope;
+        DataNode dataNode;
+        for (i = 0; i < size; i++) {
+            dataNode = dataNodes.get(i);
+            localScope = newScope(scope, dataNode.baseType, dataNode.value);
             valueBlock = this.block.interpret(aritLanguage, localScope);
             if (valueBlock instanceof Break) return null;
             if (valueBlock instanceof Return) return valueBlock;
@@ -92,12 +111,22 @@ public class ForStm extends AstNode {
         Scope localScope = new Scope();
         localScope.setPrevious(parent);
         localScope.setVariables(parent.getVariables());
-        localScope.addVariable(this.id, type, value);
+        localScope.addVariable(this.id, type, value, this.info.line);
         return localScope;
     }
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-
+        astGraph.append("\"node").append(this.hashCode()).append("\" [ label = \"Sentencia FOR\"];\n");
+        astGraph.append("\"node").append(this.id.hashCode() + this.hashCode())
+                .append("\" [ label = \"").append(this.id).append("\"];\n");
+        this.expression.createAstGraph(astGraph);
+        this.block.createAstGraph(astGraph);
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"")
+                .append("node").append(this.id.hashCode() + this.hashCode()).append("\";\n");
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"")
+                .append("node").append(this.expression.hashCode()).append("\";\n");
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"")
+                .append("node").append(this.block.hashCode()).append("\";\n");
     }
 }

@@ -26,7 +26,7 @@ public class NRowFunction extends NativeFunction {
             if (valueResult instanceof AritMatrix) {
                 return new AritVector(new DataNode(TYPE_FACADE.getIntegerType(), ((AritMatrix) valueResult).rows));
             } else {
-                // TODO: AGREGAR ERROR
+                aritLanguage.addSemanticError("Error : se esperaba una matriz en la funcion NRow.", info);
             }
         } else {
             aritLanguage.addSemanticError("Error : no se encontró la funcion nRow con la cantidad de parametros `" +

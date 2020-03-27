@@ -41,24 +41,24 @@ public class SubIf extends AstNode {
         boolean value = false;
         if (this.expression != null) {
             Object result = this.expression.interpret(aritLanguage, scope);
-            if (TYPE_FACADE.isVectorType(this.expression.type)) {
+            if (result instanceof AritVector) {
                 AritVector aritVector = (AritVector) result;
                 if (TYPE_FACADE.isBooleanType(aritVector.baseType)) {
                     value = toBoolean(aritVector.getDataNodes().get(0).value);
                 } else {
-                    // TODO: Agregar error
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo boolean.", this.info);
                     return null;
                 }
-            } else if (TYPE_FACADE.isMatrixType(this.expression.type)) {
+            } else if (result instanceof AritMatrix) {
                 AritMatrix aritMatrix = (AritMatrix) result;
                 if (TYPE_FACADE.isBooleanType(aritMatrix.baseType)) {
                     value = toBoolean(aritMatrix.getDataNodes()[0].value);
                 } else {
-                    // TODO: Agregar error
+                    aritLanguage.addSemanticError("Error : se esperaba una matriz de tipo boolean.", this.info);
                     return null;
                 }
             } else {
-                // TODO: Agregar error
+                aritLanguage.addSemanticError("Error : se esperaba una estructura de tipo boolean.", this.info);
                 return null;
             }
         }
@@ -79,6 +79,16 @@ public class SubIf extends AstNode {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-
+        if (this.isElse) {
+            astGraph.append("\"node").append(this.hashCode()).append("\" [ label = \"ELSE\"];\n");
+        } else {
+            astGraph.append("\"node").append(this.hashCode()).append("\"[ label = \"IF\"];\n");
+            this.expression.createAstGraph(astGraph);
+            astGraph.append("\"node").append(this.hashCode()).append("\" -> \"")
+                    .append("node").append(this.expression.hashCode()).append("\";\n");
+        }
+        this.block.createAstGraph(astGraph);
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"")
+                .append("node").append(this.block.hashCode()).append("\";\n");
     }
 }

@@ -51,7 +51,7 @@ public class WhileStm extends AstNode {
                 return toBoolean(aritMatrix.getDataNodes()[0].value);
             }
         }
-        // error
+        aritLanguage.addSemanticError("Error : Se esperaba un vector o matrix de tipo boolean", this.info);
         return false;
     }
 
@@ -61,6 +61,12 @@ public class WhileStm extends AstNode {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-
+        astGraph.append("\"node").append(this.hashCode()).append("\" [ label = \"Sentencia WHILE\"];\n");
+        this.expression.createAstGraph(astGraph);
+        this.block.createAstGraph(astGraph);
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"")
+                .append("node").append(this.expression.hashCode()).append("\";\n");
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"")
+                .append("node").append(this.block.hashCode()).append("\";\n");
     }
 }

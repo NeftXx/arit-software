@@ -27,7 +27,7 @@ public class Ternary extends Operation {
     public Object interpret(AritLanguage aritLanguage, Scope scope) {
         Object resultCond = this.condition.interpret(aritLanguage, scope);
         boolean result = false;
-        if (TYPE_FACADE.isVectorType(this.condition.type)) {
+        if (resultCond instanceof AritVector) {
             AritVector aritVector = (AritVector) resultCond;
             if (TYPE_FACADE.isBooleanType(aritVector.baseType)) {
                 if (aritVector.size() > 0) {
@@ -39,7 +39,7 @@ public class Ternary extends Operation {
                 this.type = TYPE_FACADE.getUndefinedType();
                 return null;
             }
-        } else if (TYPE_FACADE.isMatrixType(this.condition.type)) {
+        } else if (resultCond instanceof AritMatrix) {
             AritMatrix aritMatrix = (AritMatrix) resultCond;
             if (TYPE_FACADE.isBooleanType(aritMatrix.baseType)) {
                 if (aritMatrix.size() > 0) {
@@ -71,7 +71,16 @@ public class Ternary extends Operation {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-
+        astGraph.append("\"node").append(this.hashCode()).append("\" [label = \"Exp Ternario\"];\n");
+        this.condition.createAstGraph(astGraph);
+        this.expLeft.createAstGraph(astGraph);
+        this.expRight.createAstGraph(astGraph);
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"").append("node")
+                .append(this.condition.hashCode()).append("\";\n");
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"").append("node")
+                .append(this.expLeft.hashCode()).append("\";\n");
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"").append("node")
+                .append(this.expRight.hashCode()).append("\";\n");
     }
 
     @Override

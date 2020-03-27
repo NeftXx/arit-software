@@ -18,6 +18,6 @@ public class Continue extends AstNode {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-
+        astGraph.append("\"node").append(this.hashCode()).append("\" [ label = \"Continue\"];\n");
     }
 }

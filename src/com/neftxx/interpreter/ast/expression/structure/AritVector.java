@@ -15,7 +15,7 @@ public class AritVector extends AritStructure {
     }
 
     public AritVector(@NotNull DataNode dataNode) {
-        this.baseType = dataNode.type;
+        this.baseType = dataNode.baseType;
         this.dataNodes = new ArrayList<>();
         this.dataNodes.add(dataNode);
     }
@@ -26,9 +26,9 @@ public class AritVector extends AritStructure {
     }
 
     public void addElement(int position, @NotNull DataNode dataNode) throws IndexOutOfBoundsException {
-        if (dataNode.type.priority > this.baseType.priority) {
+        if (dataNode.baseType.priority > this.baseType.priority) {
             AritType oldType = this.baseType;
-            AritType newType = dataNode.type;
+            AritType newType = dataNode.baseType;
             Object newValue;
             for (DataNode node: this.dataNodes) {
                 newValue = TYPE_FACADE.castValue(oldType, newType, node.value);
@@ -38,7 +38,7 @@ public class AritVector extends AritStructure {
         }
         while (position > size()) this.dataNodes.add(DataNode.getDataNodeDefault(this.baseType));
         Object newValue = dataNode.value;
-        if (dataNode.type != this.baseType) newValue = TYPE_FACADE.castValue(dataNode.type, this.baseType, dataNode.value);
+        if (dataNode.baseType != this.baseType) newValue = TYPE_FACADE.castValue(dataNode.baseType, this.baseType, dataNode.value);
         this.dataNodes.get(position - 1).changeValues(this.baseType, newValue);
     }
 

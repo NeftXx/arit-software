@@ -31,7 +31,7 @@ public class Identifier extends Expression {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-        astGraph.append("node").append(this.hashCode()).append("[ label = \"Identificador(")
+        astGraph.append("\"node").append(this.hashCode()).append("\" [ label = \"Identificador(")
                 .append(this.name).append(")\"];\n");
     }
 

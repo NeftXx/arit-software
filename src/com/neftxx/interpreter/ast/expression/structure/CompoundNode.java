@@ -8,17 +8,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class CompoundNode extends StructureNode {
     public final ArrayList<StructureNode> childrenNodes;
+    public AritType principalType;
 
-    public CompoundNode(@NotNull ArrayList<StructureNode> childrenNodes) {
+    public CompoundNode(@NotNull AritType principalType, @NotNull AritType baseType, @NotNull ArrayList<StructureNode> childrenNodes) {
+        this.principalType = principalType;
+        this.baseType = baseType;
         this.childrenNodes = childrenNodes;
     }
 
-    public CompoundNode() {
-        this(new ArrayList<>());
+    public CompoundNode(@NotNull AritType principalType, @NotNull AritType baseType) {
+        this(principalType, baseType, new ArrayList<>());
     }
 
     public void initialize(
-            int numberDim, int currentIndex, int[] indexes, AritType type, ArrayList<DataNode> dataNodes, AtomicInteger countNodes
+            int numberDim, int currentIndex, int[] indexes, ArrayList<DataNode> dataNodes, AtomicInteger countNodes
     ) {
         int i;
         if (currentIndex == numberDim) {
@@ -30,11 +33,51 @@ public class CompoundNode extends StructureNode {
             return;
         }
         for (i = 0; i < indexes[currentIndex - 1]; i++) {
-            CompoundNode child = new CompoundNode();
-            child.type = type;
+            CompoundNode child = new CompoundNode(this.principalType, this.baseType);
             childrenNodes.add(child);
-            child.initialize(numberDim, currentIndex + 1, indexes, type, dataNodes, countNodes);
+            child.initialize(numberDim, currentIndex + 1, indexes, dataNodes, countNodes);
         }
+    }
+
+    public void changeTypes(int numberDim, int currentIndex, int[] indexes, AritType newType) {
+        int i;
+        if (currentIndex == numberDim) {
+            for (i = 0; i < indexes[currentIndex - 1]; i++) {
+                DataNode node = (DataNode) childrenNodes.get(i);
+                AritVector vector = (AritVector) node.value;
+                node = vector.getDataNodes().get(0);
+                if (TYPE_FACADE.isBaseType(newType)) {
+                    AritType oldType = vector.baseType;
+                    Object newValue = TYPE_FACADE.castValue(oldType, newType, node.value);
+                    node.changeValues(newType, newValue);
+                    this.baseType = newType;
+                } else {
+                    AritList list = new AritList(vector);
+                    this.principalType = TYPE_FACADE.getListType();
+                    this.baseType = this.principalType;
+                    DataNode temp = (DataNode) childrenNodes.get(i);
+                    temp.changeValues(this.baseType, list);
+                }
+            }
+            return;
+        }
+        for (i = 0; i < indexes[currentIndex - 1]; i++) {
+            CompoundNode child = (CompoundNode) childrenNodes.get(i);
+            if (TYPE_FACADE.isBaseType(newType)) {
+                child.baseType = newType;
+            }
+            else {
+                child.principalType = TYPE_FACADE.getListType();
+                child.baseType = child.principalType;
+            }
+            child.changeTypes(numberDim, currentIndex + 1, indexes, newType);
+        }
+    }
+
+    @Override
+    public void setValue(int position, @NotNull int[] indexes, Object value) throws IndexOutOfBoundsException {
+        StructureNode child = childrenNodes.get(indexes[position]);
+        child.setValue(position + 1, indexes, value);
     }
 
     public ArrayList<DataNode> getDataNodes() {
@@ -52,6 +95,10 @@ public class CompoundNode extends StructureNode {
         return dataNodes;
     }
 
+    public StructureNode get(int index) {
+        return this.childrenNodes.get(index);
+    }
+
     @Override
     public int size() {
         return this.childrenNodes.size();
@@ -64,19 +111,17 @@ public class CompoundNode extends StructureNode {
         for (i = 0; i < size; i++) {
             childrenNodes.add(this.childrenNodes.get(i).copy());
         }
-        return new CompoundNode(childrenNodes);
+        return new CompoundNode(this.principalType, this.baseType, childrenNodes);
+    }
+
+    @Override
+    public Object getValue(int position, @NotNull int[] indexes) throws IndexOutOfBoundsException {
+        StructureNode child = this.childrenNodes.get(indexes[position]);
+        return child.getValue(position + 1, indexes);
     }
 
     @Override
     public String toString() {
-        StringBuilder cad = new StringBuilder();
-        int i, size = size();
-        cad.append("[ ");
-        for (i = 0; i < size; i++) {
-            cad.append(this.childrenNodes.get(i).toString());
-            if (i != size - 1) cad.append(", ");
-        }
-        cad.append(" ]");
-        return cad.toString();
+        return childrenNodes.toString();
     }
 }

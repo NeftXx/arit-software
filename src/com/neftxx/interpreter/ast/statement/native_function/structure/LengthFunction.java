@@ -2,10 +2,7 @@ package com.neftxx.interpreter.ast.statement.native_function.structure;
 
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.expression.Expression;
-import com.neftxx.interpreter.ast.expression.structure.AritList;
-import com.neftxx.interpreter.ast.expression.structure.AritMatrix;
-import com.neftxx.interpreter.ast.expression.structure.AritVector;
-import com.neftxx.interpreter.ast.expression.structure.DataNode;
+import com.neftxx.interpreter.ast.expression.structure.*;
 import com.neftxx.interpreter.ast.scope.Scope;
 import com.neftxx.interpreter.ast.statement.native_function.NativeFunction;
 import com.neftxx.util.NodeInfo;
@@ -31,10 +28,11 @@ public class LengthFunction extends NativeFunction {
                 size = ((AritList) valueResult).size();
             } else if (valueResult instanceof AritMatrix) {
                 size = ((AritMatrix) valueResult).size();
+            } else if (valueResult instanceof AritArray) {
+                size = ((AritArray) valueResult).size();
             } else {
                 size = 1;
             }
-            // TODO: AGREGAR ARREGLO
         } else {
             aritLanguage.addSemanticError("Error : no se encontró la funcion length con la cantidad de parametros `" +
                     argumentsSize + "`.", info);

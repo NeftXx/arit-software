@@ -27,11 +27,20 @@ public class FileScope extends Scope {
         return true;
     }
 
-    public Function getMethod(String id, int numberOfParameters) {
+    public Function getMethod(String id, int numberOfParameters, int lineReference) {
         Function function = methods.get(id);
-        if (function != null)
-            return numberOfParameters == function.getNumberOfParameters() ? function : null;
+        if (function != null) {
+            function = numberOfParameters == function.getNumberOfParameters() ? function : null;
+            if (function != null) {
+                function.addReference(lineReference);
+                return function;
+            }
+        }
         return null;
+    }
+
+    public HashMap<String, Function> getMethods() {
+        return this.methods;
     }
 
     public NativeFunction getNativeFunction(String id) {

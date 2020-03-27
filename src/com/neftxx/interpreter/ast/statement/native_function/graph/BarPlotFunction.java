@@ -5,10 +5,7 @@ import com.neftxx.interpreter.ast.expression.Expression;
 import com.neftxx.interpreter.ast.expression.structure.AritVector;
 import com.neftxx.interpreter.ast.scope.Scope;
 import com.neftxx.interpreter.ast.statement.native_function.NativeFunction;
-import com.neftxx.interpreter.ast.type.AritType;
 import com.neftxx.util.NodeInfo;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
@@ -39,7 +36,8 @@ public class BarPlotFunction extends NativeFunction {
                         && isString(vectorNamesArg)) {
                     int i, sizeH = vectorH.size(), sizeNames = vectorNamesArg.size();
                     if (sizeH != sizeNames) {
-                        // TODO: AGREGAR ERROR
+                        aritLanguage.addSemanticError("Warning : la cantidad de nombres deben ser iguales " +
+                                "a los datos.", info);
                     }
                     double[] values = new double[sizeH];
                     String[] names = new String[sizeH];
@@ -58,13 +56,16 @@ public class BarPlotFunction extends NativeFunction {
                     String title = toString(vectorMain.getDataNodes().get(0).value);
                     aritLanguage.addChart(getChart(values, xLab, yLab, title, names));
                 } else {
-                    // TODO: AGREGAR ERROR
+                    aritLanguage.addSemanticError("Error : los tipos de los parametros no son los correctos " +
+                            "para esta funcion `barplot()`.", info);
                 }
             } else {
-                // TODO: AGREGAR ERROR
+                aritLanguage.addSemanticError("Error : los tipos de los parametros no son los correctos " +
+                        "para esta funcion `barplot()`.", info);
             }
         } else {
-            // TODO: AGREGAR ERROR
+            aritLanguage.addSemanticError("Error : el tamaño `" + numberOfArguments +
+                    "` de parámetros no es válido para la función barplot().", info);
         }
         return null;
     }

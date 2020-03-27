@@ -40,16 +40,54 @@ public class Arithmetic extends Operation {
     public Object interpret(AritLanguage aritLanguage, Scope scope) {
         Object resultExpLeft = expLeft.interpret(aritLanguage, scope);
         Object resultExpRight = expRight.interpret(aritLanguage, scope);
-        if (TYPE_FACADE.isVectorType(expLeft.type) && TYPE_FACADE.isVectorType(expRight.type)) {
+        if (resultExpLeft instanceof AritVector && resultExpRight instanceof AritVector) {
             if (operationBetweenVectors(aritLanguage, (AritVector) resultExpLeft, (AritVector) resultExpRight))
                 return this.value;
-        } else if (TYPE_FACADE.isMatrixType(expLeft.type) && TYPE_FACADE.isMatrixType(expRight.type)) {
+        } else if (resultExpLeft instanceof AritMatrix && resultExpRight instanceof AritMatrix) {
             if (matrixOperation(aritLanguage, (AritMatrix) resultExpLeft, (AritMatrix) resultExpRight))
                 return this.value;
-        } else if (TYPE_FACADE.isMatrixType(expLeft.type) && TYPE_FACADE.isVectorType(expRight.type)) {
+        } else if (resultExpLeft instanceof AritMatrix && resultExpRight instanceof AritVector) {
             return operateMatrixVector(aritLanguage, (AritMatrix) resultExpLeft, (AritVector) resultExpRight);
-        } else if (TYPE_FACADE.isVectorType(expLeft.type) && TYPE_FACADE.isMatrixType(expRight.type)) {
+        } else if (resultExpLeft instanceof AritVector && resultExpRight instanceof  AritMatrix) {
             return operateVectorMatrix(aritLanguage, (AritVector) resultExpLeft, (AritMatrix) resultExpRight);
+        } else if (resultExpLeft instanceof AritVector) {
+            AritVector vector = (AritVector) resultExpLeft;
+            if (TYPE_FACADE.isStringType(vector.baseType)) {
+                int size = vector.size();
+                int i;
+                ArrayList<DataNode> dataNodeArrayList = new ArrayList<>();
+                AritType stringType = TYPE_FACADE.getStringType();
+                for (i = 0; i < size; i++) {
+                    dataNodeArrayList.add(
+                            getDataNode(aritLanguage, stringType, vector.getDataNodes().get(i).value, resultExpRight)
+                    );
+                }
+                this.type = TYPE_FACADE.getVectorType();
+                this.value = new AritVector(stringType, dataNodeArrayList);
+                return this.value;
+            } else {
+                aritLanguage.addSemanticError("Error : No se puede operar un vector de tipo `" +
+                        vector.baseType + "` con una estructura de tipo `" + expRight.type + "`.", this.info);
+            }
+        } else if (resultExpRight instanceof AritVector) {
+            AritVector vector = (AritVector) resultExpRight;
+            if (TYPE_FACADE.isStringType(vector.baseType)) {
+                int size = vector.size();
+                int i;
+                ArrayList<DataNode> dataNodeArrayList = new ArrayList<>();
+                AritType stringType = TYPE_FACADE.getStringType();
+                for (i = 0; i < size; i++) {
+                    dataNodeArrayList.add(
+                            getDataNode(aritLanguage, stringType, resultExpLeft, vector.getDataNodes().get(i).value)
+                    );
+                }
+                this.type = TYPE_FACADE.getVectorType();
+                this.value = new AritVector(stringType, dataNodeArrayList);
+                return this.value;
+            } else {
+                aritLanguage.addSemanticError("Error : No se puede operar una estructura de tipo `" +
+                        expLeft.type + "` con un vector de tipo `" + vector.baseType + "`.", this.info);
+            }
         } else {
             aritLanguage.addSemanticError("Error en " + this + " : no se puede operar las estructuras " +
                     expLeft.type + " y " + expRight.type + ".", this.info);
@@ -249,7 +287,14 @@ public class Arithmetic extends Operation {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-
+        astGraph.append("\"node").append(this.hashCode()).append("\" [label = \"Exp Aritmética(")
+                .append(this.operator).append(")\"];\n");
+        this.expLeft.createAstGraph(astGraph);
+        this.expRight.createAstGraph(astGraph);
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"").append("node")
+                .append(this.expLeft.hashCode()).append("\";\n");
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"").append("node")
+                .append(this.expRight.hashCode()).append("\";\n");
     }
 
     @Override

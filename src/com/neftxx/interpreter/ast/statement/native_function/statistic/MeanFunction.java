@@ -6,7 +6,6 @@ import com.neftxx.interpreter.ast.expression.structure.AritVector;
 import com.neftxx.interpreter.ast.expression.structure.DataNode;
 import com.neftxx.interpreter.ast.scope.Scope;
 import com.neftxx.interpreter.ast.statement.native_function.NativeFunction;
-import com.neftxx.interpreter.ast.statement.native_function.structure.ArrayFunction;
 import com.neftxx.util.NodeInfo;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,10 +36,10 @@ public class MeanFunction extends NativeFunction {
                     double mean = StatisticalOperations.calculateMean(values);
                     return new AritVector(new DataNode(TYPE_FACADE.getNumericType(), mean));
                 } else {
-                    // TODO: AGREGAR ERROR
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
                 }
             } else {
-                // TODO: AGREGAR ERROR
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
             }
         } else if (argumentsSize == 2) {
             Expression expression = arguments.get(0);
@@ -64,16 +63,16 @@ public class MeanFunction extends NativeFunction {
                             double mean = StatisticalOperations.calculateMean(values, trim);
                             return new AritVector(new DataNode(TYPE_FACADE.getNumericType(), mean));
                         } else {
-                            // TODO: AGREGAR ERROR
+                            aritLanguage.addSemanticError("Error en TRIM: se esperaba un vector de tipo numerico.", info);
                         }
                     } else {
-                        // TODO: AGREGAR ERROR
+                        aritLanguage.addSemanticError("Error en TRIM: se esperaba un vector de tipo numerico.", info);
                     }
                 } else {
-                    // TODO: AGREGAR ERROR
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
                 }
-            } else{
-                // TODO: AGREGAR ERROR
+            } else {
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
             }
         } else {
             aritLanguage.addSemanticError("Error : no se encontró la funcion mean con la cantidad de parametros `" +

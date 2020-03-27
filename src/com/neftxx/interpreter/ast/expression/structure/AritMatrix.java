@@ -37,12 +37,23 @@ public class AritMatrix extends AritStructure {
         return dataNodes;
     }
 
+    public ArrayList<DataNode> getAuxDataNodes() {
+        int i, j;
+        ArrayList<DataNode> auxDataNodes = new ArrayList<>();
+        for (i = 0; i < this.columns; i++) {
+            for (j = 0; j < this.rows; j++) {
+                auxDataNodes.add(this.dataNodes[j * this.columns + i]);
+            }
+        }
+        return auxDataNodes;
+    }
+
     public AritVector modifyItemWithAccessOne(int posX, int posY, @NotNull DataNode dataNode) throws IndexOutOfBoundsException {
-        verifyNodeTypeChange(dataNode.type);
+        verifyNodeTypeChange(dataNode.baseType);
         Object newValue = dataNode.value;
-        if (dataNode.type != this.baseType)
-            newValue = TYPE_FACADE.castValue(dataNode.type, this.baseType, dataNode.value);
-        this.dataNodes[(posY - 1) * this.columns + posX - 1].changeValues(this.baseType, newValue);
+        if (dataNode.baseType != this.baseType)
+            newValue = TYPE_FACADE.castValue(dataNode.baseType, this.baseType, dataNode.value);
+        this.dataNodes[(posX - 1) * this.columns + posY - 1].changeValues(this.baseType, newValue);
         return new AritVector(dataNode.copy());
     }
 
@@ -70,22 +81,8 @@ public class AritMatrix extends AritStructure {
         return new AritVector(this.baseType, newDataNodes);
     }
 
-    private int changeNodeValue(int column, @NotNull ArrayList<DataNode> currentDataNodes, int i, int currentPosition, int size, ArrayList<DataNode> newDataNodes) {
-        DataNode dataNode;
-        Object newValue;
-        if (currentPosition > size) currentPosition = 0;
-        dataNode = currentDataNodes.get(currentPosition);
-        if (dataNode.type != this.baseType)
-            newValue = TYPE_FACADE.castValue(dataNode.type, this.baseType, dataNode.value);
-        else newValue = dataNode.value;
-        this.dataNodes[i * this.columns + column].changeValues(this.baseType, newValue);
-        newDataNodes.add(currentDataNodes.get(currentPosition).copy());
-        currentPosition++;
-        return currentPosition;
-    }
-
     public AritVector modifyItemWithAccessFour(int position, @NotNull DataNode dataNode) throws IndexOutOfBoundsException {
-        verifyNodeTypeChange(dataNode.type);
+        verifyNodeTypeChange(dataNode.baseType);
         int column, row, count = 0;
         for (column = 0; column < this.columns; column++) {
             for (row = 0; row < this.rows; row++) {
@@ -100,7 +97,7 @@ public class AritMatrix extends AritStructure {
     }
 
     public AritVector getItemWithAccessOne(int posX, int posY) throws IndexOutOfBoundsException {
-        return new AritVector(this.dataNodes[(posY - 1) * this.columns + posX - 1].copy());
+        return new AritVector(this.dataNodes[(posX - 1) * this.columns + posY - 1].copy());
     }
 
     public AritVector getItemWithAccessTwo(int row) throws IndexOutOfBoundsException {
@@ -120,17 +117,45 @@ public class AritMatrix extends AritStructure {
     }
 
     public AritVector getItemWithAccessFour(int position) throws IndexOutOfBoundsException {
-        int i , j;
+        int column , row;
         int count = 0;
-        for (i = 0; i < this.columns; i++) {
-            for (j = 0; j < this.rows; j++) {
+        for (column = 0; column < this.columns; column++) {
+            for (row = 0; row < this.rows; row++) {
                 if (count == position) {
-                    return new AritVector(this.dataNodes[j * this.columns + i].copy());
+                    return new AritVector(this.dataNodes[row * this.columns + column].copy());
                 }
                 count++;
             }
         }
         throw new IndexOutOfBoundsException();
+    }
+
+    public AritVector getItem(int position) throws IndexOutOfBoundsException {
+        int column , row;
+        int count = 0;
+        for (column = 0; column < this.columns; column++) {
+            for (row = 0; row < this.rows; row++) {
+                if (count == position) {
+                    return new AritVector(this.dataNodes[row * this.columns + column]);
+                }
+                count++;
+            }
+        }
+        throw new IndexOutOfBoundsException();
+    }
+
+    private int changeNodeValue(int column, @NotNull ArrayList<DataNode> currentDataNodes, int i, int currentPosition, int size, ArrayList<DataNode> newDataNodes) {
+        DataNode dataNode;
+        Object newValue;
+        if (currentPosition > size) currentPosition = 0;
+        dataNode = currentDataNodes.get(currentPosition);
+        if (dataNode.baseType != this.baseType)
+            newValue = TYPE_FACADE.castValue(dataNode.baseType, this.baseType, dataNode.value);
+        else newValue = dataNode.value;
+        this.dataNodes[i * this.columns + column].changeValues(this.baseType, newValue);
+        newDataNodes.add(currentDataNodes.get(currentPosition).copy());
+        currentPosition++;
+        return currentPosition;
     }
 
     private void verifyNodeTypeChange(@NotNull AritType newType) {

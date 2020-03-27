@@ -24,12 +24,12 @@ public class Scope {
         this.variables.putAll(variables);
     }
 
-    public void addVariable(String id, AritType type, Object value) {
+    public void addVariable(String id, AritType type, Object value, int line) {
         VarSymbol found = getVariable(id);
         if (found != null) {
-            found.changeValues(type, value);
+            found.changeValues(type, value, line);
         } else {
-            this.variables.put(id, new VarSymbol(id, type, value));
+            this.variables.put(id, new VarSymbol(id, type, value, line));
         }
     }
 

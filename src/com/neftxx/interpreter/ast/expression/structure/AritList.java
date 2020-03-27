@@ -20,8 +20,8 @@ public class AritList extends AritStructure  {
     public AritList(@NotNull AritVector vector) {
         this.dataNodes = new ArrayList<>();
         for (DataNode currentNode: vector.getDataNodes()) {
-            if (TYPE_FACADE.isBaseType(currentNode.type)) {
-                AritType currentType = currentNode.type;
+            if (TYPE_FACADE.isBaseType(currentNode.baseType)) {
+                AritType currentType = currentNode.baseType;
                 Object currentValue = currentNode.value;
                 this.dataNodes.add(new DataNode(TYPE_FACADE.getVectorType(), new AritVector(currentType, currentValue)));
             }
@@ -34,7 +34,7 @@ public class AritList extends AritStructure  {
     }
 
     public void addElement(int position, @NotNull DataNode dataNode) throws IndexOutOfBoundsException {
-        addElement(position, dataNode.type, dataNode.value);
+        addElement(position, dataNode.baseType, dataNode.value);
     }
 
     public void addElement(int position, AritType type, Object value) throws IndexOutOfBoundsException {

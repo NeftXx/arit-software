@@ -22,15 +22,15 @@ public class ToUpperCaseFunction extends NativeFunction {
             Object valueResult = arguments.get(0).interpret(aritLanguage, scope);
             if (valueResult instanceof AritVector) {
                 AritVector vector = (AritVector) valueResult;
-                if (TYPE_FACADE.isStringType(vector.baseType) && vector.size() == 1) {
+                if (TYPE_FACADE.isStringType(vector.baseType)) {
                     this.type = TYPE_FACADE.getVectorType();
                     String _string = toString(vector.getDataNodes().get(0).value);
                     return new AritVector(new DataNode(TYPE_FACADE.getStringType(), _string.toUpperCase()));
                 } else {
-                    // TODO: AGREGAR ERROR
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo String.", info);
                 }
             } else {
-                // TODO: AGREGAR ERROR
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo String.", info);
             }
         } else {
             aritLanguage.addSemanticError("Error : no se encontró la funcion toUpperCase con la cantidad de parametros `" +

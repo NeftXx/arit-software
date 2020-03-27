@@ -1,8 +1,10 @@
 package com.neftxx.controller;
 
 import com.neftxx.util.SyntaxUtils;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.fxmisc.richtext.CodeArea;
@@ -12,6 +14,7 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.fxmisc.wellbehaved.event.EventPattern;
 import org.fxmisc.wellbehaved.event.InputMap;
 import org.fxmisc.wellbehaved.event.Nodes;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -24,10 +27,12 @@ import java.util.regex.Matcher;
 
 public class EditorController {
     private CodeArea codeArea;
+    private Label labelLineInfo;
     private ExecutorService taskExecutor;
 
-    public EditorController(CodeArea codeArea) {
+    public EditorController(CodeArea codeArea, Label labelLineInfo) {
         this.codeArea = codeArea;
+        this.labelLineInfo = labelLineInfo;
         taskExecutor = Executors.newSingleThreadExecutor();
     }
 
@@ -35,6 +40,18 @@ public class EditorController {
         changeTabSize();
         codeAreaHighlighter();
         codeAreaAddLineNumber();
+        caretLineColumn();
+    }
+
+    private void caretLineColumn() {
+        this.codeArea.selectionProperty().addListener((oba, oldVal, newVal) -> {
+            Platform.runLater(() -> {
+                int line = codeArea.getCurrentParagraph() + 1;
+                int column = codeArea.getCaretColumn() + 1;
+                String format = String.format("Línea: %d | Columna: %d", line, column);
+                this.labelLineInfo.setText(format);
+            });
+        });
     }
 
     private void changeTabSize() {
@@ -47,7 +64,7 @@ public class EditorController {
 
     private void codeAreaHighlighter() {
         codeArea.multiPlainChanges()
-                .successionEnds(Duration.ofMillis(1000))
+                .successionEnds(Duration.ofMillis(300))
                 .supplyTask(this::computeHighlightingAsync)
                 .awaitLatest(codeArea.multiPlainChanges())
                 .filterMap(tryTask -> {
@@ -66,15 +83,16 @@ public class EditorController {
         codeArea.setParagraphGraphicFactory(lineNumberFactory);
     }
 
+    @NotNull
     private Task<StyleSpans<Collection<String>>> computeHighlightingAsync() {
-        String text = codeArea.getText();
+        String text = this.codeArea.getText();
         Task<StyleSpans<Collection<String>>> task = new Task<StyleSpans<Collection<String>>>() {
             @Override
             protected StyleSpans<Collection<String>> call() {
                 return computeHighlighting(text);
             }
         };
-        taskExecutor.execute(task);
+        this.taskExecutor.execute(task);
         return task;
     }
 

@@ -40,7 +40,13 @@ public class DoWhileStm extends AstNode {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-
+        astGraph.append("\"node").append(this.hashCode()).append("\" [ label = \"Sentencia DO WHILE\"];\n");
+        this.block.createAstGraph(astGraph);
+        this.expression.createAstGraph(astGraph);
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"")
+                .append("node").append(this.block.hashCode()).append("\";\n");
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"")
+                .append("node").append(this.expression.hashCode()).append("\";\n");
     }
 
     private boolean getCond(AritLanguage aritLanguage, Scope scope) {

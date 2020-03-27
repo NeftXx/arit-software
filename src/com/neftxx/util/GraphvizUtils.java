@@ -1,18 +1,13 @@
 package com.neftxx.util;
 
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.image.Image;
 import org.jetbrains.annotations.Nullable;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
 public class GraphvizUtils {
     @Nullable
-    public static Image createGraph(String code) {
+    public static void createGraph(String code) {
         FileWriter fileWriter = null;
         PrintWriter printWriter;
         String errorMessage;
@@ -33,15 +28,16 @@ public class GraphvizUtils {
             }
         }
         try {
-            Runtime rt = Runtime.getRuntime();
-            rt.exec( "dot -Tpng -o graph.png graph.dot");
-            Thread.sleep(1000);
-            File imageFile = new File("graph.png");
-            return SwingFXUtils.toFXImage(ImageIO.read(imageFile), null);
+            Process process = Runtime.getRuntime().exec( "dot -Tpng -o graph.png graph.dot");
+            process.waitFor();
+            String [] commands = {
+                    "cmd.exe" , "/c", "start" , "\"DummyTitle\"", "\"graph.png\""
+            };
+            process = Runtime.getRuntime().exec(commands);
+            process.waitFor();
         } catch (Exception ex) {
             errorMessage = "Error al generar la imagen para el archivo graph.dot";
             DialogUtils.createErrorDialog(DialogUtils.ERROR_DIALOG, ex.getMessage(), errorMessage);
         }
-        return null;
     }
 }

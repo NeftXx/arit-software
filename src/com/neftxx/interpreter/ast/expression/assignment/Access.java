@@ -46,6 +46,17 @@ public class Access extends AstNode {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
+        astGraph.append("\"node").append(this.hashCode()).append("\" [label = \"Acesso\"];\n");
+        if (this.exp1 != null) {
+            this.exp1.createAstGraph(astGraph);
+            astGraph.append("\"node").append(this.hashCode()).append("\" -> \"").append("node")
+                    .append(this.exp1.hashCode()).append("\";\n");
+        }
+        if (this.exp2 != null) {
+            this.exp2.createAstGraph(astGraph);
+            astGraph.append("\"node").append(this.hashCode()).append("\" -> \"").append("node")
+                    .append(this.exp2.hashCode()).append("\";\n");
+        }
     }
 
     private void interpret(AritLanguage aritLanguage, Scope scope, Expression expression, int position) {
@@ -57,10 +68,10 @@ public class Access extends AstNode {
                     DataNode dataNode = vector.getDataNodes().get(0);
                     this.values[position] = (int) dataNode.value;
                 } else {
-                    aritLanguage.addSemanticError("Error : la posición no es de un tipo entero.", this.info);
+                    aritLanguage.addSemanticError("Error : la posición debe ser un vector de tipo integer.", this.info);
                 }
             } else {
-                aritLanguage.addSemanticError("Error : la posición no es de un tipo entero.", this.info);
+                aritLanguage.addSemanticError("Error : la posición debe ser un vector de tipo integer.", this.info);
             }
         }
     }
@@ -94,11 +105,14 @@ public class Access extends AstNode {
     }
 
     private String getStringExp(Expression exp) {
-        return exp != null ? exp.toString() : "";
+        return exp != null ? exp.toString() : "NULL";
     }
 
     @Override
     public String toString() {
+        if (this.isTypeOneToMatrix()) return '[' + getStringExp(this.exp1) + ',' + getStringExp(this.exp2) + ']';
+        if (this.isTypeThreeToMatrix()) return '[' + getStringExp(this.exp1) + ",]";
+        if (this.isTypeThreeToMatrix()) return "[," + getStringExp(this.exp1) + ']';
         if (this.isTypeTwoToList()) return "[[" + getStringExp(this.exp1) + "]]";
         return "[" + getStringExp(this.exp1) + "]";
     }

@@ -16,8 +16,6 @@ import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.stream.Stream;
 
 public class HistFunction extends NativeFunction {
     private HistFunction() {
@@ -46,7 +44,8 @@ public class HistFunction extends NativeFunction {
                     String title = toString(vectorArg3.getDataNodes().get(0).value);
                     aritLanguage.addChart(getChartViewer(values, xLab, title));
                 } else {
-                    // TODO: AGREGAR ERROR
+                    aritLanguage.addSemanticError("Error : los tipos de los parametros no son los correctos " +
+                            "para esta funcion `hist()`.", info);
                 }
             } else if (isMatrix(expArgument1) && isVector(expArgument2) && isVector(expArgument3)) {
                 AritMatrix matrixArg1 = (AritMatrix) resArgument1;
@@ -62,13 +61,16 @@ public class HistFunction extends NativeFunction {
                     String title = toString(vectorArg3.getDataNodes().get(0).value);
                     aritLanguage.addChart(getChartViewer(values, xLab, title));
                 } else {
-                    // TODO: AGREGAR ERROR
+                    aritLanguage.addSemanticError("Error : los tipos de los parametros no son los correctos " +
+                            "para esta funcion `hist()`.", info);
                 }
             } else {
-                // TODO: AGREGAR ERROR
+                aritLanguage.addSemanticError("Error : los tipos de los parametros no son los correctos " +
+                        "para esta funcion `hist()`.", info);
             }
         } else {
-            // TODO: AGREGAR ERROR
+            aritLanguage.addSemanticError("Error : el tamaño `" + numberOfArguments +
+                    "` de parámetros no es válido para la función hist().", info);
         }
         return null;
     }

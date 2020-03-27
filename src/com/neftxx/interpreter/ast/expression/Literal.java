@@ -29,7 +29,7 @@ public class Literal extends Expression {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-        astGraph.append("node").append(this.hashCode()).append("[label = \"Literal(Tipo: ")
+        astGraph.append("\"node").append(this.hashCode()).append("\" [label = \"Literal(Tipo: ")
                 .append(this.baseType).append(", Valor: ").append(this.baseValue).append(")\"];\n");
     }
 

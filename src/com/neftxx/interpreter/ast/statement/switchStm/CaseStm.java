@@ -36,6 +36,20 @@ public class CaseStm extends AstNode {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-
+        if (this.expression == null) {
+            astGraph.append("\"node").append(this.hashCode()).append("\" [ label = \"DEFAULT\"];\n");
+        } else {
+            astGraph.append("\"node").append(this.hashCode()).append("\" [ label = \"CASE\"];\n");
+            this.expression.createAstGraph(astGraph);
+            astGraph.append("\"node").append(this.hashCode()).append("\" -> \"")
+                    .append("node").append(this.expression.hashCode()).append("\";\n");
+        }
+        if (astNodes != null) {
+            for (AstNode astNode: astNodes) {
+                astNode.createAstGraph(astGraph);
+                astGraph.append("\"node").append(this.hashCode()).append("\" -> \"")
+                        .append("node").append(astNode.hashCode()).append("\";\n");
+            }
+        }
     }
 }

@@ -24,15 +24,15 @@ public class RoundFunction extends NativeFunction {
             Object valueResult = arguments.get(0).interpret(aritLanguage, scope);
             if (valueResult instanceof AritVector) {
                 AritVector vector = (AritVector) valueResult;
-                if (isNumeric(vector) && vector.size() == 1) {
+                if (isNumeric(vector)) {
                     this.type = TYPE_FACADE.getVectorType();
                     return new AritVector(new DataNode(TYPE_FACADE.getIntegerType(),
                             toInt(vector.getDataNodes().get(0).value)));
                 } else {
-                    // TODO: AGREGAR ERROR
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
                 }
             } else  {
-                // TODO: AGREGAR ERRORES
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
             }
         } else {
             aritLanguage.addSemanticError("Error : no se encontró la funcion Round con la cantidad de parametros `" +

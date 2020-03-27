@@ -28,6 +28,7 @@ import java_cup.runtime.ComplexSymbolFactory.Location;
 %column
 %cup
 %char
+%ignorecase
 
 %{
     /**
@@ -144,7 +145,7 @@ Espacios        = {Fin_linea} | [ \t\f]
 Identificador   = ((["."]({Letra}|["_"]|["."]))|{Letra})({Letra}|{Digito}|["_"]|["."])*
 
 /* literales */
-Integer_Literal = 0 | [1-9]{Digito}*
+Integer_Literal = {Digito}+
 Decimal_Literal = {Digito}+["."]{Digito}+
 Boolean_Literal = true|false
 Null_Literal    = null
@@ -277,7 +278,7 @@ Null_Literal    = null
     "\\n"               { string.append('\n'); }
     "\\r"               { string.append('\r'); }
     "\\t"               { string.append('\t'); }
-    \\.                 { string.append(yytext()); }
+    \\.                 { error("Error: no se esperaba el escape \\." + yytext()); }
 
     {Fin_linea}         {
                             yybegin(YYINITIAL);

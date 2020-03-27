@@ -36,8 +36,13 @@ public class Block extends AstNode {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
+        astGraph.append("\"node").append(this.hashCode()).append("\" [ label = \"Sentencias\"];\n");
         if (astNodes != null) {
-            for (AstNode astNode: astNodes) astNode.createAstGraph(astGraph);
+            for (AstNode astNode: astNodes) {
+                astNode.createAstGraph(astGraph);
+                astGraph.append("\"node").append(this.hashCode()).append("\" -> \"")
+                        .append("node").append(astNode.hashCode()).append("\";\n");
+            }
         }
     }
 }

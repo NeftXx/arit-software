@@ -25,7 +25,7 @@ public class Not extends Operation {
     @Override
     public Object interpret(AritLanguage aritLanguage, Scope scope) {
         Object result = this.expLeft.interpret(aritLanguage, scope);
-        if (TYPE_FACADE.isVectorType(this.expLeft.type)) {
+        if (result instanceof AritVector) {
             AritVector aritVector = (AritVector) result;
             if (TYPE_FACADE.isBooleanType(aritVector.baseType)) {
                 int i, size = aritVector.size();
@@ -40,7 +40,7 @@ public class Not extends Operation {
                 aritLanguage.addSemanticError("Error en " + this + " : no se puede operar con el signo ! a " +
                         " un vector de tipo " + aritVector.baseType + ".", this.info);
             }
-        } else if (TYPE_FACADE.isMatrixType(this.expLeft.type)) {
+        } else if (result instanceof AritMatrix) {
             AritMatrix aritMatrix = (AritMatrix) result;
             if (TYPE_FACADE.isBooleanType(aritMatrix.baseType)) {
                 int i, size = aritMatrix.size();
@@ -65,6 +65,10 @@ public class Not extends Operation {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
+        astGraph.append("\"node").append(this.hashCode()).append("\" [label = \"Exp Lógica(!)\"];\n");
+        this.expLeft.createAstGraph(astGraph);
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"").append("node")
+                .append(this.expLeft.hashCode()).append("\";\n");
     }
 
     @Override

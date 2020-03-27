@@ -18,6 +18,6 @@ public class Break extends AstNode {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-
+        astGraph.append("\"node").append(this.hashCode()).append("\" [ label = \"Break\"];\n");
     }
 }

@@ -1,9 +1,9 @@
 package com.neftxx.controller;
 
-import com.neftxx.App;
 import com.neftxx.constant.Icons;
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.error.NodeError;
+import com.neftxx.interpreter.ast.scope.SymbolNode;
 import com.neftxx.util.DialogUtils;
 import com.neftxx.util.FileManager;
 import com.neftxx.util.GraphvizUtils;
@@ -14,15 +14,9 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +32,8 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 public class MainController implements Initializable {
+    @FXML
+    private Label labelLineInfo;
     @FXML
     private VBox paneCharts;
     @FXML
@@ -95,19 +91,19 @@ public class MainController implements Initializable {
     @FXML
     private TableColumn<String, NodeError> columnFile;
     @FXML
-    private TableView tableSymbols;
+    private TableView<SymbolNode> tableSymbols;
     @FXML
-    private TableColumn columnNameSym;
+    private TableColumn<String, SymbolNode> columnIdSym;
     @FXML
-    private TableColumn columnTypeSym;
+    private TableColumn<String, SymbolNode> columnTypeSym;
     @FXML
-    private TableColumn columnScopeSym;
+    private TableColumn<Integer, SymbolNode> columnSizeSym;
     @FXML
-    private TableColumn columnRolSym;
+    private TableColumn<String, SymbolNode> columnScopeSym;
     @FXML
-    private TableColumn columnParameterSym;
+    private TableColumn<Integer, SymbolNode> columnDeclarationSym;
     @FXML
-    private TableColumn columnConstantSym;
+    private TableColumn<String, SymbolNode> columnReferencesSym;
 
     private ExecutorService executorService;
     private static Logger debugger;
@@ -121,6 +117,7 @@ public class MainController implements Initializable {
         debugger = Logger.getLogger(DEBUG_TAG);
         codeAreaLayout.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         initTableErrors();
+        initTableSymbols();
         onMenuItemsActions();
     }
 
@@ -131,6 +128,16 @@ public class MainController implements Initializable {
         columnLine.setCellValueFactory(new PropertyValueFactory<>("line"));
         columnColumn.setCellValueFactory(new PropertyValueFactory<>("column"));
         columnFile.setCellValueFactory(new PropertyValueFactory<>("filename"));
+    }
+
+    private void initTableSymbols() {
+        tableSymbols.setPlaceholder(new Label("No hay simbolos que mostrar."));
+        columnIdSym.setCellValueFactory(new PropertyValueFactory<>("id"));
+        columnTypeSym.setCellValueFactory(new PropertyValueFactory<>("type"));
+        columnSizeSym.setCellValueFactory(new PropertyValueFactory<>("size"));
+        columnScopeSym.setCellValueFactory(new PropertyValueFactory<>("scope"));
+        columnDeclarationSym.setCellValueFactory(new PropertyValueFactory<>("declarationLine"));
+        columnReferencesSym.setCellValueFactory(new PropertyValueFactory<>("linesReference"));
     }
 
     private void onMenuItemsActions() {
@@ -251,6 +258,7 @@ public class MainController implements Initializable {
                 if (!aritLanguage.errors.isEmpty()) {
                     showErrorsInTableView(aritLanguage.errors);
                 }
+                showSymbolsInTableView(aritLanguage.getSymbols());
             } catch (Exception e) {
                 e.printStackTrace();
                 String warnMessage = "Error al analizar el archivo " + currentTab.getText();
@@ -278,7 +286,7 @@ public class MainController implements Initializable {
                     String code = FileManager.readFile(sourceFile);
                     if (code != null) {
                         CodeArea codeTextArea = new CodeArea();
-                        EditorController editorController = new EditorController(codeTextArea);
+                        EditorController editorController = new EditorController(codeTextArea, this.labelLineInfo);
                         editorController.editorSettings();
                         codeTextArea.replaceText(0, 0, code);
                         rmbTab.setContent(new VirtualizedScrollPane<>(codeTextArea));
@@ -334,20 +342,13 @@ public class MainController implements Initializable {
         tabReportPane.getSelectionModel().select(TABLE_ERRORS_TAB);
     }
 
+    private void showSymbolsInTableView(@NotNull ArrayList<SymbolNode> symbols) {
+        tableSymbols.getItems().clear();
+        tableSymbols.setItems(FXCollections.observableArrayList(symbols));
+    }
+
     private void graphAST(String code) {
-        Image image = GraphvizUtils.createGraph(code);
-        if (Objects.nonNull(image)) {
-            Stage stage = new Stage();
-            stage.initOwner(App.MAIN_STAGE);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Rmb - Frame");
-            ImageView imageView = new ImageView(image);
-            HBox hbox = new HBox(imageView);
-            Scene scene = new Scene(hbox);
-            stage.setScene(scene);
-            stage.setMaximized(true);
-            stage.show();
-        }
+        GraphvizUtils.createGraph(code);
     }
 
     /**

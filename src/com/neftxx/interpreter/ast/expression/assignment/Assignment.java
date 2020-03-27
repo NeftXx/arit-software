@@ -22,17 +22,17 @@ public class Assignment extends Expression {
         this.value = expression.interpret(aritLanguage, scope);
         this.type = expression.type;
         if (expression.verifyCopy()) this.value = ((AritStructure) this.value).copy();
-        scope.addVariable(this.id, this.type, this.value);
+        scope.addVariable(this.id, this.type, this.value, this.info.line);
         return this.value;
     }
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-        astGraph.append("node").append(this.hashCode()).append("[label = \"Asignación(")
+        astGraph.append("\"node").append(this.hashCode()).append("\" [label = \"Asignación(")
                 .append(this.id).append(")\"];\n");
         this.expression.createAstGraph(astGraph);
-        astGraph.append("node").append(this.hashCode()).append(" -> ").append("node")
-                .append(this.expression.hashCode()).append(";\n");
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"").append("node")
+                .append(this.expression.hashCode()).append("\";\n");
     }
 
     @Override

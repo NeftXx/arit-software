@@ -36,10 +36,10 @@ public class ModeFunction extends NativeFunction {
                     double mode = StatisticalOperations.calculateMode(values);
                     return new AritVector(new DataNode(TYPE_FACADE.getNumericType(), mode));
                 } else {
-                    // TODO: AGREGAR ERROR
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
                 }
             } else {
-                // TODO: AGREGAR ERROR
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
             }
         } else if (argumentsSize == 2) {
             Expression expression = arguments.get(0);
@@ -63,16 +63,16 @@ public class ModeFunction extends NativeFunction {
                             double mode = StatisticalOperations.calculateMode(values, trim);
                             return new AritVector(new DataNode(TYPE_FACADE.getNumericType(), mode));
                         } else {
-                            // TODO: AGREGAR ERROR
+                            aritLanguage.addSemanticError("Error en TRIM : se esperaba un vector de tipo numerico.", info);
                         }
                     } else {
-                        // TODO: AGREGAR ERROR
+                        aritLanguage.addSemanticError("Error en TRIM : se esperaba un vector de tipo numerico.", info);
                     }
                 } else {
-                    // TODO: AGREGAR ERROR
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
                 }
             } else{
-                // TODO: AGREGAR ERROR
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
             }
         } else {
             aritLanguage.addSemanticError("Error : no se encontró la funcion median con la cantidad de parametros `" +

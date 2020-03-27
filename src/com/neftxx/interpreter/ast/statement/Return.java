@@ -39,6 +39,6 @@ public class Return extends AstNode {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-
+        astGraph.append("\"node").append(this.hashCode()).append("\" [ label = \"Return\"];\n");
     }
 }

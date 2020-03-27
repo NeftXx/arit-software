@@ -212,7 +212,6 @@ global_statements
 global_statement
     ::= statement:statement {: RESULT = statement; :}
     |   function_declaration:function {: RESULT = function; :}
-    |   error PUNTO_COMA
 ;
 
 function_declaration
@@ -309,11 +308,15 @@ return_statement
             NodeInfo info = new NodeInfo(rxleft.getLine(), rxleft.getColumn(), filename);
             RESULT = new Return(info);
         :}
-    |   RETURN:r expression:exp {:
+    |   RETURN:r {:
+            NodeInfo info = new NodeInfo(rxleft.getLine(), rxleft.getColumn(), filename);
+            RESULT = new Return(info);
+        :}
+    |   RETURN:r PAR_IZQ expression:exp PAR_DER {:
             NodeInfo info = new NodeInfo(rxleft.getLine(), rxleft.getColumn(), filename);
             RESULT = new Return(info, exp);
         :}
-    |   RETURN:r expression:exp PUNTO_COMA {:
+    |   RETURN:r PAR_IZQ expression:exp PAR_DER PUNTO_COMA {:
             NodeInfo info = new NodeInfo(rxleft.getLine(), rxleft.getColumn(), filename);
             RESULT = new Return(info, exp);
         :}
@@ -422,6 +425,7 @@ statement
     |   while_statement:statement {: RESULT = statement; :}
     |   do_while_statement:statement {: RESULT = statement; :}
     |   for_statement:statement {: RESULT = statement; :}
+    |   error PUNTO_COMA
 ;
 
 statement_expression
@@ -541,9 +545,9 @@ expression
             NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);
             RESULT = new Arithmetic(info, exp1, exp2, Arithmetic.Operator.POWER);
         :}
-    |   expression:exp access:access {:
+    |   expression:exp access_list:accessList {:
             NodeInfo infoExp = new NodeInfo(expxleft.getLine(), expxright.getColumn(), filename);
-            RESULT = new StructureAccess(infoExp, exp, access);
+            RESULT = new StructureAccess(infoExp, exp, accessList);
         :}
     |   MENOS:op expression:exp {:
             NodeInfo info = new NodeInfo(opxleft.getLine(), opxright.getColumn(), filename);

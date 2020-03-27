@@ -34,10 +34,10 @@ public class RemoveFunction extends NativeFunction {
                     this.type = TYPE_FACADE.getVectorType();
                     return new AritVector(new DataNode(TYPE_FACADE.getStringType(), result));
                 } else {
-                    // TODO: AGREGAR ERROR
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
                 }
             } else {
-                // TODO: AGREGAR ERROR
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
             }
         } else {
             aritLanguage.addSemanticError("Error : no se encontró la funcion Remove con la cantidad de parametros `" +

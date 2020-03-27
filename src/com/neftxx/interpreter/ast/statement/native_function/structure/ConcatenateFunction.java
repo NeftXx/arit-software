@@ -47,8 +47,8 @@ public class ConcatenateFunction extends NativeFunction {
         if (TYPE_FACADE.isListType(typeTemp)) {
             this.type = TYPE_FACADE.getListType();
             for(DataNode currentNode: dataNodes) {
-                if (TYPE_FACADE.isBaseType(currentNode.type)) {
-                    AritType currentType = currentNode.type;
+                if (TYPE_FACADE.isBaseType(currentNode.baseType)) {
+                    AritType currentType = currentNode.baseType;
                     Object currentValue = currentNode.value;
                     currentNode.changeValues(TYPE_FACADE.getVectorType(), new AritVector(currentType, currentValue));
                 }
@@ -57,8 +57,8 @@ public class ConcatenateFunction extends NativeFunction {
         }
         this.type = TYPE_FACADE.getVectorType();
         for (DataNode dataNode: dataNodes) {
-            if (typeTemp.priority > dataNode.type.priority) {
-                Object cast = TYPE_FACADE.castValue(dataNode.type, typeTemp, dataNode.value);
+            if (typeTemp.priority > dataNode.baseType.priority) {
+                Object cast = TYPE_FACADE.castValue(dataNode.baseType, typeTemp, dataNode.value);
                 dataNode.changeValues(typeTemp, cast);
             }
         }

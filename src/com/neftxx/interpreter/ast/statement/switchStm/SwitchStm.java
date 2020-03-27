@@ -5,12 +5,10 @@ import com.neftxx.interpreter.ast.AstNode;
 import com.neftxx.interpreter.ast.expression.Expression;
 import com.neftxx.interpreter.ast.expression.structure.AritMatrix;
 import com.neftxx.interpreter.ast.expression.structure.AritVector;
-import com.neftxx.interpreter.ast.expression.structure.DataNode;
 import com.neftxx.interpreter.ast.scope.Scope;
 import com.neftxx.interpreter.ast.statement.Break;
 import com.neftxx.interpreter.ast.statement.Continue;
 import com.neftxx.interpreter.ast.statement.Return;
-import com.neftxx.interpreter.ast.type.AritType;
 import com.neftxx.util.NodeInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +33,7 @@ public class SwitchStm extends AstNode {
                 int i = 0;
                 i = labels.stream().filter((caseStm -> caseStm.expression == null)).map(_item -> 1).reduce(i, Integer::sum);
                 if (i > 1) {
-                    // error
+                    aritLanguage.addSemanticError("Error : en un switch solo puede venir un caso default.", this.info);
                     return null;
                 }
                 Scope localScope = new Scope();
@@ -50,7 +48,7 @@ public class SwitchStm extends AstNode {
                         if (currentValueLabel != null) {
                             foundLabel = valueSwitch.equals(currentValueLabel);
                         } else {
-                            // error
+                            aritLanguage.addSemanticError("Error : en la expresion de un caso.", this.info);
                         }
                     }
 
@@ -74,7 +72,7 @@ public class SwitchStm extends AstNode {
                 }
             }
         } else {
-            // error
+            aritLanguage.addSemanticError("Error : error en la expresion del switch.", this.info);
         }
         return null;
     }
@@ -100,6 +98,14 @@ public class SwitchStm extends AstNode {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-
+        astGraph.append("node").append(this.hashCode()).append("[ label = \"Sentencia SWITCH\"];\n");
+        this.expression.createAstGraph(astGraph);
+        astGraph.append("node").append(this.hashCode()).append(" -> ")
+                .append("node").append(this.expression.hashCode()).append(";\n");
+        for (CaseStm caseStm: this.labels) {
+            caseStm.createAstGraph(astGraph);
+            astGraph.append("node").append(this.hashCode()).append(" -> ")
+                    .append("node").append(caseStm.hashCode()).append(";\n");
+        }
     }
 }

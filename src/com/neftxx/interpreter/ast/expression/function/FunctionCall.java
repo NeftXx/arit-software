@@ -33,7 +33,7 @@ public class FunctionCall extends Expression {
             return this.value;
         } else {
             int numberOfArguments = this.arguments != null ? arguments.size() : 0;
-            Function function = aritLanguage.globalScope.getMethod(this.id, numberOfArguments);
+            Function function = aritLanguage.globalScope.getMethod(this.id, numberOfArguments, this.info.line);
             if (function != null) {
                 int i = 0;
                 Expression expression;
@@ -65,7 +65,7 @@ public class FunctionCall extends Expression {
                         }
                     }
                     if (expression.verifyCopy()) valueArgument = ((AritStructure) valueArgument).copy();
-                    methodScope.addVariable(parameters.get(i).id, expression.type, valueArgument);
+                    methodScope.addVariable(parameters.get(i).id, expression.type, valueArgument, this.info.line);
                 }
                 this.value = function.interpret(aritLanguage, methodScope);
                 this.type = function.type;
@@ -80,12 +80,14 @@ public class FunctionCall extends Expression {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-        astGraph.append("node").append(this.hashCode()).append("[label = \"LlamadaFunción(")
+        astGraph.append("\"node").append(this.hashCode()).append("\" [label = \"LlamadaFunción(")
                 .append(this.id).append(")\"];\n");
-        for (Expression argument: this.arguments) {
-            argument.createAstGraph(astGraph);
-            astGraph.append("node").append(this.hashCode()).append(" -> ").append("node")
-                    .append(argument.hashCode()).append(";\n");
+        if (this.arguments != null) {
+            for (Expression argument: this.arguments) {
+                argument.createAstGraph(astGraph);
+                astGraph.append("\"node").append(this.hashCode()).append("\" -> \"").append("node")
+                        .append(argument.hashCode()).append("\";\n");
+            }
         }
     }
 

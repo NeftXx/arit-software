@@ -40,7 +40,8 @@ public class PieFunction extends NativeFunction {
                         && TYPE_FACADE.isStringType(mainAritVector.baseType)) {
                     int i, sizeX = xAritVector.size(), sizeLabels = labelsAritVector.size();
                     if (sizeX != sizeLabels) {
-                        // TODO: AGREGAR ERROR
+                        aritLanguage.addSemanticError("Warning : la cantidad de nombres deben ser iguales " +
+                                "a los datos.", info);
                     }
                     double[] values = new double[sizeX];
                     String[] labels = new String[sizeX];
@@ -57,13 +58,16 @@ public class PieFunction extends NativeFunction {
                     String title = toString(mainAritVector.getDataNodes().get(0).value);
                     aritLanguage.addChart(getChart(values, labels, title));
                 } else {
-                    // TODO: AGREGAR ERROR
+                    aritLanguage.addSemanticError("Error : los tipos de los parametros no son los correctos " +
+                            "para esta funcion `pie()`.", info);
                 }
             } else {
-                // TODO: AGREGAR ERROR
+                aritLanguage.addSemanticError("Error : los tipos de los parametros no son los correctos " +
+                        "para esta funcion `pie()`.", info);
             }
         } else {
-            // TODO: AGREGAR ERROR
+            aritLanguage.addSemanticError("Error : el tamaño `" + numberOfArguments +
+                    "` de parámetros no es válido para la función pie().", info);
         }
         return null;
     }

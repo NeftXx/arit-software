@@ -18,16 +18,22 @@ public class Function extends Expression {
     public final String id;
     public final ArrayList<FormalParameter> parameters;
     private final Block block;
+    public ArrayList<Integer> referenceLines;
 
     public Function(NodeInfo info, String id, ArrayList<FormalParameter> parameters, Block block) {
         super(info);
         this.id = id;
         this.parameters = parameters;
         this.block = block;
+        this.referenceLines = new ArrayList<>();
     }
 
     public Function (NodeInfo info, String id, Block block) {
         this(info, id, null, block);
+    }
+
+    public void addReference(int line) {
+        this.referenceLines.add(line);
     }
 
     public boolean verifyNamesOfParameters() {
@@ -66,17 +72,19 @@ public class Function extends Expression {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-        astGraph.append("node").append(this.hashCode()).append("[label = \"Función[")
+        astGraph.append("\"node").append(this.hashCode()).append("\" [label = \"Función[")
                 .append(this.id).append("]\"];\n");
-        for (FormalParameter parameter: this.parameters) {
-            parameter.createAstGraph(astGraph);
-            astGraph.append("node").append(this.hashCode()).append(" -> ").append("node")
-                    .append(parameter.hashCode()).append(";\n");
+        if (this.parameters != null) {
+            for (FormalParameter parameter: this.parameters) {
+                parameter.createAstGraph(astGraph);
+                astGraph.append("\"node").append(this.hashCode()).append("\" -> \"").append("node")
+                        .append(parameter.hashCode()).append("\";\n");
+            }
         }
         if (this.block != null) {
             this.block.createAstGraph(astGraph);
-            astGraph.append("node").append(this.hashCode()).append(" -> ").append("node")
-                    .append(this.block.hashCode()).append(";\n");
+            astGraph.append("\"node").append(this.hashCode()).append("\" -> \"").append("node")
+                    .append(this.block.hashCode()).append("\";\n");
         }
     }
 

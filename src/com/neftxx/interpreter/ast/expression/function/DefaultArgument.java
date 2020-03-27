@@ -20,7 +20,7 @@ public class DefaultArgument extends Expression {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-        astGraph.append("node").append(this.hashCode()).append("[label = \"default\"];\n");
+        astGraph.append("\"node").append(this.hashCode()).append("\" [label = \"Argumento default\"];\n");
     }
 
     @Override

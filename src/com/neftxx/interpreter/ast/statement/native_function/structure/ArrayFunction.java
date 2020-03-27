@@ -9,8 +9,6 @@ import com.neftxx.interpreter.ast.type.AritType;
 import com.neftxx.util.NodeInfo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 public class ArrayFunction extends NativeFunction {
     private ArrayFunction() {
@@ -31,51 +29,68 @@ public class ArrayFunction extends NativeFunction {
                 int[] indexes;
                 int numberDims = aritVectorDimension.size();
                 if (TYPE_FACADE.isIntegerType(aritVectorDimension.baseType)) {
-                    int i;
+                    int j = 0;
+                    int i = numberDims - 1;
                     indexes = new int[numberDims];
-                    for (i = 0; i < numberDims; i++) {
-                        indexes[i] = (int) aritVectorDimension.getDataNodes().get(i).value;
+                    Object value;
+                    for (; i >= 0; i--, j++) {
+                        value = aritVectorDimension.getDataNodes().get(j).value;
+                        indexes[i] = value instanceof Number ? ((Number) value).intValue() : 0;
                     }
                 } else {
                     aritLanguage.addSemanticError("Error : en la funcion array el segundo argumento debe ser " +
                             " de tipo integer.", info);
                     return null;
                 }
+                boolean itsFixData = false;
                 ArrayList<DataNode> dataNodes;
+                AritType principalType;
+                AritType auxType;
                 if (TYPE_FACADE.isVectorType(expression.type)) {
                     AritVector temp = ((AritVector) resultExp).copy();
                     dataNodes = temp.getDataNodes();
+                    principalType = TYPE_FACADE.getVectorType();
+                    auxType = temp.baseType;
                 } else if (TYPE_FACADE.isListType(expression.type)) {
                     AritList temp = ((AritList) resultExp).copy();
                     dataNodes = temp.getDataNodes();
+                    principalType = TYPE_FACADE.getListType();
+                    auxType = principalType;
                 } else if (TYPE_FACADE.isMatrixType(expression.type)) {
                     AritMatrix temp = ((AritMatrix) resultExp).copy();
-                    dataNodes = (ArrayList<DataNode>) Arrays.asList(temp.getDataNodes());
+                    dataNodes = temp.getAuxDataNodes();
+                    principalType = TYPE_FACADE.getVectorType();
+                    auxType = temp.baseType;
                 } else if (TYPE_FACADE.isArrayType(expression.type)) {
                     AritArray temp = ((AritArray) resultExp).copy();
                     dataNodes = temp.getDataNodes();
+                    principalType = temp.principalType;
+                    auxType = temp.auxType;
+                    itsFixData = true;
                 } else {
                     aritLanguage.addSemanticError("Error : en la funcion array el primer parametro debe " +
                             "ser una estructura.", info);
                     return null;
                 }
                 int i, size = dataNodes.size();
-                AritType currentType;
                 if (size < 1) {
                     aritLanguage.addSemanticError("Error : en la funcion array, no existen datos.", info);
                     return null;
-                } else {
-                    currentType = dataNodes.get(0).type;
                 }
-                for (i = 1; i < size; i++) {
-                    if (currentType != dataNodes.get(i).type) {
-                        aritLanguage.addSemanticError("Error : en la funcion array los datos pasados en el " +
-                                "argumento 1 deben ser del mismo tipo", info);
-                        return null;
+                ArrayList<DataNode> newDataNodes = new ArrayList<>();
+                for (i = 0; i < size; i++) {
+                    if (itsFixData) {
+                        newDataNodes.add(dataNodes.get(i));
+                    } else {
+                        if (TYPE_FACADE.isVectorType(principalType)) {
+                            newDataNodes.add(new DataNode(principalType, new AritVector(dataNodes.get(i))));
+                        } else {
+                            newDataNodes.add(new DataNode(principalType, new AritList(dataNodes.get(i))));
+                        }
                     }
                 }
                 this.type = TYPE_FACADE.getArrayType();
-                return AritArray.createNewArray(dataNodes, numberDims, indexes, currentType);
+                return AritArray.createNewArray(newDataNodes, numberDims, indexes, principalType, auxType);
             } else {
                 aritLanguage.addSemanticError("Error : en la funcion array el segundo parametro debe ser un " +
                         "vector de tipo integer.", info);

@@ -9,7 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 public class PrintFunction extends NativeFunction {
-    private PrintFunction() { super("print"); }
+    private PrintFunction() {
+        super("print");
+    }
 
     @Override
     public Object interpret(NodeInfo info, AritLanguage aritLanguage, @NotNull ArrayList<Expression> arguments, Scope scope) {

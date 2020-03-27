@@ -4,7 +4,8 @@ import java.util.regex.Pattern;
 
 public class SyntaxUtils {
     public static final String[] KEYWORDS = new String[]{
-            "continue", "function", "default", "return", "switch", "break", "while", "case", "else", "for", "in", "do", "if"
+            "continue", "function", "default", "return", "switch", "break", "while", "case", "else", "for", "in", "do",
+            "if", "true", "false", "null"
     };
 
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
@@ -13,7 +14,7 @@ public class SyntaxUtils {
     private static final String BRACKET_PATTERN = "[\\[\\]]";
     private static final String SEMICOLON_PATTERN = ";";
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-    private static final String COMMENT_PATTERN = "#[^\n]*";
+    private static final String COMMENT_PATTERN = "#\\*[^*]*\\*(\\*|[^*#][^*]\\*)*#|#[^\n\r]*";
     private static final String OPERATION_PATTERN = "=>|==|!=|>=|<=|%%|\\+|-|\\*|/|\\^|=|>|<|\\?|:|[|]|&|!|,";
     private static final String NUMBERS_PATTERN = "[0-9]+(\".\"[0-9]+)?";
 

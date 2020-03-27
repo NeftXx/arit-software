@@ -2,8 +2,13 @@ package com.neftxx.interpreter;
 
 import com.neftxx.interpreter.ast.AstNode;
 import com.neftxx.interpreter.ast.error.*;
+import com.neftxx.interpreter.ast.expression.structure.AritStructure;
+import com.neftxx.interpreter.ast.expression.structure.StructureNode;
 import com.neftxx.interpreter.ast.scope.FileScope;
 import com.neftxx.interpreter.ast.expression.function.Function;
+import com.neftxx.interpreter.ast.scope.SymbolNode;
+import com.neftxx.interpreter.javacc.Grammar;
+import com.neftxx.interpreter.javacc.ParseException;
 import com.neftxx.interpreter.jflex_cup.Lexer;
 import com.neftxx.interpreter.jflex_cup.Parser;
 import com.neftxx.util.NodeInfo;
@@ -64,6 +69,31 @@ public class AritLanguage {
         }
     }
 
+    public ArrayList<SymbolNode> getSymbols() {
+        ArrayList<SymbolNode> symbols = new ArrayList<>();
+        this.globalScope.getMethods().forEach((key, function) -> {
+            symbols.add(new SymbolNode(
+                    key, "Function", 0, "Global", function.info.line, function.referenceLines.toString()
+            ));
+            if (function.parameters != null) {
+                function.parameters.forEach(parameter -> {
+                    symbols.add(new SymbolNode(parameter.id, "Parametro", 0, key, function.info.line, ""));
+                });
+            }
+        });
+        this.globalScope.getVariables().forEach((key, variable) -> {
+            int size = 0;
+            if (variable.value instanceof AritStructure) {
+                size = ((AritStructure) variable.value).size();
+            }
+            symbols.add(new SymbolNode(
+                    key, variable.type.toString(), size, "Global",
+                    variable.declarationLine, variable.referenceLines.toString()
+            ));
+        });
+        return symbols;
+    }
+
     public String createAstGraph() {
         StringBuilder astGraph = new StringBuilder();
         astGraph.append("digraph astGraph {\n")
@@ -110,5 +140,14 @@ public class AritLanguage {
         parse.parse();
     }
 
-    public void analyzeWithJavaCC(String text) { }
+    public void analyzeWithJavaCC(String text) {
+        StringReader sr = new StringReader(text);
+        BufferedReader reader = new BufferedReader(sr);
+        Grammar parser = new Grammar(reader, this);
+        try {
+            parser.compilation_unit();
+        } catch (ParseException e) {
+            System.err.println(e.getMessage());
+        }
+    }
 }

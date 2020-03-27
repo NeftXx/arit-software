@@ -9,7 +9,7 @@ public class StatisticalOperations {
         double prom = 0.0;
         int size = 0;
         for (double value: values) {
-            if (value > trim) {
+            if (value >= trim) {
                 prom += value;
                 size++;
             }
@@ -100,7 +100,7 @@ public class StatisticalOperations {
         int i;
         int size = values.length;
         for(i = 0; i < size; i++) {
-            if (values[i] > trim) {
+            if (values[i] >= trim) {
                 positions.add(i);
             }
         }

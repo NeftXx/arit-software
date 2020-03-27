@@ -28,6 +28,11 @@ public class IfStatement extends AstNode {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-
+        astGraph.append("\"node").append(this.hashCode()).append("\" [ label = \"Sentencia IF\"];\n");
+        for (SubIf subIf: this.subIfs) {
+            subIf.createAstGraph(astGraph);
+            astGraph.append("\"node").append(this.hashCode()).append("\" -> \"")
+                    .append("node").append(subIf.hashCode()).append("\";\n");
+        }
     }
 }

@@ -59,17 +59,19 @@ public class Comparator extends Operation {
     public Object interpret(AritLanguage aritLanguage, Scope scope) {
         Object resultLeft = this.expLeft.interpret(aritLanguage, scope);
         Object resultRight = this.expRight.interpret(aritLanguage, scope);
-        if (TYPE_FACADE.isVectorType(expLeft.type) && TYPE_FACADE.isVectorType(expRight.type)) {
+        if (resultLeft instanceof AritVector && resultRight instanceof AritVector) {
             if (operateVectors(aritLanguage, (AritVector) resultLeft, (AritVector) resultRight)) return this.value;
-        } else if (TYPE_FACADE.isMatrixType(expLeft.type) && TYPE_FACADE.isMatrixType(expRight.type)) {
+        } else if (resultLeft instanceof AritMatrix && resultRight instanceof AritMatrix) {
             if (operateMatrix(aritLanguage, (AritMatrix) resultLeft, (AritMatrix) resultRight)) return this.value;
-        } else if (TYPE_FACADE.isMatrixType(expLeft.type) && TYPE_FACADE.isVectorType(expRight.type)) {
-            if (operateMatrixVector(aritLanguage, (AritMatrix) resultLeft, (AritVector) resultRight, true)) return this.value;
-        } else if (TYPE_FACADE.isVectorType(expLeft.type) && TYPE_FACADE.isMatrixType(expRight.type)) {
-            if (operateMatrixVector(aritLanguage, (AritMatrix) resultRight, (AritVector) resultLeft, false)) return this.value;
+        } else if (resultLeft instanceof AritMatrix && resultRight instanceof AritVector) {
+            if (operateMatrixVector(aritLanguage, (AritMatrix) resultLeft, (AritVector) resultRight, true))
+                return this.value;
+        } else if (resultRight instanceof AritMatrix && resultLeft instanceof AritVector) {
+            if (operateMatrixVector(aritLanguage, (AritMatrix) resultRight, (AritVector) resultLeft, false))
+                return this.value;
         }
         else {
-            aritLanguage.addSemanticError("Error en " + this + " : no se puede operar las estructuras " +
+            aritLanguage.addSemanticError("Error : no se puede operar las estructuras " +
                     expLeft.type + " y " + expRight.type + ".", this.info);
         }
         this.type = TYPE_FACADE.getUndefinedType();
@@ -327,7 +329,14 @@ public class Comparator extends Operation {
 
     @Override
     public void createAstGraph(@NotNull StringBuilder astGraph) {
-
+        astGraph.append("\"node").append(this.hashCode()).append("\" [label = \"Exp Comparativa(")
+                .append(this.operator).append(")\"];\n");
+        this.expLeft.createAstGraph(astGraph);
+        this.expRight.createAstGraph(astGraph);
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"").append("node")
+                .append(this.expLeft.hashCode()).append("\";\n");
+        astGraph.append("\"node").append(this.hashCode()).append("\" -> \"").append("node")
+                .append(this.expRight.hashCode()).append("\";\n");
     }
 
     @Override

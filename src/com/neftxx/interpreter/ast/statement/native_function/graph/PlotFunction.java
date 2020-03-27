@@ -48,7 +48,7 @@ public class PlotFunction extends NativeFunction {
                         if (!(type.equalsIgnoreCase("P") ||
                                 type.equalsIgnoreCase("I") ||
                                 type.equalsIgnoreCase("O"))) {
-                            // TODO: AGREGAR ERROR
+                            aritLanguage.addSemanticError("Warning : Se esperaba un String `P`, `I` o `O`.", info);
                             type = "O";
                         }
                         String labelX = toString(vectorArgument3.getDataNodes().get(0).value);
@@ -73,10 +73,12 @@ public class PlotFunction extends NativeFunction {
                         }
                         aritLanguage.addChart(getScatterChart(values, labelX, labelY, title, min, max));
                     } else {
-                        // TODO: AGREGAR ERROR
+                        aritLanguage.addSemanticError("Error : los tipos de los parametros no son los correctos " +
+                                "para esta funcion `plot()`.", info);
                     }
                 } else {
-                    // TODO: AGREGAR ERROR
+                    aritLanguage.addSemanticError("Error : los tipos de los parametros no son los correctos " +
+                            "para esta funcion `plot()`.", info);
                 }
             } else if (isMatrix(expArgument1)) {
                 if (isVector(expArgument2) && isVector(expArgument3) && isVector(expArgument4) && isVector(expArgument5)) {
@@ -96,7 +98,7 @@ public class PlotFunction extends NativeFunction {
                         if (!(type.equalsIgnoreCase("P") ||
                                 type.equalsIgnoreCase("I") ||
                                 type.equalsIgnoreCase("O"))) {
-                            // TODO: AGREGAR ERROR
+                            aritLanguage.addSemanticError("Warning : Se esperaba un String `P`, `I` o `O`.", info);
                             type = "O";
                         }
                         String labelX = toString(vectorArgument3.getDataNodes().get(0).value);
@@ -121,16 +123,20 @@ public class PlotFunction extends NativeFunction {
                         }
                         aritLanguage.addChart(getScatterChart(values, labelX, labelY, title, min, max));
                     } else {
-                        // TODO: AGREGAR ERROR
+                        aritLanguage.addSemanticError("Error : los tipos de los parametros no son los correctos " +
+                                "para esta funcion `plot()`.", info);
                     }
                 } else {
-                    // TODO: AGREGAR ERROR
+                    aritLanguage.addSemanticError("Error : los tipos de los parametros no son los correctos " +
+                            "para esta funcion `plot()`.", info);
                 }
             } else {
-                // TODO: AGREGAR ERROR
+                aritLanguage.addSemanticError("Error : los tipos de los parametros no son los correctos " +
+                        "para esta funcion `plot()`.", info);
             }
         } else {
-            // TODO: AGREGAR ERROR
+            aritLanguage.addSemanticError("Error : el tamaño `" + numberOfArguments +
+                    "` de parámetros no es válido para la función plot().", info);
         }
         return null;
     }
