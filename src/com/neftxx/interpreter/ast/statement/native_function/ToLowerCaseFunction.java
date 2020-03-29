@@ -27,10 +27,10 @@ public class ToLowerCaseFunction extends NativeFunction {
                     String _string = toString(vector.getDataNodes().get(0).value);
                     return new AritVector(new DataNode(TYPE_FACADE.getStringType(), _string.toLowerCase()));
                 } else {
-                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo String.", info);
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo String en la función `toLowerCase()`.", info);
                 }
             } else {
-                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo String.", info);
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo String en la función `toLowerCase()`.", info);
             }
         } else {
             aritLanguage.addSemanticError("Error : no se encontró la funcion toLowerCase con la cantidad de parametros `" +

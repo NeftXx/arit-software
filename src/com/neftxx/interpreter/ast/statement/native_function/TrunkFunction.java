@@ -29,13 +29,13 @@ public class TrunkFunction extends NativeFunction {
                     return new AritVector(new DataNode(TYPE_FACADE.getIntegerType(),
                             toInt(vector.getDataNodes().get(0).value)));
                 } else {
-                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico en la función `trunk()`.", info);
                 }
             } else  {
-                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico en la función `trunk()`.", info);
             }
         } else {
-            aritLanguage.addSemanticError("Error : no se encontró la funcion trunk con la cantidad de parametros `" +
+            aritLanguage.addSemanticError("Error : no se encontró la función `trunk()` con la cantidad de parametros `" +
                     argumentsSize + "`.", info);
         }
         return null;

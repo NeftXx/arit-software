@@ -34,7 +34,7 @@ public class LengthFunction extends NativeFunction {
                 size = 1;
             }
         } else {
-            aritLanguage.addSemanticError("Error : no se encontró la funcion length con la cantidad de parametros `" +
+            aritLanguage.addSemanticError("Error : no se encontró la funcion `length()` con la cantidad de parametros `" +
                     argumentsSize + "`.", info);
         }
         return new AritVector(new DataNode(TYPE_FACADE.getIntegerType(), size));

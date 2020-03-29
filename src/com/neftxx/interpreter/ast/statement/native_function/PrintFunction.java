@@ -20,10 +20,12 @@ public class PrintFunction extends NativeFunction {
             Expression expression = arguments.get(0);
             Object result = expression.interpret(aritLanguage, scope);
             if (TYPE_FACADE.isUndefinedType(expression.type)) {
-                StringBuilder cad = new StringBuilder();
-                for (Expression argument: arguments) cad.append(argument).append(" ");
-                aritLanguage.addSemanticError("Error en print( " + cad + ") : al calcular el valor del parametro de la posición `1`.",
+                aritLanguage.addSemanticError("Error : en la función `print()` al calcular el valor del parametro de la posición `1`.",
                         expression.info);
+                return null;
+            } else if (TYPE_FACADE.isDefaultType(expression.type)) {
+                aritLanguage.addSemanticError("Error : en la función `print()` al calcular el valor del " +
+                                "parametro de la posición `1` no se esperaba el parametro default.", expression.info);
                 return null;
             }
             aritLanguage.printOnConsole(result != null ? "> " + result.toString() : "> NULL");

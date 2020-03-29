@@ -28,8 +28,8 @@ public class MatrixFunction extends NativeFunction {
             Object resultVector = vectorExp.interpret(aritLanguage, scope);
             Object resultRows = rowsExp.interpret(aritLanguage, scope);
             Object resultCol = colExp.interpret(aritLanguage, scope);
-            if (TYPE_FACADE.isVectorType(vectorExp.type)) {
-                if (TYPE_FACADE.isVectorType(rowsExp.type) && TYPE_FACADE.isVectorType(colExp.type)) {
+            if (resultVector instanceof AritVector) {
+                if (resultRows instanceof AritVector && resultCol instanceof AritVector) {
                     AritVector vectorRows = (AritVector) resultRows;
                     AritVector vectorCol = (AritVector) resultCol;
                     if (TYPE_FACADE.isIntegerType(vectorRows.baseType) && TYPE_FACADE.isIntegerType(vectorCol.baseType)) {

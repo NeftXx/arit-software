@@ -3,6 +3,7 @@ package com.neftxx.interpreter.ast.statement.native_function;
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.expression.Expression;
 import com.neftxx.interpreter.ast.expression.structure.AritArray;
+import com.neftxx.interpreter.ast.expression.structure.AritList;
 import com.neftxx.interpreter.ast.expression.structure.AritMatrix;
 import com.neftxx.interpreter.ast.expression.structure.AritVector;
 import com.neftxx.interpreter.ast.scope.Scope;
@@ -25,20 +26,19 @@ public class TypeofFunction extends NativeFunction {
             this.type = TYPE_FACADE.getVectorType();
             if (value instanceof AritVector) {
                 return new AritVector(TYPE_FACADE.getStringType(), ((AritVector) value).baseType.toString());
-            }
-
-            if (value instanceof AritMatrix) {
+            } else if (value instanceof AritMatrix) {
                 return new AritVector(TYPE_FACADE.getStringType(), ((AritMatrix) value).baseType.toString());
-            }
-
-            if (value instanceof AritArray) {
+            } else if (value instanceof AritArray) {
                 return new AritVector(TYPE_FACADE.getStringType(), ((AritArray) value).auxType.toString());
+            } else if (value instanceof AritList) {
+                return new AritVector(TYPE_FACADE.getStringType(), argument.type.toString());
+            } else {
+                aritLanguage.addSemanticError("Error : en la función `typeof()` no se esperaba el " +
+                        "tipo " + argument.type + "." , info);
             }
-
-            return new AritVector(TYPE_FACADE.getStringType(), argument.type.toString());
         } else {
             aritLanguage.addSemanticError("Error : el tamaño `" + size +
-                    "` de parámetros no es válido para la función typeof().", info);
+                    "` de parámetros no es válido para la función `typeof()`.", info);
         }
         this.type = TYPE_FACADE.getUndefinedType();
         return null;

@@ -62,7 +62,7 @@ public class Access extends AstNode {
     private void interpret(AritLanguage aritLanguage, Scope scope, Expression expression, int position) {
         if (expression != null) {
             Object value = expression.interpret(aritLanguage, scope);
-            if (TYPE_FACADE.isVectorType(expression.type)) {
+            if (value instanceof AritVector) {
                 AritVector vector = (AritVector) value;
                 if (TYPE_FACADE.isIntegerType(vector.baseType)) {
                     DataNode dataNode = vector.getDataNodes().get(0);

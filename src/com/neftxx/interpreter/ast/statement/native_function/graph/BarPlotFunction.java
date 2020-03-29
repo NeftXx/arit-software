@@ -28,7 +28,7 @@ public class BarPlotFunction extends NativeFunction {
             Object resultH = expH.interpret(aritLanguage, scope), resultXLab = expXLab.interpret(aritLanguage, scope),
                     resultYLab = expYLab.interpret(aritLanguage, scope), resultMain = expMain.interpret(aritLanguage, scope),
                     resultNamesArg = expNamesArg.interpret(aritLanguage, scope);
-            if (isVector(expH) && isVector(expXLab) && isVector(expYLab) && isVector(expMain) && isVector(expNamesArg)) {
+            if (isVector(resultH) && isVector(resultXLab) && isVector(resultYLab) && isVector(resultMain) && isVector(resultNamesArg)) {
                 AritVector vectorH = (AritVector) resultH, vectorXLab = (AritVector) resultXLab,
                         vectorYLab = (AritVector) resultYLab, vectorMain = (AritVector) resultMain,
                         vectorNamesArg = (AritVector) resultNamesArg;
@@ -106,8 +106,8 @@ public class BarPlotFunction extends NativeFunction {
         return value != null ? value.toString() : "NULL";
     }
 
-    private boolean isVector(@NotNull Expression exp) {
-        return TYPE_FACADE.isVectorType(exp.type);
+    private boolean isVector(@NotNull Object value) {
+        return value instanceof AritVector;
     }
 
     private boolean isNumber(@NotNull AritVector vector) {

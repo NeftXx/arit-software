@@ -37,10 +37,10 @@ public class MedianFunction extends NativeFunction {
                     double median = StatisticalOperations.calculateMedian(values);
                     return new AritVector(new DataNode(TYPE_FACADE.getNumericType(), median));
                 } else {
-                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico en la función `median()`.", info);
                 }
             } else {
-                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico en la función `median()`.", info);
             }
         } else if (argumentsSize == 2) {
             Expression expression = arguments.get(0);
@@ -64,16 +64,16 @@ public class MedianFunction extends NativeFunction {
                             double median = StatisticalOperations.calculateMedian(values, trim);
                             return new AritVector(new DataNode(TYPE_FACADE.getNumericType(), median));
                         } else {
-                            aritLanguage.addSemanticError("Error en TRIM : se esperaba un vector de tipo numerico.", info);
+                            aritLanguage.addSemanticError("Error en trim : se esperaba un vector de tipo numerico en la función `median()`.", info);
                         }
                     } else {
-                        aritLanguage.addSemanticError("Error en TRIM : se esperaba un vector de tipo numerico.", info);
+                        aritLanguage.addSemanticError("Error en trim : se esperaba un vector de tipo numerico en la función `median()`.", info);
                     }
                 } else {
-                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico en la función `median()`.", info);
                 }
             } else{
-                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico en la función `median()`.", info);
             }
         } else {
             aritLanguage.addSemanticError("Error : no se encontró la funcion median con la cantidad de parametros `" +

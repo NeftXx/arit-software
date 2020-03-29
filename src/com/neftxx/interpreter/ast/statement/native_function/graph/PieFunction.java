@@ -30,8 +30,8 @@ public class PieFunction extends NativeFunction {
             Object resultXExp = xExp.interpret(aritLanguage, scope);
             Object resultLabelsExp = labelsExp.interpret(aritLanguage, scope);
             Object resultMainExp = mainExp.interpret(aritLanguage, scope);
-            if (TYPE_FACADE.isVectorType(xExp.type) && TYPE_FACADE.isVectorType(labelsExp.type) &&
-                    TYPE_FACADE.isVectorType(mainExp.type)) {
+            if (resultXExp instanceof AritVector && resultLabelsExp instanceof AritVector &&
+                    resultMainExp instanceof AritVector) {
                 AritVector xAritVector = (AritVector) resultXExp;
                 AritVector labelsAritVector = (AritVector) resultLabelsExp;
                 AritVector mainAritVector = (AritVector) resultMainExp;

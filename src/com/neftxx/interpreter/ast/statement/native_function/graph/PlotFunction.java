@@ -30,8 +30,8 @@ public class PlotFunction extends NativeFunction {
                     resultArgument3 = expArgument3.interpret(aritLanguage, scope),
                     resultArgument4 = expArgument4.interpret(aritLanguage, scope),
                     resultArgument5 = expArgument5.interpret(aritLanguage, scope);
-            if (isVector(expArgument1)) {
-                if (isVector(expArgument2) && isVector(expArgument3) && isVector(expArgument4) && isVector(expArgument5)) {
+            if (isVector(resultArgument1)) {
+                if (isVector(resultArgument2) && isVector(resultArgument3) && isVector(resultArgument4) && isVector(resultArgument5)) {
                     AritVector vectorArgument1 = (AritVector) resultArgument1,
                             vectorArgument2 = (AritVector) resultArgument2,
                             vectorArgument3 = (AritVector) resultArgument3,
@@ -80,8 +80,8 @@ public class PlotFunction extends NativeFunction {
                     aritLanguage.addSemanticError("Error : los tipos de los parametros no son los correctos " +
                             "para esta funcion `plot()`.", info);
                 }
-            } else if (isMatrix(expArgument1)) {
-                if (isVector(expArgument2) && isVector(expArgument3) && isVector(expArgument4) && isVector(expArgument5)) {
+            } else if (isMatrix(resultArgument1)) {
+                if (isVector(resultArgument2) && isVector(resultArgument3) && isVector(resultArgument4) && isVector(resultArgument5)) {
                     AritMatrix matrixArgument1 = (AritMatrix) resultArgument1;
                     AritVector vectorArgument2 = (AritVector) resultArgument2,
                             vectorArgument3 = (AritVector) resultArgument3,
@@ -214,12 +214,12 @@ public class PlotFunction extends NativeFunction {
         return value != null ? value.toString() : "NULL";
     }
 
-    private boolean isVector(@NotNull Expression exp) {
-        return TYPE_FACADE.isVectorType(exp.type);
+    private boolean isVector(@NotNull Object value) {
+        return value instanceof AritVector;
     }
 
-    private boolean isMatrix(@NotNull Expression exp) {
-        return TYPE_FACADE.isMatrixType(exp.type);
+    private boolean isMatrix(@NotNull Object value) {
+        return value instanceof AritMatrix;
     }
 
     public static PlotFunction getInstance() {

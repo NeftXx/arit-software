@@ -27,10 +27,10 @@ public class StringLengthFunction extends NativeFunction {
                     String _string = toString(vector.getDataNodes().get(0).value);
                     return new AritVector(new DataNode(TYPE_FACADE.getIntegerType(), _string.length()));
                 } else {
-                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo String.", info);
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo String en la función `StringLength()`.", info);
                 }
             } else {
-                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo String.", info);
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo String en la función `StringLength()`.", info);
             }
         } else {
             aritLanguage.addSemanticError("Error : no se encontró la funcion StringLength con la cantidad de parametros `" +

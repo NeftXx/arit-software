@@ -24,7 +24,7 @@ public class ArrayFunction extends NativeFunction {
             Expression dimensionsExp = arguments.get(1);
             Object resultExp = expression.interpret(aritLanguage, scope);
             Object resultDimensionExp = dimensionsExp.interpret(aritLanguage, scope);
-            if (TYPE_FACADE.isVectorType(dimensionsExp.type)) {
+            if (resultDimensionExp instanceof AritVector) {
                 AritVector aritVectorDimension = (AritVector) resultDimensionExp;
                 int[] indexes;
                 int numberDims = aritVectorDimension.size();
@@ -46,22 +46,22 @@ public class ArrayFunction extends NativeFunction {
                 ArrayList<DataNode> dataNodes;
                 AritType principalType;
                 AritType auxType;
-                if (TYPE_FACADE.isVectorType(expression.type)) {
+                if (resultExp instanceof AritVector) {
                     AritVector temp = ((AritVector) resultExp).copy();
                     dataNodes = temp.getDataNodes();
                     principalType = TYPE_FACADE.getVectorType();
                     auxType = temp.baseType;
-                } else if (TYPE_FACADE.isListType(expression.type)) {
+                } else if (resultExp instanceof AritList) {
                     AritList temp = ((AritList) resultExp).copy();
                     dataNodes = temp.getDataNodes();
                     principalType = TYPE_FACADE.getListType();
                     auxType = principalType;
-                } else if (TYPE_FACADE.isMatrixType(expression.type)) {
+                } else if (resultExp instanceof AritMatrix) {
                     AritMatrix temp = ((AritMatrix) resultExp).copy();
                     dataNodes = temp.getAuxDataNodes();
                     principalType = TYPE_FACADE.getVectorType();
                     auxType = temp.baseType;
-                } else if (TYPE_FACADE.isArrayType(expression.type)) {
+                } else if (resultExp instanceof AritArray) {
                     AritArray temp = ((AritArray) resultExp).copy();
                     dataNodes = temp.getDataNodes();
                     principalType = temp.principalType;

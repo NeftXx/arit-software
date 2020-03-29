@@ -30,7 +30,7 @@ public class HistFunction extends NativeFunction {
             Object resArgument1 = expArgument1.interpret(aritLanguage, scope),
                     resArgument2 = expArgument2.interpret(aritLanguage, scope),
                     resArgument3 = expArgument3.interpret(aritLanguage, scope);
-            if (isVector(expArgument1) && isVector(expArgument2) && isVector(expArgument3)) {
+            if (isVector(resArgument1) && isVector(resArgument2) && isVector(resArgument3)) {
                 AritVector vectorArg1 = (AritVector) resArgument1,
                         vectorArg2 = (AritVector) resArgument2,
                         vectorArg3 = (AritVector) resArgument3;
@@ -47,7 +47,7 @@ public class HistFunction extends NativeFunction {
                     aritLanguage.addSemanticError("Error : los tipos de los parametros no son los correctos " +
                             "para esta funcion `hist()`.", info);
                 }
-            } else if (isMatrix(expArgument1) && isVector(expArgument2) && isVector(expArgument3)) {
+            } else if (isMatrix(resArgument1) && isVector(resArgument2) && isVector(resArgument3)) {
                 AritMatrix matrixArg1 = (AritMatrix) resArgument1;
                 AritVector vectorArg2 = (AritVector) resArgument2,
                         vectorArg3 = (AritVector) resArgument3;
@@ -109,12 +109,12 @@ public class HistFunction extends NativeFunction {
         return value != null ? value.toString() : "NULL";
     }
 
-    private boolean isVector(@NotNull Expression exp) {
-        return TYPE_FACADE.isVectorType(exp.type);
+    private boolean isVector(@NotNull Object value) {
+        return value instanceof AritVector;
     }
 
-    private boolean isMatrix(@NotNull Expression exp) {
-        return TYPE_FACADE.isMatrixType(exp.type);
+    private boolean isMatrix(@NotNull Object value) {
+        return value instanceof AritMatrix;
     }
 
     public static HistFunction getInstance() {

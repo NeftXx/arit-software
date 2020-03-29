@@ -26,18 +26,17 @@ public class RemoveFunction extends NativeFunction {
             if (resultString instanceof AritVector && resultRemove instanceof AritVector) {
                 AritVector vectorString = (AritVector) resultString;
                 AritVector vectorRemove = (AritVector) resultRemove;
-                if (TYPE_FACADE.isStringType(vectorString.baseType) && vectorString.size() == 1 &&
-                        TYPE_FACADE.isStringType(vectorRemove.baseType) && vectorRemove.size() == 1) {
+                if (TYPE_FACADE.isStringType(vectorString.baseType) && TYPE_FACADE.isStringType(vectorRemove.baseType)) {
                     String _string = toString(vectorString.getDataNodes().get(0).value);
                     String _remove = toString(vectorRemove.getDataNodes().get(0).value);
                     String result = _string.replaceAll(_remove, "");
                     this.type = TYPE_FACADE.getVectorType();
                     return new AritVector(new DataNode(TYPE_FACADE.getStringType(), result));
                 } else {
-                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo string en la funcion `remove()`.", info);
                 }
             } else {
-                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo string en la funcion `remove()`.", info);
             }
         } else {
             aritLanguage.addSemanticError("Error : no se encontró la funcion Remove con la cantidad de parametros `" +

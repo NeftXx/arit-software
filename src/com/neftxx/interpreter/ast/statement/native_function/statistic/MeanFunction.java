@@ -36,10 +36,10 @@ public class MeanFunction extends NativeFunction {
                     double mean = StatisticalOperations.calculateMean(values);
                     return new AritVector(new DataNode(TYPE_FACADE.getNumericType(), mean));
                 } else {
-                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico en la función `mean()`.", info);
                 }
             } else {
-                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico en la función `mean()`.", info);
             }
         } else if (argumentsSize == 2) {
             Expression expression = arguments.get(0);
@@ -63,19 +63,19 @@ public class MeanFunction extends NativeFunction {
                             double mean = StatisticalOperations.calculateMean(values, trim);
                             return new AritVector(new DataNode(TYPE_FACADE.getNumericType(), mean));
                         } else {
-                            aritLanguage.addSemanticError("Error en TRIM: se esperaba un vector de tipo numerico.", info);
+                            aritLanguage.addSemanticError("Error trim: se esperaba un vector de tipo numerico en la función `mean()`.", info);
                         }
                     } else {
-                        aritLanguage.addSemanticError("Error en TRIM: se esperaba un vector de tipo numerico.", info);
+                        aritLanguage.addSemanticError("Error en trim: se esperaba un vector de tipo numerico en la función `mean()`.", info);
                     }
                 } else {
-                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico en la función `mean()`.", info);
                 }
             } else {
-                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico en la función `mean()`.", info);
             }
         } else {
-            aritLanguage.addSemanticError("Error : no se encontró la funcion mean con la cantidad de parametros `" +
+            aritLanguage.addSemanticError("Error : no se encontró la funcion `mean()` con la cantidad de parametros `" +
                     argumentsSize + "`.", info);
         }
         return null;

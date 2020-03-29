@@ -29,10 +29,10 @@ public class RoundFunction extends NativeFunction {
                     return new AritVector(new DataNode(TYPE_FACADE.getIntegerType(),
                             toInt(vector.getDataNodes().get(0).value)));
                 } else {
-                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico en la función `round()`.", info);
                 }
             } else  {
-                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico.", info);
+                aritLanguage.addSemanticError("Error : se esperaba un vector de tipo numerico en la función `round()`.", info);
             }
         } else {
             aritLanguage.addSemanticError("Error : no se encontró la funcion Round con la cantidad de parametros `" +
