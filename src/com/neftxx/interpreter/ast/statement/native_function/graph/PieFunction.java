@@ -77,7 +77,13 @@ public class PieFunction extends NativeFunction {
     private PieChart getChart(@NotNull double[] values, String[] labels, String title) {
         int i, size = values.length;
         ArrayList<PieChart.Data> list = new ArrayList<>();
-        for (i = 0; i < size; i++) list.add(new PieChart.Data(labels[i], values[i]));
+        String text;
+        int total = 0;
+        for (i = 0; i < size; i++) total += values[i];
+        for (i = 0; i < size; i++) {
+            text = String.format("%.1f%%", 100 * values[i] / total);
+            list.add(new PieChart.Data(labels[i] + " | " + text, values[i]));
+        }
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(list);
         PieChart pieChart = new PieChart(pieChartData);
         pieChart.setTitle(title);
@@ -85,6 +91,8 @@ public class PieFunction extends NativeFunction {
         pieChart.setLabelsVisible(true);
         pieChart.setStartAngle(180);
         pieChart.setStyle("-fx-background-color: white; -fx-font-weight: bold");
+        pieChart.setMinSize(600, 600);
+        pieChart.setMaxSize(1000, 1000);
         return pieChart;
     }
 

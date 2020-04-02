@@ -2,9 +2,7 @@ package com.neftxx.interpreter.ast.statement.native_function.structure;
 
 import com.neftxx.interpreter.AritLanguage;
 import com.neftxx.interpreter.ast.expression.Expression;
-import com.neftxx.interpreter.ast.expression.structure.AritList;
-import com.neftxx.interpreter.ast.expression.structure.AritVector;
-import com.neftxx.interpreter.ast.expression.structure.DataNode;
+import com.neftxx.interpreter.ast.expression.structure.*;
 import com.neftxx.interpreter.ast.scope.Scope;
 import com.neftxx.interpreter.ast.statement.native_function.NativeFunction;
 import com.neftxx.interpreter.ast.type.AritType;
@@ -23,18 +21,18 @@ public class ConcatenateFunction extends NativeFunction {
         Object value;
         for (Expression argument: arguments) {
             value = argument.interpret(aritLanguage, scope);
-            if (TYPE_FACADE.isUndefinedType(argument.type) || TYPE_FACADE.isMatrixType(argument.type)
-                    || TYPE_FACADE.isArrayType(argument.type)) {
+            if (TYPE_FACADE.isUndefinedType(argument.type) || value instanceof AritMatrix
+                    || value instanceof AritArray) {
                 aritLanguage.addSemanticError("Error : al calcular el valor del parametro de la posición `" +
                         arguments.indexOf(argument) + "` de la función `c()`. No se permite objetos del tipo " + argument.type +
                         " en esta función.", argument.info);
                 return null;
-            } else if (TYPE_FACADE.isVectorType(argument.type)) {
+            } else if (value instanceof AritVector) {
                 AritVector vector = (AritVector) value;
                 if (vector.baseType.priority > typeTemp.priority) typeTemp = vector.baseType;
                 if (argument.verifyCopy()) vector = vector.copy();
                 dataNodes.addAll(vector.getDataNodes());
-            } else if (TYPE_FACADE.isListType(argument.type)) {
+            } else if (value instanceof AritList) {
                 if (!TYPE_FACADE.isListType(typeTemp)) typeTemp = TYPE_FACADE.getListType();
                 AritList list = (AritList) value;
                 if (argument.verifyCopy()) list = list.copy();

@@ -1,0 +1,135 @@
+@startuml
+
+abstract AstNode
+abstract Expression
+abstract Operation
+
+AstNode <|-- Expression
+
+Expression <|-- Identifier
+Expression <|-- Literal
+
+Expression <|-- Assignment
+Expression <|-- StructureAssignment
+Access -- StructureAssignment
+Expression <|-- Operation
+
+Expression <|-- DefaultArgument
+FormalParameter -- Function
+Expression <|-- Function
+Expression <|-- FunctionCall
+
+Operation <|-- Arithmetic
+Operation <|-- Comparator
+Operation <|-- Logical
+Operation <|-- Not
+Operation <|-- Ternary
+Operation <|-- UnarySubtraction
+
+Scope -- AstNode
+SymbolNode -- Scope
+AritType -- SymbolNode
+Scope -- AritType
+
+abstract class AritType {
+    public final int priority;
+    protected final String name;
+}
+
+class SymbolNode {
+    public String id;
+    public String type;
+    public int size;
+    public String scope;
+    public int declarationLine;
+    public String linesReference;
+}
+
+class Expression  {
+    public AritType type;
+    public Object value;
+    public Expression(NodeInfo info)
+    public boolean verifyCopy()
+}
+
+class Identifier {
+    public final String name;
+    public Identifier(NodeInfo info, String name)
+}
+
+class Literal {
+    private AritType baseType;
+    private Object baseValue;
+    public Literal(NodeInfo info, AritType type, Object value)
+}
+
+class FunctionCall {
+    public final String id;
+    public final ArrayList<Expression> arguments;
+
+    public FunctionCall(NodeInfo info, String id, ArrayList<Expression> arguments)
+}
+
+class Operation {
+    public Expression expLeft;
+    public Expression expRight;
+    public Operation(NodeInfo info, Expression expLeft, Expression expRight)
+}
+
+class Return extends AstNode {
+    public Object value;
+    public AritType type;
+    public Expression expression;
+}
+
+class Continue extends AstNode {
+}
+
+class Break extends AstNode {
+}
+
+class Block extends AstNode {
+    public final ArrayList<AstNode> astNodes;
+}
+
+class IfStatement extends AstNode {
+    public ArrayList<SubIf> subIfs;
+}
+
+class SubIf extends AstNode {
+    public boolean condValue, isElse;
+    public Expression expression;
+    public Block block;
+}
+
+class DoWhileStm extends AstNode {
+    public Expression expression;
+    public Block block;
+}
+
+class ForStm extends AstNode {
+    public String id;
+    public Expression expression;
+    public Block block;
+}
+
+class WhileStm extends AstNode {
+    public Expression expression;
+    public Block block;
+}
+
+class SwitchStm extends AstNode {
+    public Expression expression;
+    public ArrayList<CaseStm> labels;
+}
+
+class CaseStm extends AstNode {
+    public Expression expression;
+    public ArrayList<AstNode> astNodes;
+}
+
+class Scope {
+    protected Scope previous;
+    protected HashMap<String, VarSymbol> variables;
+}
+@enduml

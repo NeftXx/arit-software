@@ -25,6 +25,7 @@ public class Ternary extends Operation {
 
     @Override
     public Object interpret(AritLanguage aritLanguage, Scope scope) {
+        this.type = TYPE_FACADE.getUndefinedType();
         Object resultCond = this.condition.interpret(aritLanguage, scope);
         boolean result = false;
         if (resultCond instanceof AritVector) {

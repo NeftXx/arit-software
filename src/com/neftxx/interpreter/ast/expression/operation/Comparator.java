@@ -69,13 +69,19 @@ public class Comparator extends Operation {
         } else if (resultRight instanceof AritMatrix && resultLeft instanceof AritVector) {
             if (operateMatrixVector(aritLanguage, (AritMatrix) resultRight, (AritVector) resultLeft, false))
                 return this.value;
+        } else {
+            if (this.operator == Operator.EQUAL) {
+                this.type = TYPE_FACADE.getVectorType();
+                return new AritVector(TYPE_FACADE.getBooleanType(), resultLeft == resultRight);
+            } else if (this.operator == Operator.UNEQUAL) {
+                this.type = TYPE_FACADE.getVectorType();
+                return new AritVector(TYPE_FACADE.getBooleanType(), resultLeft != resultRight);
+            }
+            aritLanguage.addSemanticError("Warning : no se puede operar las estructuras " +
+                    expLeft.type + " y " + expRight.type + " con el operador " + this.operator + ".", this.info);
         }
-        else {
-            aritLanguage.addSemanticError("Error : no se puede operar las estructuras " +
-                    expLeft.type + " y " + expRight.type + ".", this.info);
-        }
-        this.type = TYPE_FACADE.getUndefinedType();
-        return null;
+        this.type = TYPE_FACADE.getVectorType();
+        return new AritVector(TYPE_FACADE.getBooleanType(), false);
     }
 
     private boolean operateMatrixVector(
@@ -130,11 +136,11 @@ public class Comparator extends Operation {
             AritLanguage aritLanguage, AritMatrix aritMatrix, @NotNull AritVector aritVector, boolean isMatrixVector
     ) {
         if (isMatrixVector) {
-            aritLanguage.addSemanticError("Error en " + this + " : No se puede usar el operador " +
+            aritLanguage.addSemanticError("Error : No se puede usar el operador " +
                     this.operator + " con una matriz de tipo " + aritMatrix.baseType +
                     " con un vector de tipo " + aritVector.baseType + ".", this.info);
         } else {
-            aritLanguage.addSemanticError("Error en " + this + " : No se puede usar el operador " +
+            aritLanguage.addSemanticError("Error : No se puede usar el operador " +
                     this.operator + " con el vector de tipo " + aritVector.baseType +
                     " con un la matriz de tipo " + aritMatrix.baseType + ".", this.info);
         }
@@ -168,9 +174,9 @@ public class Comparator extends Operation {
                         dataNodeArrayList[i] = new DataNode(boolType, compareBooleans(val1, val2));
                     }
                 } else {
-                    aritLanguage.addSemanticError("Error en " + this + " : No se puede usar el operador " +
+                    aritLanguage.addSemanticError("Warning : el usar el operador " +
                             this.operator + " con una matriz de tipo " + aritMatrixLeft.baseType +
-                            " con una matriz de tipo " + aritMatrixRight.baseType + ".", this.info);
+                            " con una matriz de tipo " + aritMatrixRight.baseType + " puede dar resultados no esperados.", this.info);
                     return false;
                 }
             } else if (isString) {
@@ -181,9 +187,9 @@ public class Comparator extends Operation {
                     dataNodeArrayList[i] = new DataNode(boolType, compareStrings(val1, val2));
                 }
             } else {
-                aritLanguage.addSemanticError("Error en " + this + " : No se puede usar el operador " +
+                aritLanguage.addSemanticError("Warning : No se puede usar el operador " +
                         this.operator + " con una matriz de tipo " + aritMatrixLeft.baseType +
-                        " con una matriz de tipo " + aritMatrixRight.baseType + ".", this.info);
+                        " con una matriz de tipo " + aritMatrixRight.baseType + " puede dar resultados no esperados.", this.info);
                 return false;
             }
             this.type = TYPE_FACADE.getMatrixType();
@@ -245,9 +251,9 @@ public class Comparator extends Operation {
                     dataNodeArrayList.add(new DataNode(boolType, compareStrings(str1, str2)));
                 }
             } else {
-                aritLanguage.addSemanticError("Error en " + this + " : No se puede usar el operador " +
+                aritLanguage.addSemanticError("Warning : el usar el operador " +
                         this.operator + " con un vector de tipo " + aritVectorLeft.baseType +
-                        " con un vector de tipo " + aritVectorRight.baseType + ".", this.info);
+                        " con un vector de tipo " + aritVectorRight.baseType + " puede dar resultados no esperados.", this.info);
                 return false;
             }
             this.type = TYPE_FACADE.getVectorType();
@@ -272,7 +278,6 @@ public class Comparator extends Operation {
     }
 
     private Boolean compareStrings(String val1, String val2) {
-        int i = val1 != null ? val1.compareTo(val2) : 0;
         switch (this.operator) {
             case EQUAL:
                 if (val1 == null && val2 == null) return true;
@@ -281,17 +286,17 @@ public class Comparator extends Operation {
                 if (val1 == null && val2 == null) return false;
                 return !(val1 != null && val1.equals(val2));
             case LESS_THAN:
-                if (val1 == null && val2 == null) return false;
-                return i < 0;
+                if (val1 == null || val2 == null) return false;
+                return val1.compareTo(val2) < 0;
             case GREATER_THAN:
-                if (val1 == null && val2 == null) return false;
-                return i > 0;
+                if (val1 == null || val2 == null) return false;
+                return val1.compareTo(val2) > 0;
             case LESS_THAN_OR_EQUAL_TO:
-                if (val1 == null && val2 == null) return true;
-                return i <= 0;
+                if (val1 == null || val2 == null) return true;
+                return val1.compareTo(val2) <= 0;
             case GREATER_THAN_OR_EQUAL_TO:
-                if (val1 == null && val2 == null) return true;
-                return i >= 0;
+                if (val1 == null || val2 == null) return true;
+                return val1.compareTo(val2) >= 0;
             default:
                 return false;
         }

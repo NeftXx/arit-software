@@ -3,6 +3,7 @@ package com.neftxx.interpreter.ast.expression.structure;
 import com.neftxx.interpreter.ast.type.AritType;
 import org.jetbrains.annotations.NotNull;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -46,9 +47,14 @@ public class CompoundNode extends StructureNode {
                 DataNode node = (DataNode) childrenNodes.get(i);
                 AritVector vector = (AritVector) node.value;
                 node = vector.getDataNodes().get(0);
+                Object value = node.value;
+                while (value instanceof DataNode) {
+                    value = ((DataNode) value).value;
+                }
                 if (TYPE_FACADE.isBaseType(newType)) {
                     AritType oldType = vector.baseType;
-                    Object newValue = TYPE_FACADE.castValue(oldType, newType, node.value);
+                    Object newValue = TYPE_FACADE.castValue(oldType, newType, value);
+                    vector.baseType = newType;
                     node.changeValues(newType, newValue);
                     this.baseType = newType;
                 } else {

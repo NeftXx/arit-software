@@ -82,6 +82,8 @@ public class BarPlotFunction extends NativeFunction {
         barChart.setTitle(title);
         barChart.setStyle("-fx-background-color: white; -fx-font-weight: bold");
         barChart.getData().add(getSeries(values, names));
+        barChart.setMinSize(600, 600);
+        barChart.setMaxSize(1000, 1000);
         return barChart;
     }
 
@@ -91,7 +93,7 @@ public class BarPlotFunction extends NativeFunction {
         series.setName("Datos");
         int i, length = values.length;
         for (i = 0; i < length; i++) {
-            series.getData().add(new XYChart.Data<>(names[i], values[i]));
+            series.getData().add(new XYChart.Data<>(names[i] + " | " + values[i], values[i]));
         }
         return series;
     }

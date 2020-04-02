@@ -9,11 +9,13 @@ public class AritList extends AritStructure  {
     private ArrayList<DataNode> dataNodes;
 
     public AritList(DataNode dataNode) {
+        this.baseType = TYPE_FACADE.getListType();
         this.dataNodes = new ArrayList<>();
         this.dataNodes.add(dataNode);
     }
 
     public AritList(ArrayList<DataNode> dataNodes) {
+        this.baseType = TYPE_FACADE.getListType();
         this.dataNodes = dataNodes;
     }
 

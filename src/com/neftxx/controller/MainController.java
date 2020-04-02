@@ -9,10 +9,13 @@ import com.neftxx.util.FileManager;
 import com.neftxx.util.GraphvizUtils;
 import com.neftxx.util.ImageUtils;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -119,6 +122,11 @@ public class MainController implements Initializable {
         initTableErrors();
         initTableSymbols();
         onMenuItemsActions();
+        initPaneCharts();
+    }
+
+    private void initPaneCharts() {
+        this.paneCharts.setAlignment(Pos.BOTTOM_CENTER);
     }
 
     private void initTableErrors() {
@@ -246,7 +254,7 @@ public class MainController implements Initializable {
             VirtualizedScrollPane<?> pane = (VirtualizedScrollPane<?>) currentTab.getContent();
             CodeArea codeArea = (CodeArea) pane.getContent();
             String text = codeArea.getText();
-            AritLanguage aritLanguage = new AritLanguage(currentTab.getText(), this.consoleTextArea, this.paneCharts);
+            AritLanguage aritLanguage = new AritLanguage(currentTab.getText(), this.paneCharts);
             try {
                 if (jflexCupMenuItem.isSelected()) aritLanguage.analyzeWithJflexAndCup(text);
                 else if (javaCCMenuItem.isSelected()) aritLanguage.analyzeWithJavaCC(text);
@@ -255,6 +263,7 @@ public class MainController implements Initializable {
                 if (graphAST.isSelected()) graphAST(aritLanguage.createAstGraph());
                 aritLanguage.saveFunctions();
                 aritLanguage.interpret();
+                this.consoleTextArea.setText(aritLanguage.getTextConsole());
                 if (!aritLanguage.errors.isEmpty()) {
                     showErrorsInTableView(aritLanguage.errors);
                 }

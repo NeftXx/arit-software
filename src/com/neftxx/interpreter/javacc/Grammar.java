@@ -47,9 +47,6 @@ public class Grammar implements GrammarConstants {
         this.aritLanguage.addSyntacticError(message, new NodeInfo(token.beginLine, token.beginColumn, this.filename));
     }
 
-//    private void add(String message, int line, int column) {
-//        this.aritLanguage.addLexicalError(message, new NodeInfo(line, column, ));
-//    }
     private static final TypeFacade TYPE_FACADE = TypeFacade.getInstance();
 
   final public void compilation_unit() throws ParseException {
@@ -144,6 +141,14 @@ public class Grammar implements GrammarConstants {
       throw new ParseException();
     }
     block = block();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case PUNTO_COMA:
+      jj_consume_token(PUNTO_COMA);
+      break;
+    default:
+      jj_la1[4] = jj_gen;
+      ;
+    }
         NodeInfo info = new NodeInfo(id.beginLine, id.beginColumn, this.filename);
         {if (true) return new Function(info, id.image.toLowerCase(), parameters, block);}
     throw new Error("Missing return statement in function");
@@ -161,7 +166,7 @@ public class Grammar implements GrammarConstants {
         ;
         break;
       default:
-        jj_la1[4] = jj_gen;
+        jj_la1[5] = jj_gen;
         break label_2;
       }
       jj_consume_token(COMA);
@@ -183,7 +188,7 @@ public class Grammar implements GrammarConstants {
       exp = expression();
       break;
     default:
-      jj_la1[5] = jj_gen;
+      jj_la1[6] = jj_gen;
       ;
     }
         info = new NodeInfo(token.beginLine, token.beginColumn, this.filename);
@@ -208,7 +213,7 @@ public class Grammar implements GrammarConstants {
       statements = block_statements();
       break;
     default:
-      jj_la1[6] = jj_gen;
+      jj_la1[7] = jj_gen;
       ;
     }
     jj_consume_token(LLAVE_DER);
@@ -245,7 +250,7 @@ public class Grammar implements GrammarConstants {
           ;
           break;
         default:
-          jj_la1[7] = jj_gen;
+          jj_la1[8] = jj_gen;
           break label_3;
         }
       }
@@ -301,7 +306,7 @@ public class Grammar implements GrammarConstants {
                                       {if (true) return statement;}
       break;
     default:
-      jj_la1[8] = jj_gen;
+      jj_la1[9] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -321,7 +326,7 @@ public class Grammar implements GrammarConstants {
         ;
         break;
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[10] = jj_gen;
         break label_4;
       }
       access = access();
@@ -334,7 +339,7 @@ public class Grammar implements GrammarConstants {
       jj_consume_token(PUNTO_COMA);
       break;
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[11] = jj_gen;
       ;
     }
         NodeInfo info = new NodeInfo(id.beginLine, id.beginColumn, this.filename);
@@ -381,12 +386,12 @@ public class Grammar implements GrammarConstants {
                                               accessType = Access.Type.ONE_MATRIX;
           break;
         default:
-          jj_la1[11] = jj_gen;
+          jj_la1[12] = jj_gen;
           ;
         }
         break;
       default:
-        jj_la1[12] = jj_gen;
+        jj_la1[13] = jj_gen;
         ;
       }
       break;
@@ -402,7 +407,7 @@ public class Grammar implements GrammarConstants {
                                                           accessType = Access.Type.TWO_LIST;
       break;
     default:
-      jj_la1[13] = jj_gen;
+      jj_la1[14] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -421,7 +426,7 @@ public class Grammar implements GrammarConstants {
       jj_consume_token(PUNTO_COMA);
       break;
     default:
-      jj_la1[14] = jj_gen;
+      jj_la1[15] = jj_gen;
       ;
     }
         NodeInfo info = new NodeInfo(token.beginLine, token.beginColumn, this.filename);
@@ -437,7 +442,7 @@ public class Grammar implements GrammarConstants {
       jj_consume_token(PUNTO_COMA);
       break;
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[16] = jj_gen;
       ;
     }
         NodeInfo info = new NodeInfo(token.beginLine, token.beginColumn, this.filename);
@@ -456,7 +461,7 @@ public class Grammar implements GrammarConstants {
       jj_consume_token(PAR_DER);
       break;
     default:
-      jj_la1[16] = jj_gen;
+      jj_la1[17] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -464,7 +469,7 @@ public class Grammar implements GrammarConstants {
       jj_consume_token(PUNTO_COMA);
       break;
     default:
-      jj_la1[17] = jj_gen;
+      jj_la1[18] = jj_gen;
       ;
     }
         NodeInfo info = new NodeInfo(token.beginLine, token.beginColumn, this.filename);
@@ -485,7 +490,15 @@ public class Grammar implements GrammarConstants {
         if_list.add(new SubIf(info, block_else));
       break;
     default:
-      jj_la1[18] = jj_gen;
+      jj_la1[19] = jj_gen;
+      ;
+    }
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case PUNTO_COMA:
+      jj_consume_token(PUNTO_COMA);
+      break;
+    default:
+      jj_la1[20] = jj_gen;
       ;
     }
         NodeInfo info = if_list.get(0).info;
@@ -541,10 +554,18 @@ public class Grammar implements GrammarConstants {
       labels = switch_labels();
       break;
     default:
-      jj_la1[19] = jj_gen;
+      jj_la1[21] = jj_gen;
       ;
     }
     jj_consume_token(LLAVE_DER);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case PUNTO_COMA:
+      jj_consume_token(PUNTO_COMA);
+      break;
+    default:
+      jj_la1[22] = jj_gen;
+      ;
+    }
         NodeInfo info = new NodeInfo(token.beginLine, token.beginColumn, this.filename);
         {if (true) return new SwitchStm(info, expression, labels);}
     throw new Error("Missing return statement in function");
@@ -563,7 +584,7 @@ public class Grammar implements GrammarConstants {
         ;
         break;
       default:
-        jj_la1[20] = jj_gen;
+        jj_la1[23] = jj_gen;
         break label_6;
       }
     }
@@ -594,7 +615,7 @@ public class Grammar implements GrammarConstants {
         statements = block_statements();
         break;
       default:
-        jj_la1[21] = jj_gen;
+        jj_la1[24] = jj_gen;
         ;
       }
         info = new NodeInfo(token.beginLine, token.beginColumn, this.filename);
@@ -616,14 +637,14 @@ public class Grammar implements GrammarConstants {
         statements = block_statements();
         break;
       default:
-        jj_la1[22] = jj_gen;
+        jj_la1[25] = jj_gen;
         ;
       }
         info = new NodeInfo(token.beginLine, token.beginColumn, this.filename);
         {if (true) return new CaseStm(info, null, statements);}
       break;
     default:
-      jj_la1[23] = jj_gen;
+      jj_la1[26] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -639,6 +660,14 @@ public class Grammar implements GrammarConstants {
     expression = expression();
     jj_consume_token(PAR_DER);
     block = block();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case PUNTO_COMA:
+      jj_consume_token(PUNTO_COMA);
+      break;
+    default:
+      jj_la1[27] = jj_gen;
+      ;
+    }
         NodeInfo info = new NodeInfo(token.beginLine, token.beginColumn, this.filename);
         {if (true) return new WhileStm(info, expression, block);}
     throw new Error("Missing return statement in function");
@@ -659,7 +688,7 @@ public class Grammar implements GrammarConstants {
       jj_consume_token(PUNTO_COMA);
       break;
     default:
-      jj_la1[24] = jj_gen;
+      jj_la1[28] = jj_gen;
       ;
     }
         NodeInfo info = new NodeInfo(token.beginLine, token.beginColumn, this.filename);
@@ -679,6 +708,14 @@ public class Grammar implements GrammarConstants {
     expression = expression();
     jj_consume_token(PAR_DER);
     block = block();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case PUNTO_COMA:
+      jj_consume_token(PUNTO_COMA);
+      break;
+    default:
+      jj_la1[29] = jj_gen;
+      ;
+    }
         NodeInfo info = new NodeInfo(token.beginLine, token.beginColumn, this.filename);
         {if (true) return new ForStm(info, id.image.toLowerCase(), expression, block);}
     throw new Error("Missing return statement in function");
@@ -704,7 +741,7 @@ public class Grammar implements GrammarConstants {
       argument_list = argument_list();
       break;
     default:
-      jj_la1[25] = jj_gen;
+      jj_la1[30] = jj_gen;
       ;
     }
     jj_consume_token(PAR_DER);
@@ -730,7 +767,7 @@ public class Grammar implements GrammarConstants {
         ;
         break;
       default:
-        jj_la1[26] = jj_gen;
+        jj_la1[31] = jj_gen;
         break label_7;
       }
       jj_consume_token(COMA);
@@ -761,7 +798,7 @@ public class Grammar implements GrammarConstants {
                              {if (true) return exp;}
       break;
     default:
-      jj_la1[27] = jj_gen;
+      jj_la1[32] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -799,7 +836,7 @@ public class Grammar implements GrammarConstants {
             exp = new Ternary(info, exp, exp1, exp2);
       break;
     default:
-      jj_la1[28] = jj_gen;
+      jj_la1[33] = jj_gen;
       ;
     }
         {if (true) return exp;}
@@ -818,7 +855,7 @@ public class Grammar implements GrammarConstants {
         ;
         break;
       default:
-        jj_la1[29] = jj_gen;
+        jj_la1[34] = jj_gen;
         break label_8;
       }
       token = jj_consume_token(OR);
@@ -842,7 +879,7 @@ public class Grammar implements GrammarConstants {
         ;
         break;
       default:
-        jj_la1[30] = jj_gen;
+        jj_la1[35] = jj_gen;
         break label_9;
       }
       token = jj_consume_token(AND);
@@ -868,7 +905,7 @@ public class Grammar implements GrammarConstants {
         ;
         break;
       default:
-        jj_la1[31] = jj_gen;
+        jj_la1[36] = jj_gen;
         break label_10;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -881,7 +918,7 @@ public class Grammar implements GrammarConstants {
                                     operator = Comparator.Operator.UNEQUAL;
         break;
       default:
-        jj_la1[32] = jj_gen;
+        jj_la1[37] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -924,7 +961,7 @@ public class Grammar implements GrammarConstants {
                                              operator = Comparator.Operator.LESS_THAN;
         break;
       default:
-        jj_la1[33] = jj_gen;
+        jj_la1[38] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -959,7 +996,7 @@ public class Grammar implements GrammarConstants {
                              operator = Arithmetic.Operator.SUBTRACTION;
         break;
       default:
-        jj_la1[34] = jj_gen;
+        jj_la1[39] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -998,7 +1035,7 @@ public class Grammar implements GrammarConstants {
                           operator = Arithmetic.Operator.MODULE;
         break;
       default:
-        jj_la1[35] = jj_gen;
+        jj_la1[40] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1022,7 +1059,7 @@ public class Grammar implements GrammarConstants {
         ;
         break;
       default:
-        jj_la1[36] = jj_gen;
+        jj_la1[41] = jj_gen;
         break label_14;
       }
       token = jj_consume_token(POTENCIA);
@@ -1056,7 +1093,7 @@ public class Grammar implements GrammarConstants {
                                             {if (true) return exp;}
       break;
     default:
-      jj_la1[37] = jj_gen;
+      jj_la1[42] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1084,7 +1121,7 @@ public class Grammar implements GrammarConstants {
                                {if (true) return exp;}
       break;
     default:
-      jj_la1[38] = jj_gen;
+      jj_la1[43] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1108,13 +1145,13 @@ public class Grammar implements GrammarConstants {
           ;
           break;
         default:
-          jj_la1[39] = jj_gen;
+          jj_la1[44] = jj_gen;
           break label_15;
         }
       }
       break;
     default:
-      jj_la1[40] = jj_gen;
+      jj_la1[45] = jj_gen;
       ;
     }
         if (accesses == null) {if (true) return exp;}
@@ -1134,7 +1171,7 @@ public class Grammar implements GrammarConstants {
       exp = literal();
       break;
     default:
-      jj_la1[41] = jj_gen;
+      jj_la1[46] = jj_gen;
       if (jj_2_11(2147483647)) {
         exp = function_call();
       } else if (jj_2_12(2147483647)) {
@@ -1147,7 +1184,7 @@ public class Grammar implements GrammarConstants {
           jj_consume_token(PAR_DER);
           break;
         default:
-          jj_la1[42] = jj_gen;
+          jj_la1[47] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -1209,7 +1246,7 @@ public class Grammar implements GrammarConstants {
             type = TYPE_FACADE.getStringType();
       break;
     default:
-      jj_la1[43] = jj_gen;
+      jj_la1[48] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1902,23 +1939,23 @@ public class Grammar implements GrammarConstants {
     return false;
   }
 
-  private boolean jj_3_2() {
-    if (jj_3R_17()) return true;
-    return false;
-  }
-
-  private boolean jj_3_1() {
-    if (jj_3R_16()) return true;
-    return false;
-  }
-
   private boolean jj_3R_25() {
     if (jj_scan_token(MENOS)) return true;
     return false;
   }
 
+  private boolean jj_3_2() {
+    if (jj_3R_17()) return true;
+    return false;
+  }
+
   private boolean jj_3R_24() {
     if (jj_scan_token(MAS)) return true;
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    if (jj_3R_16()) return true;
     return false;
   }
 
@@ -2038,7 +2075,7 @@ public class Grammar implements GrammarConstants {
   private boolean jj_lookingAhead = false;
   private boolean jj_semLA;
   private int jj_gen;
-  final private int[] jj_la1 = new int[44];
+  final private int[] jj_la1 = new int[49];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -2046,10 +2083,10 @@ public class Grammar implements GrammarConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x20d3c800,0x20000000,0x20000000,0x1000,0x0,0x0,0x20d3c800,0x20d3c800,0x20d3c800,0x0,0x0,0x3f000000,0x0,0x3f000000,0x0,0x0,0x0,0x0,0x80000,0x42000,0x42000,0x20d3c800,0x20d3c800,0x42000,0x0,0x3f002000,0x0,0x3f002000,0x0,0x0,0x0,0x80000000,0x80000000,0x0,0x0,0x0,0x0,0x3f000000,0x3f000000,0x0,0x0,0x1f000000,0x0,0x1f000000,};
+      jj_la1_0 = new int[] {0x20d3c800,0x20000000,0x20000000,0x1000,0x0,0x0,0x0,0x20d3c800,0x20d3c800,0x20d3c800,0x0,0x0,0x3f000000,0x0,0x3f000000,0x0,0x0,0x0,0x0,0x80000,0x0,0x42000,0x0,0x42000,0x20d3c800,0x20d3c800,0x42000,0x0,0x0,0x0,0x3f002000,0x0,0x3f002000,0x0,0x0,0x0,0x80000000,0x80000000,0x0,0x0,0x0,0x0,0x3f000000,0x3f000000,0x0,0x0,0x1f000000,0x0,0x1f000000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x20000,0x400000,0x200,0x0,0x0,0x0,0x80000,0x200000,0x30020,0x400000,0x4b0020,0x200000,0x200000,0x20000,0x200000,0x0,0x0,0x0,0x0,0x0,0x0,0x200000,0x30020,0x400000,0x30020,0x1000,0x4000,0x8000,0x1,0x1,0xc06,0x30,0xc8,0x100,0x30020,0x30000,0x80000,0x80000,0x0,0x20000,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x20000,0x200000,0x400000,0x200,0x0,0x0,0x0,0x80000,0x200000,0x30020,0x400000,0x4b0020,0x200000,0x200000,0x20000,0x200000,0x0,0x200000,0x0,0x200000,0x0,0x0,0x0,0x0,0x200000,0x200000,0x200000,0x30020,0x400000,0x30020,0x1000,0x4000,0x8000,0x1,0x1,0xc06,0x30,0xc8,0x100,0x30020,0x30000,0x80000,0x80000,0x0,0x20000,0x0,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[12];
   private boolean jj_rescan = false;
@@ -2066,7 +2103,7 @@ public class Grammar implements GrammarConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 44; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 49; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2081,7 +2118,7 @@ public class Grammar implements GrammarConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 44; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 49; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2092,7 +2129,7 @@ public class Grammar implements GrammarConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 44; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 49; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2103,7 +2140,7 @@ public class Grammar implements GrammarConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 44; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 49; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2113,7 +2150,7 @@ public class Grammar implements GrammarConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 44; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 49; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2123,7 +2160,7 @@ public class Grammar implements GrammarConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 44; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 49; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2243,7 +2280,7 @@ public class Grammar implements GrammarConstants {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 44; i++) {
+    for (int i = 0; i < 49; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {

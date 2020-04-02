@@ -144,7 +144,7 @@
                     </AnchorPane>
                 </SplitPane>
             </AnchorPane>
-            <ScrollPane>
+            <ScrollPane hbarPolicy="ALWAYS" vbarPolicy="ALWAYS">
                 <VBox fx:id="paneCharts">
                 </VBox>
             </ScrollPane>

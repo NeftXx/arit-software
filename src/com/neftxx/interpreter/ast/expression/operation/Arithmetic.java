@@ -266,18 +266,18 @@ public class Arithmetic extends Operation {
         try {
             switch (this.operator) {
                 case SUM:
-                    return toDouble(value1) + toDouble(value2);
+                    return toDouble(toDouble(value1) + toDouble(value2));
                 case SUBTRACTION:
-                    return toDouble(value1) - toDouble(value2);
+                    return toDouble(toDouble(value1) - toDouble(value2));
                 case DIVISION:
-                    return toDouble(value1) / toDouble(value2);
+                    return toDouble(toDouble(value1) / toDouble(value2));
                 case MULTIPLICATION:
-                    return toDouble(value1) * toDouble(value2);
+                    return toDouble(toDouble(value1) * toDouble(value2));
                 case POWER:
-                    return Math.pow(toDouble(value1), toDouble(value2));
+                    return toDouble(Math.pow(toDouble(value1), toDouble(value2)));
                 case MODULE:
                 default:
-                    return toDouble(value1) % toDouble(value2);
+                    return toDouble(toDouble(value1) % toDouble(value2));
             }
         } catch (Exception ex) {
             aritLanguage.addSemanticError("Error en `" + this + "` : no se pudo realizar la operación numerica.", this.info);

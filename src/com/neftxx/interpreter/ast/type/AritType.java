@@ -1,6 +1,5 @@
 package com.neftxx.interpreter.ast.type;
 
-import org.jetbrains.annotations.NotNull;
 
 public abstract class AritType {
     public final int priority;

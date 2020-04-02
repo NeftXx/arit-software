@@ -212,6 +212,7 @@ global_statements
 global_statement
     ::= statement:statement {: RESULT = statement; :}
     |   function_declaration:function {: RESULT = function; :}
+    |   function_declaration:function PUNTO_COMA {: RESULT = function; :}
 ;
 
 function_declaration
@@ -421,10 +422,14 @@ statement
     |   continue_statement:statement {: RESULT = statement; :}
     |   return_statement:statement {: RESULT = statement; :}
     |   if_statement:statement {: RESULT = statement; :}
+    |   if_statement:statement PUNTO_COMA {: RESULT = statement; :}
     |   switch_statement:statement {: RESULT = statement; :}
+    |   switch_statement:statement PUNTO_COMA {: RESULT = statement; :}
     |   while_statement:statement {: RESULT = statement; :}
+    |   while_statement:statement PUNTO_COMA {: RESULT = statement; :}
     |   do_while_statement:statement {: RESULT = statement; :}
     |   for_statement:statement {: RESULT = statement; :}
+    |   for_statement:statement PUNTO_COMA {: RESULT = statement; :}
     |   error PUNTO_COMA
 ;
 

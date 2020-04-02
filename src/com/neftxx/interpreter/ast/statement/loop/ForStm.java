@@ -45,63 +45,77 @@ public class ForStm extends AstNode {
     }
 
     @Nullable
-    private Object iterateVector(AritLanguage aritLanguage, Scope scope, @NotNull AritVector vector) {
+    private Object iterateVector(@NotNull AritLanguage aritLanguage, Scope scope, @NotNull AritVector vector) {
         int i, size = vector.size();
         Object valueBlock;
         Scope localScope;
+        int errors = aritLanguage.errors.size();
         for (i = 1; i <= size; i++) {
             localScope = newScope(scope, TYPE_FACADE.getVectorType(), vector.getItemValue(i));
             valueBlock = this.block.interpret(aritLanguage, localScope);
             if (valueBlock instanceof Break) return null;
             if (valueBlock instanceof Return) return valueBlock;
+            if (errors < aritLanguage.errors.size()) return null;
         }
         return null;
     }
 
     @Nullable
-    private Object iterateList(AritLanguage aritLanguage, Scope scope, @NotNull AritList list) {
+    private Object iterateList(@NotNull AritLanguage aritLanguage, Scope scope, @NotNull AritList list) {
         int i, size = list.size();
         Object valueBlock;
         DataNode dataNode;
         Scope localScope;
+        int errors = aritLanguage.errors.size();
+        Object value;
         for (i = 1; i <= size; i++) {
             dataNode = list.getItemValue(i);
-            localScope = newScope(scope, dataNode.baseType, dataNode.value);
+            value = dataNode.value;
+            if (value instanceof AritVector) {
+                localScope = newScope(scope, ((AritVector) value).baseType, value);
+            } else {
+                localScope = newScope(scope, dataNode.baseType, value);
+            }
             valueBlock = this.block.interpret(aritLanguage, localScope);
             if (valueBlock instanceof Break) return null;
             if (valueBlock instanceof Return) return valueBlock;
+            if (errors < aritLanguage.errors.size()) return null;
         }
         return null;
     }
 
     @Nullable
-    private Object iterateMatrix(AritLanguage aritLanguage, Scope scope, @NotNull AritMatrix matrix) {
+    private Object iterateMatrix(@NotNull AritLanguage aritLanguage, Scope scope, @NotNull AritMatrix matrix) {
         int i, size = matrix.size();
         Object valueBlock;
         Scope localScope;
         AritType typeVector = TYPE_FACADE.getVectorType();
+        int errors = aritLanguage.errors.size();
         for (i = 0; i < size; i++) {
             localScope = newScope(scope, typeVector, matrix.getItem(i));
             valueBlock = this.block.interpret(aritLanguage, localScope);
             if (valueBlock instanceof Break) return null;
             if (valueBlock instanceof Return) return valueBlock;
+            if (errors < aritLanguage.errors.size()) return null;
         }
         return null;
     }
 
     @Nullable
-    private Object iterateArray(AritLanguage aritLanguage, Scope scope, @NotNull AritArray array) {
+    private Object iterateArray(@NotNull AritLanguage aritLanguage, Scope scope, @NotNull AritArray array) {
         ArrayList<DataNode> dataNodes = array.getDataNodes();
         int i, size = dataNodes.size();
         Object valueBlock;
         Scope localScope;
         DataNode dataNode;
+        int errors = aritLanguage.errors.size();
         for (i = 0; i < size; i++) {
             dataNode = dataNodes.get(i);
             localScope = newScope(scope, dataNode.baseType, dataNode.value);
             valueBlock = this.block.interpret(aritLanguage, localScope);
             if (valueBlock instanceof Break) return null;
             if (valueBlock instanceof Return) return valueBlock;
+            if (errors < aritLanguage.errors.size()) return null;
         }
         return null;
     }

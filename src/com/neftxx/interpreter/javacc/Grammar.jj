@@ -1,4 +1,4 @@
-options{
+options {
     JAVA_UNICODE_ESCAPE = true;
 	IGNORE_CASE = true;
 	STATIC = false;
@@ -54,9 +54,6 @@ public class Grammar {
         this.aritLanguage.addSyntacticError(message, new NodeInfo(token.beginLine, token.beginColumn, this.filename));
     }
 
-//    private void add(String message, int line, int column) {
-//        this.aritLanguage.addLexicalError(message, new NodeInfo(line, column, ));
-//    }
     private static final TypeFacade TYPE_FACADE = TypeFacade.getInstance();
 }
 
@@ -222,6 +219,9 @@ private AstNode global_statement() : {
 
 
 /**
+function_declaration
+    ::= id '=' 'function' '(' [ formal_parameter_list ] ')' block
+    |   id '=' '(' [ formal_parameter_list ] ')' '=>' block
  */
 private Function function_declaration() : {
     ArrayList<FormalParameter> parameters = null;
@@ -231,7 +231,7 @@ private Function function_declaration() : {
     id=<ID> <IGUAL> (
             <FUNCTION> <PAR_IZQ> [ parameters=formal_parameter_list() ] <PAR_DER>
         |   <PAR_IZQ> [ parameters=formal_parameter_list() ] <PAR_DER> <LAMBDA>
-    ) block=block() {
+    ) block=block() [ <PUNTO_COMA> ] {
         NodeInfo info = new NodeInfo(id.beginLine, id.beginColumn, this.filename);
         return new Function(info, id.image.toLowerCase(), parameters, block);
     }
@@ -451,7 +451,7 @@ private IfStatement if_statement() : {
     if_list=if_list() [ token_else=<ELSE> block_else=block() {
         NodeInfo info = new NodeInfo(token_else.beginLine, token_else.beginColumn, this.filename);
         if_list.add(new SubIf(info, block_else));
-    } ] {
+    } ] [ <PUNTO_COMA> ] {
         NodeInfo info = if_list.get(0).info;
         return new IfStatement(info, if_list);
     }
@@ -496,7 +496,7 @@ private SwitchStm switch_statement() : {
     ArrayList<CaseStm> labels = null;
 } {
     token=<SWITCH> <PAR_IZQ> expression=expression() <PAR_DER>
-    <LLAVE_IZQ> [ labels=switch_labels() ] <LLAVE_DER> {
+    <LLAVE_IZQ> [ labels=switch_labels() ] <LLAVE_DER> [ <PUNTO_COMA> ] {
         NodeInfo info = new NodeInfo(token.beginLine, token.beginColumn, this.filename);
         return new SwitchStm(info, expression, labels);
     }
@@ -555,7 +555,7 @@ private WhileStm while_statement() : {
     Expression expression;
     Block block;
 } {
-    token=<WHILE> <PAR_IZQ> expression=expression() <PAR_DER> block=block() {
+    token=<WHILE> <PAR_IZQ> expression=expression() <PAR_DER> block=block() [ <PUNTO_COMA> ] {
         NodeInfo info = new NodeInfo(token.beginLine, token.beginColumn, this.filename);
         return new WhileStm(info, expression, block);
     }
@@ -590,7 +590,7 @@ private ForStm for_statement() : {
     Expression expression;
     Block block;
 } {
-    token=<FOR> <PAR_IZQ> id=<ID> <IN> expression=expression() <PAR_DER> block=block() {
+    token=<FOR> <PAR_IZQ> id=<ID> <IN> expression=expression() <PAR_DER> block=block() [ <PUNTO_COMA> ] {
         NodeInfo info = new NodeInfo(token.beginLine, token.beginColumn, this.filename);
         return new ForStm(info, id.image.toLowerCase(), expression, block);
     }

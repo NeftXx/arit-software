@@ -78,12 +78,12 @@ public class HistFunction extends NativeFunction {
     public ChartViewer getChartViewer(@NotNull double[] values, String xLab, String title) {
         HistogramDataset dataset = new HistogramDataset();
         dataset.setType(HistogramType.FREQUENCY);
-        dataset.addSeries("Datos", values, 10);
+        dataset.addSeries("Datos", values, 5);
         JFreeChart histogram = ChartFactory.createHistogram(title, xLab, "", dataset,
                 PlotOrientation.VERTICAL, true, true, false);
         ChartViewer chartViewer = new ChartViewer(histogram);
-        chartViewer.setMinWidth(455);
-        chartViewer.setMinHeight(405);
+        chartViewer.setMinWidth(600);
+        chartViewer.setMinHeight(600);
         return chartViewer;
     }
 

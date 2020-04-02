@@ -3,6 +3,7 @@ package com.neftxx.interpreter.ast.expression;
 import com.neftxx.interpreter.ast.AstNode;
 import com.neftxx.interpreter.ast.expression.assignment.Assignment;
 import com.neftxx.interpreter.ast.expression.assignment.StructureAssignment;
+import com.neftxx.interpreter.ast.expression.structure.StructureAccess;
 import com.neftxx.interpreter.ast.type.AritType;
 import com.neftxx.util.NodeInfo;
 
@@ -17,7 +18,6 @@ public abstract class Expression extends AstNode {
     }
 
     public boolean verifyCopy() {
-        return (this instanceof Assignment || this instanceof Identifier || this instanceof StructureAssignment)
-                && TYPE_FACADE.isStructureType(this.type);
+        return (this instanceof StructureAccess || this instanceof Identifier) && TYPE_FACADE.isStructureType(this.type);
     }
 }

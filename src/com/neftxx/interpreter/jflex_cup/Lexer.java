@@ -1084,7 +1084,7 @@ public class Lexer implements java_cup.runtime.Scanner {
             // fall through
           case 105: break;
           case 44: 
-            { error("Error: no se esperaba el escape \\." + yytext());
+            { error("Error: no se esperaba el escape \\." + yytext()); string.append(yytext());
             } 
             // fall through
           case 106: break;

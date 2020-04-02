@@ -26,6 +26,8 @@ public class Identifier extends Expression {
             return this.value;
         }
         aritLanguage.addSemanticError("Error : objeto " + this.name + " no encontrado.", this.info);
+        this.type = TYPE_FACADE.getUndefinedType();
+        this.value = null;
         return null;
     }
 

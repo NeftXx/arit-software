@@ -155,23 +155,31 @@ Null_Literal    = null
 /**
  *  Comentarios:
  *
- *  Los comentarios de una línea que serán delimitados al inicio con los símbolos //
+ *  Los comentarios de una línea que serán delimitados al inicio con los símbolos #
  *  y al final con un carácter de finalización de línea.
  */
 %state COMENTARIO_DE_FIN_DE_LINEA
 
-/* Comentarios múltiples */
+/**
+ *  Comentarios múltiples:
+ *  
+ *  Los comentarios múltiples serán delimitados al inicio con los símbolos #*
+ *  y al final con un los símbolos *#
+ */
 %state COMENTARIO_TRADICIONAL
 
 /**
- * string: """ <Caracteres ASCII> """
+ * string: "<Caracteres ASCII>"
  */
 %state CADENA
 
 %%
 
 <YYINITIAL> {
-    /* palabras claves */
+    /*
+        palabras claves del lenguaje
+        se llama al metodo al metodo symbol(nombre, token)
+    */
     "continue"          { return symbol("`continue`", Sym.CONTINUE); }
     "function"          { return symbol("`function`", Sym.FUNCTION); }
     "default"           { return symbol("`default`", Sym.DEFAULT); }
@@ -278,7 +286,7 @@ Null_Literal    = null
     "\\n"               { string.append('\n'); }
     "\\r"               { string.append('\r'); }
     "\\t"               { string.append('\t'); }
-    \\.                 { error("Error: no se esperaba el escape \\." + yytext()); }
+    \\.                 { error("Error: no se esperaba el escape \\." + yytext()); string.append(yytext()); }
 
     {Fin_linea}         {
                             yybegin(YYINITIAL);

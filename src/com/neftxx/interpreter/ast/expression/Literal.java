@@ -7,6 +7,9 @@ import com.neftxx.interpreter.ast.type.AritType;
 import com.neftxx.util.NodeInfo;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * @author Ronald - 201504420
  */

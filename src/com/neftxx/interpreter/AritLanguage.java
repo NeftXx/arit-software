@@ -15,6 +15,7 @@ import com.neftxx.util.NodeInfo;
 import java_cup.runtime.ComplexSymbolFactory;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.io.BufferedReader;
@@ -25,17 +26,17 @@ public class AritLanguage {
     private ArrayList<AstNode> astNodes;
     public final ArrayList<NodeError> errors;
     public final String filename;
-    private final TextArea console;
     private final VBox paneCharts;
     public final FileScope globalScope;
+    private StringBuilder console;
 
-    public AritLanguage(String filename, TextArea console, VBox paneCharts) {
+    public AritLanguage(String filename, VBox paneCharts) {
         this.errors = new ArrayList<>();
         this.astNodes = null;
         this.filename = filename;
-        this.console = console;
         this.paneCharts = paneCharts;
         this.globalScope = new FileScope();
+        this.console = new StringBuilder();
     }
 
     public void setAstNodes(ArrayList<AstNode> astNodes) {
@@ -124,10 +125,15 @@ public class AritLanguage {
     }
 
     public void printOnConsole(String text) {
-        this.console.setText(this.console.getText() + text + "\n");
+        this.console.append(text).append("\n");
+    }
+
+    public String getTextConsole() {
+        return this.console.toString();
     }
 
     public void addChart(Node node) {
+        VBox.setVgrow(node, Priority.ALWAYS);
         this.paneCharts.getChildren().add(node);
     }
 

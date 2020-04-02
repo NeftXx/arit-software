@@ -5,6 +5,10 @@ import com.neftxx.interpreter.ast.type.TypeFacade;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 public class DataNode extends StructureNode {
     public Object value;
 
@@ -23,6 +27,8 @@ public class DataNode extends StructureNode {
         Object value = this.value;
         if (value instanceof AritStructure) {
             value = ((AritStructure) value).copy();
+        } else if (value instanceof DataNode) {
+            value = ((DataNode) value).copy();
         }
         return new DataNode(baseType, value);
     }

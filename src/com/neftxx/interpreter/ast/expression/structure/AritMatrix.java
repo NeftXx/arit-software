@@ -179,11 +179,11 @@ public class AritMatrix extends AritStructure {
     public AritMatrix copy() {
         int i = 0;
         int length = this.dataNodes.length;
-        DataNode[] dataNodes = new DataNode[length];
+        DataNode[] newDataNodes = new DataNode[length];
         for (; i < length; i++) {
-            dataNodes[i] = this.dataNodes[i].copy();
+            newDataNodes[i] = this.dataNodes[i].copy();
         }
-        return new AritMatrix(this.baseType, dataNodes, this.rows, this.columns);
+        return new AritMatrix(this.baseType, newDataNodes, this.rows, this.columns);
     }
 
     @Override

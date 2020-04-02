@@ -19,9 +19,11 @@ public class Assignment extends Expression {
 
     @Override
     public Object interpret(AritLanguage aritLanguage, Scope scope) {
-        this.value = expression.interpret(aritLanguage, scope);
-        this.type = expression.type;
-        if (expression.verifyCopy()) this.value = ((AritStructure) this.value).copy();
+        this.value = this.expression.interpret(aritLanguage, scope);
+        this.type = this.expression.type;
+        if (expression.verifyCopy()) {
+            this.value = ((AritStructure) this.value).copy();
+        }
         scope.addVariable(this.id, this.type, this.value, this.info.line);
         return this.value;
     }

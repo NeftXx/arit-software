@@ -39,6 +39,7 @@ public class SubIf extends AstNode {
     @Override
     public Object interpret(AritLanguage aritLanguage, Scope scope) {
         boolean value = false;
+        this.condValue = false;
         if (this.expression != null) {
             Object result = this.expression.interpret(aritLanguage, scope);
             if (result instanceof AritVector) {
@@ -46,7 +47,8 @@ public class SubIf extends AstNode {
                 if (TYPE_FACADE.isBooleanType(aritVector.baseType)) {
                     value = toBoolean(aritVector.getDataNodes().get(0).value);
                 } else {
-                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo boolean.", this.info);
+                    aritLanguage.addSemanticError("Error : se esperaba un vector de tipo boolean y " +
+                            "no de tipo " + aritVector.baseType + ".", this.info);
                     return null;
                 }
             } else if (result instanceof AritMatrix) {
@@ -54,11 +56,13 @@ public class SubIf extends AstNode {
                 if (TYPE_FACADE.isBooleanType(aritMatrix.baseType)) {
                     value = toBoolean(aritMatrix.getDataNodes()[0].value);
                 } else {
-                    aritLanguage.addSemanticError("Error : se esperaba una matriz de tipo boolean.", this.info);
+                    aritLanguage.addSemanticError("Error : se esperaba una matriz de tipo boolean y " +
+                            "no de tipo " + aritMatrix.baseType + ".", this.info);
                     return null;
                 }
             } else {
-                aritLanguage.addSemanticError("Error : se esperaba una estructura de tipo boolean.", this.info);
+                aritLanguage.addSemanticError("Error : se esperaba una estructura de tipo boolean y " +
+                        "no de tipo " + this.expression.type + ".", this.info);
                 return null;
             }
         }

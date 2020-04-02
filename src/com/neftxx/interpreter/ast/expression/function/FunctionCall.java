@@ -26,6 +26,7 @@ public class FunctionCall extends Expression {
 
     @Override
     public Object interpret(@NotNull AritLanguage aritLanguage, Scope scope) {
+        this.type = TYPE_FACADE.getUndefinedType();
         NativeFunction nativeFunction = aritLanguage.globalScope.getNativeFunction(this.id);
         if (nativeFunction != null) {
             this.value = nativeFunction.interpret(this.info, aritLanguage, this.arguments, scope);
@@ -38,7 +39,6 @@ public class FunctionCall extends Expression {
                 int i = 0;
                 Expression expression;
                 Scope methodScope = new Scope();
-                methodScope.setPrevious(aritLanguage.globalScope);
                 ArrayList<FormalParameter> parameters = function.parameters;
                 Object valueArgument;
                 for (; i < numberOfArguments; i++) {
@@ -64,9 +64,12 @@ public class FunctionCall extends Expression {
                             return null;
                         }
                     }
-                    if (expression.verifyCopy()) valueArgument = ((AritStructure) valueArgument).copy();
+                    if (valueArgument instanceof AritStructure) {
+                        valueArgument = ((AritStructure) valueArgument).copy();
+                    }
                     methodScope.addVariable(parameters.get(i).id, expression.type, valueArgument, this.info.line);
                 }
+                methodScope.setPrevious(aritLanguage.globalScope);
                 this.value = function.interpret(aritLanguage, methodScope);
                 this.type = function.type;
                 return this.value;

@@ -156,7 +156,8 @@ public class StructureAssignment extends Expression {
                             if (aritListTemp.size() == 1) {
                                 try {
                                     if (this.expression.verifyCopy()) aritListTemp = aritListTemp.copy();
-                                    list.addElement(position, new DataNode(TYPE_FACADE.getListType(), aritListTemp));
+                                    DataNode dataNodeTemp = aritListTemp.getDataNodes().get(0);
+                                    list.addElement(position, dataNodeTemp);
                                     this.value = aritListTemp;
                                     this.type = TYPE_FACADE.getListType();
                                 } catch (Exception ex) {
@@ -508,18 +509,23 @@ public class StructureAssignment extends Expression {
 
     @Override
     public Object interpret(AritLanguage aritLanguage, @NotNull Scope scope) {
+        this.value = null;
+        this.type = TYPE_FACADE.getUndefinedType();
         VarSymbol varSymbol = scope.getVariable(this.id);
         if (varSymbol != null) {
-            if (TYPE_FACADE.isVectorType(varSymbol.type)) {
+            if (this.id.equals("v")) {
+                System.out.println();
+            }
+            if (varSymbol.value instanceof AritVector) {
                 vectorAssignment(aritLanguage, scope, (AritVector) varSymbol.value);
                 if (!TYPE_FACADE.isUndefinedType(this.type)) {
                     varSymbol.changeValues(this.type, this.value, this.info.line);
                 }
-            } else if (TYPE_FACADE.isListType(varSymbol.type)) {
+            } else if (varSymbol.value instanceof AritList) {
                 listAssignment(aritLanguage, scope, (AritList) varSymbol.value);
-            } else if (TYPE_FACADE.isMatrixType(varSymbol.type)) {
+            } else if (varSymbol.value instanceof AritMatrix) {
                 matrixAssignment(aritLanguage, scope, (AritMatrix) varSymbol.value);
-            } else if (TYPE_FACADE.isArrayType(varSymbol.type)) {
+            } else if (varSymbol.value instanceof AritArray) {
                 arrayAssignment(aritLanguage, scope, (AritArray) varSymbol.value);
             }
             return this.value;

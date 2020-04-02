@@ -159,6 +159,7 @@ public class PlotFunction extends NativeFunction {
         if (type.equalsIgnoreCase("P")) {
             series.getNode().setStyle("-fx-stroke: transparent;");
         } else if (type.equalsIgnoreCase("I")) chart.setCreateSymbols(false);
+        chart.setMinSize(600, 600);
         return chart;
     }
 
@@ -178,6 +179,7 @@ public class PlotFunction extends NativeFunction {
         chart.setTitle(title);
         chart.getData().add(getSeries(values));
         chart.setStyle("-fx-background-color: white; -fx-font-weight: bold;");
+        chart.setMinSize(600, 600);
         return chart;
     }
 

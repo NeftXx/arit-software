@@ -26,6 +26,9 @@ public class StructureAccess extends Expression {
 
     @Override
     public Object interpret(AritLanguage aritLanguage, Scope scope) {
+        this.currentAccess = 0;
+        this.value = null;
+        this.type = TYPE_FACADE.getUndefinedType();
         Object resultExp = this.expression.interpret(aritLanguage, scope);
         getAccess(aritLanguage, scope, resultExp);
         return this.value;

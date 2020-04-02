@@ -9,6 +9,7 @@ public class Scope {
     protected HashMap<String, VarSymbol> variables;
 
     public Scope() {
+        this.previous = null;
         this.variables = new HashMap<>();
     }
 
